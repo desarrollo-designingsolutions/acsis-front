@@ -73,6 +73,7 @@ const setFormEdit = async (id: string) => {
 
 const handleSubmit = async () => {
   const validation = await refForm.value?.validate();
+  console.log(validation)
   if (validation?.valid) {
 
     componentData.form.company_id = authenticationStore.company.id;
@@ -100,7 +101,7 @@ const handleSubmit = async () => {
       componentData.isLoading = false;
     }
 
-    if (responseApi.response.status==200 && responseApi.data) {
+    if (responseApi.response.status == 200 && responseApi.data) {
       handleIsDialogVisible();
       emits("saveData")
     }
@@ -160,7 +161,7 @@ const openModalQuestion = (response: IImageSelected) => {
               <VCol cols="12">
                 <AppFileInput :requiredField="componentData.form.id ? false : true" clearable
                   :label2="componentData.form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
-                  label="Seleccione un archivo" @change="changeFile($event)" :key="inputFile.key"
+                  label="Seleccione un archivo" @change="changeFile($event)"
                   :rules="[componentData.form.id ? true : requiredValidator]"></AppFileInput>
 
               </VCol>

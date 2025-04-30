@@ -49,7 +49,7 @@ const tabs = ref([
   },
   {
     title: "Documentos",
-    show: true,
+    show: false,
     errorsValidations: false,
   },
 ])
@@ -73,8 +73,9 @@ const fetchDataForm = async () => {
     typeEntities.value = data.typeEntities
     //formulario 
     if (data.form) {
-      form.value = data.form
-      const formClone = JSON.parse(JSON.stringify(data.form))
+      form.value = cloneObject(data.form)
+
+      tabs.value[1].show = true;
     }
   }
   loading.form = false
@@ -117,6 +118,17 @@ onMounted(async () => {
 const isLoading = computed(() => {
   return Object.values(loading).some(value => value);
 });
+
+const nitRules = [
+  value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
+  value => requiredValidator(value),
+];
+const phoneRules = [
+  value => requiredValidator(value),
+  value => integerValidator(value),
+  value => (!value || value.length <= 10) || "El número no debe tener mas de 10 caracteres",
+  value => positiveNumberValidator(value),
+];
 </script>
 
 
@@ -145,28 +157,13 @@ const isLoading = computed(() => {
             <VRow>
               <VCol cols="12" sm="4">
                 <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.corporate_name"
-                  label="Nombre" :error-messages="errorsBack.corporate_name" @input="errorsBack.corporate_name = ''"
-                  clearable />
+                  label="Razón Social" :error-messages="errorsBack.corporate_name"
+                  @input="errorsBack.corporate_name = ''" clearable />
               </VCol>
 
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" :rules="[requiredValidator, integerValidator]" v-model="form.nit"
-                  label="Nit" :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable />
-              </VCol>
-
-              <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" clearable v-model="form.address" label="Dirección"
-                  :error-messages="errorsBack.address" />
-              </VCol>
-
-              <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" :rules="[integerValidator]" v-model="form.phone" label="Teléfono"
-                  :error-messages="errorsBack.phone" @input="errorsBack.phone = ''" />
-              </VCol>
-
-              <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" clearable :rules="[emailValidator]" v-model="form.email"
-                  label="Email" :error-messages="errorsBack.email" @input="errorsBack.email = ''" />
+                <AppTextField :requiredField="true" :rules="nitRules" v-model="form.nit" label="Nit"
+                  :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable />
               </VCol>
 
               <VCol cols="12" sm="4">
@@ -175,12 +172,28 @@ const isLoading = computed(() => {
                   :rules="[requiredValidator]">
                 </AppAutocomplete>
               </VCol>
+
+              <VCol cols="12" sm="4">
+                <AppTextField :requiredField="true" clearable v-model="form.address" label="Dirección"
+                  :error-messages="errorsBack.address" />
+              </VCol>
+
+              <VCol cols="12" sm="4">
+                <AppTextField :requiredField="true" :rules="phoneRules" v-model="form.phone" label="Teléfono"
+                  :error-messages="errorsBack.phone" @input="errorsBack.phone = ''" />
+              </VCol>
+
+              <VCol cols="12" sm="4">
+                <AppTextField :requiredField="true" clearable :rules="[emailValidator]" v-model="form.email"
+                  label="Correo de contacto" :error-messages="errorsBack.email" @input="errorsBack.email = ''" />
+              </VCol>
+
             </VRow>
           </VForm>
         </div>
 
         <div v-show="currentTab == 1">
-          Documentos
+          <Files v-if="form.id" model="Entity" :id="form.id" :disabled="disabledFiledsView"></Files>
         </div>
       </VCardText>
 

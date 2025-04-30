@@ -54,6 +54,7 @@ const fetchDataForm = async () => {
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
+      tabs.value[1].show = true;
     }
   }
   loading.form = false
@@ -120,7 +121,7 @@ const tabs = ref([
   },
   {
     title: "Anexos",
-    show: true,
+    show: false,
     errorsValidations: false,
   },
 ])
@@ -143,7 +144,7 @@ const phoneRules = [
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
         <span>
-          Fromulario prestador
+          Formulario prestador
         </span>
       </VCardTitle>
 
@@ -164,8 +165,8 @@ const phoneRules = [
             <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
               <VRow>
                 <VCol sm="4">
-                  <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.name" label="Nombre"
-                    :error-messages="errorsBack.name" @input="errorsBack.name = ''" clearable />
+                  <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.name"
+                    label="Razón Social" :error-messages="errorsBack.name" @input="errorsBack.name = ''" clearable />
                 </VCol>
                 <VCol sm="4">
                   <AppTextField :requiredField="true" :rules="nitRules" v-model="form.nit" label="Nit"
@@ -195,7 +196,6 @@ const phoneRules = [
 
           <VWindowItem>
             <Files v-if="form.id" model="ServiceVendor" :id="form.id" :disabled="disabledFiledsView"></Files>
-
           </VWindowItem>
 
         </VWindow>

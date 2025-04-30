@@ -35,11 +35,12 @@ const componentData = reactive({
 
 const getFiles = async () => {
   componentData.isLoading = true;
-  const { data, response } = await useAxios(`/file/list`).get(
-    {
+  const { data, response } = await useAxios(`/file/list`).get({
+    params: {
       fileable_type: model,
       fileable_id: id
     }
+  }
   );
   componentData.isLoading = false;
 
