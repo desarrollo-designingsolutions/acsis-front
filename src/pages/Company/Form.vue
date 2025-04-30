@@ -198,6 +198,17 @@ const isLoading = computed(() => {
   return Object.values(loading).some(value => value);
 });
 
+
+const nitRules = [
+  value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
+  value => requiredValidator(value),
+];
+const phoneRules = [
+  value => integerValidator(value),
+  value => (!value || value.length <= 10) || "El número no debe tener mas de 10 caracteres",
+  value => positiveNumberValidator(value),
+  value => requiredValidator(value),
+];
 const stateRules = computed(() => {
   return states.value.length > 0 ? [value => !!value || "La región es obligatoria"] : [];
 });
@@ -226,7 +237,7 @@ const openModalQuestion = (response: IImageSelected) => {
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
         <span>
-          Fromulario Compañia
+          Formulario Compañia
         </span>
       </VCardTitle>
       <VCardText>
@@ -258,11 +269,11 @@ const openModalQuestion = (response: IImageSelected) => {
                     :error-messages="errorsBack.name" @input="errorsBack.name = ''" clearable />
                 </VCol>
                 <VCol sm="4">
-                  <AppTextField :requiredField="true" :rules="[requiredValidator, integerValidator]" v-model="form.nit"
-                    label="Nit" :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable />
+                  <AppTextField :requiredField="true" :rules="nitRules" v-model="form.nit" label="Nit"
+                    :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable />
                 </VCol>
                 <VCol sm="4">
-                  <AppTextField :rules="[integerValidator]" v-model="form.phone" label="Teléfono"
+                  <AppTextField :rules="phoneRules" v-model="form.phone" label="Teléfono"
                     :error-messages="errorsBack.phone" @input="errorsBack.phone = ''" />
                 </VCol>
 

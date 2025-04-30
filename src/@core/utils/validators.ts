@@ -103,3 +103,12 @@ export const alphaDashValidator = (value: unknown) => {
 
   return /^[\w-]*$/.test(valueAsString) || 'Todos los caracteres no son válidos'
 }
+
+
+export const positiveNumberValidator = (value: string) => {
+  if (value) {
+    return /^[0-9]*$/i.test(value) || "El numero no debe ser negativo"
+  } else {
+    return false
+  }
+}

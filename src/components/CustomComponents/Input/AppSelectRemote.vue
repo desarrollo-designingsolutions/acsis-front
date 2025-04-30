@@ -67,7 +67,7 @@ const loadItems = async (newSearch = false) => {
       hasMore.value = true;
     }
 
-    const { data } = await useApi(props.url).post({
+    const { data } = await useAxios(props.url).post({
       [props.searchParam]: search.value,
       page: page.value
     })
@@ -75,9 +75,9 @@ const loadItems = async (newSearch = false) => {
     const arrayInfo = props.arrayInfo + "_arrayInfo";
     const countLinks = props.arrayInfo + "_countLinks";
 
-    if (data.value.data) { // Si usa paginación estilo Laravel
-      items.value = newSearch ? data.value.data : [...items.value, ...data.value.data];
-      hasMore.value = data.value.current_page < data.value.last_page;
+    if (data.data) { // Si usa paginación estilo Laravel
+      items.value = newSearch ? data.data : [...items.value, ...data.data];
+      hasMore.value = data.current_page < data.last_page;
     } else { // Si es un endpoint personalizado
       items.value = newSearch ? data.value[arrayInfo] : [...items.value, ...data.value[arrayInfo]];
       hasMore.value = data.value[countLinks].length > 1;
