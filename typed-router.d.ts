@@ -25,6 +25,8 @@ declare module 'vue-router/auto-routes' {
     'VerifyEmail': RouteRecordInfo<'VerifyEmail', '/VerifyEmail', Record<never, never>, Record<never, never>>,
     'Company-Form': RouteRecordInfo<'Company-Form', 'company-form/:action/:id?', Record<never, never>, Record<never, never>>,
     'Company-List': RouteRecordInfo<'Company-List', '/Company/List', Record<never, never>, Record<never, never>>,
+    'Entity-Form': RouteRecordInfo<'Entity-Form', 'entity-Form/:action/:id?', Record<never, never>, Record<never, never>>,
+    'Entity-List': RouteRecordInfo<'Entity-List', '/Entity/List', Record<never, never>, Record<never, never>>,
     'Home': RouteRecordInfo<'Home', '/home', Record<never, never>, Record<never, never>>,
     'redis-components-cache-hit-rate-chart': RouteRecordInfo<'redis-components-cache-hit-rate-chart', '/Redis/Components/CacheHitRateChart', Record<never, never>, Record<never, never>>,
     'redis-components-list-cache-keys': RouteRecordInfo<'redis-components-list-cache-keys', '/Redis/Components/ListCacheKeys', Record<never, never>, Record<never, never>>,
