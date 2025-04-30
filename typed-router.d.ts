@@ -34,6 +34,8 @@ declare module 'vue-router/auto-routes' {
     'redis-components-response-time-chart': RouteRecordInfo<'redis-components-response-time-chart', '/Redis/Components/ResponseTimeChart', Record<never, never>, Record<never, never>>,
     'Redis-Index': RouteRecordInfo<'Redis-Index', '/Redis/Index', Record<never, never>, Record<never, never>>,
     'second-page': RouteRecordInfo<'second-page', '/second-page', Record<never, never>, Record<never, never>>,
+    'ServiceVendor-List': RouteRecordInfo<'ServiceVendor-List', '/ServiceVendor/List', Record<never, never>, Record<never, never>>,
+    'ServiceVendor-Form': RouteRecordInfo<'ServiceVendor-Form', 'serviceVendor-form/:action/:id?', Record<never, never>, Record<never, never>>,
     'user-access-role-components-modal-form': RouteRecordInfo<'user-access-role-components-modal-form', '/UserAccess/Role/Components/ModalForm', Record<never, never>, Record<never, never>>,
     'Role-List': RouteRecordInfo<'Role-List', '/UserAccess/Role/List', Record<never, never>, Record<never, never>>,
     'user-access-users-components-modal-form': RouteRecordInfo<'user-access-users-components-modal-form', '/UserAccess/Users/Components/ModalForm', Record<never, never>, Record<never, never>>,

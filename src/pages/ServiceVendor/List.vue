@@ -1,51 +1,19 @@
 <script setup lang="ts">
+import { router } from '@/plugins/1.router';
+import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+
 definePage({
-  name: "User-List",
+  name: "ServiceVendor-List",
   meta: {
     redirectIfLoggedIn: true,
     requiresAuth: true,
-    requiredPermission: "menu.user",
+    requiredPermission: "serviceVendor.list",
   },
 });
 
-import ModalForm from '@/pages/UserAccess/Users/Components/ModalForm.vue';
-import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
-
-const authenticationStore = useAuthenticationStore();
-const { company, user } = storeToRefs(authenticationStore);
-
-const route = useRoute()
-
 const loading = reactive({ excel: false })
-
-
-//TABLE
-const refTableFull = ref()
-
-const optionsTable = {
-  url: "/user/paginate",
-  paramsGlobal: {
-    company_id: company.value.id,
-  },
-  headers: [
-    { key: 'full_name', title: 'Nombre Completo' },
-    { key: 'email', title: 'Email' },
-    { key: 'role_description', title: 'Rol' },
-    { key: "is_active", title: 'Estado', },
-    { key: 'actions', title: 'Acciones', sortable: false },
-  ],
-  actions: {
-    changeStatus: {
-      url: "/user/changeStatus"
-    },
-    view: {
-      show: false,
-    },
-    delete: {
-      show: false,
-    },
-  }
-}
+const route = useRoute()
+const authenticationStore = useAuthenticationStore();
 
 //FILTER
 const optionsFilter = ref({
@@ -61,22 +29,39 @@ const optionsFilter = ref({
         placeholder: "Ingrese valor"
       },
     ],
-  }
+  },
 })
 
-
-//ModalForm
-const refModalForm = ref()
-
-const openModalForm = () => {
-  refModalForm.value.openModal()
+//TABLE
+const refTableFull = ref()
+const optionsTable = {
+  url: "/serviceVendor/paginate",
+  headers: [
+    { key: 'name', title: 'Razon social' },
+    { key: 'nit', title: 'Nit' },
+    { key: 'email', title: 'Contacto' },
+    { key: 'type_vendor_name', title: 'Tipo' },
+    { key: "is_active", title: 'Estado', },
+    { key: 'actions', title: 'Acciones', sortable: false },
+  ],
+  actions: {
+    changeStatus: {
+      url: "/serviceVendor/changeStatus"
+    },
+    delete: {
+      url: "/serviceVendor/delete"
+    },
+  }
 }
 
-
 const goViewEdit = (data: any) => {
-  console.log(data);
-
-  refModalForm.value.openModal(data.id)
+  router.push({ name: "ServiceVendor-Form", params: { action: "edit", id: data.id } })
+}
+const goViewView = (data: any) => {
+  router.push({ name: "ServiceVendor-Form", params: { action: "view", id: data.id } })
+}
+const goViewCreate = () => {
+  router.push({ name: "ServiceVendor-Form", params: { action: "create" } })
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -91,20 +76,20 @@ const refreshTable = () => {
 const downloadExcel = async () => {
   loading.excel = true;
 
-  const { data, response } = await useAxios("/user/excelExport").get({
+  const { data, response } = await useAxios("/serviceVendor/excelExport").get({
     params: {
       ...route.query,
       company_id: authenticationStore.company.id
     }
   })
 
-  
   loading.excel = false;
 
   if (response.status == 200 && data) {
-    downloadExcelBase64(data.excel, "Lista de usuarios")
+    downloadExcelBase64(data.excel, "Lista de proveedores")
   }
 }
+
 </script>
 
 <template>
@@ -113,7 +98,7 @@ const downloadExcel = async () => {
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
         <span>
-          Usuarios
+          Prestadores
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
@@ -124,24 +109,33 @@ const downloadExcel = async () => {
             </VTooltip>
           </VBtn>
 
-          <VBtn @click="openModalForm">
-            Agregar usuario
+          <VBtn @click="goViewCreate()">
+            Agregar prestador
           </VBtn>
         </div>
       </VCardTitle>
 
+      <!-- Sección de filtros mejorada -->
       <VCardText>
         <FilterDialog :options-filter="optionsFilter" @force-search="refreshTable" :table-loading="tableLoading">
         </FilterDialog>
       </VCardText>
 
       <VCardText class="mt-2">
-        <TableFull ref="refTableFull" :options="optionsTable" @edit="goViewEdit"
+
+        <TableFull ref="refTableFull" :options="optionsTable" @edit="goViewEdit" @view="goViewView"
           @update:loading="tableLoading = $event">
+
+          <template #item.logo="{ item }">
+            <div class="my-2">
+              <VImg style="width: 80px;" :src="storageBack(item.logo)"></VImg>
+            </div>
+          </template>
+
         </TableFull>
+
+
       </VCardText>
     </VCard>
-
-    <ModalForm ref="refModalForm" @execute="refreshTable" />
   </div>
 </template>

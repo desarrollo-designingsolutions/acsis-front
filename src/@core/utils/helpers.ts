@@ -109,4 +109,11 @@ export function onlyNumbersKeyPress(event: any) {
 }
 export function storageBack(path: string) {
   return BASE_BACK_STORAGE + path
-} 
+}
+
+export function cloneObject(data: any) {
+  if (data === undefined) {
+    return null; // O podrías devolver {} si prefieres un objeto vacío
+  }
+  return JSON.parse(JSON.stringify(data));
+}

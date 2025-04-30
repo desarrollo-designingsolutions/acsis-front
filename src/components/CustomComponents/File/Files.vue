@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ModalFileForm from "@/components/File/ModalFileForm.vue";
-import ModalQuestion from "@/components/ModalQuestion.vue";
+import ModalFileForm from "@/components/CustomComponents/File/ModalFileForm.vue";
+import ModalQuestion from "@/components/CustomComponents/ModalQuestion.vue";
 
 const { toast } = useToast();
 const { model, id, disabled, maxFiles } = defineProps({
@@ -40,11 +40,11 @@ const getFiles = async () => {
       fileable_type: model,
       fileable_id: id
     }
-  ); 
+  );
   componentData.isLoading = false;
 
-  if (response.value.status==200) {
-    componentData.files = data.value.tableData;
+  if (response.status == 200 && data && data.code === 200) {
+    componentData.files = data.tableData;
   }
 };
 

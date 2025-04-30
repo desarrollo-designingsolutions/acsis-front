@@ -49,7 +49,7 @@ const setFormCreate = async () => {
   const { response, data } = await useAxios(`file/create`).get();
   componentData.isLoading = false;
 
-  if (response.value.status==200) {
+  if (response.status == 200 && data && data.code === 200) {
     componentData.form.fileable_id = model_id;
     componentData.form.fileable_type = model_type;
     handleIsDialogVisible();
@@ -62,8 +62,8 @@ const setFormEdit = async (id: string) => {
   const { response, data } = await useAxios(`file/${id}/edit`).get();
   componentData.isLoading = false;
 
-  if (response.value.status==200) {
-    componentData.form = data.value.form;
+  if (response.status == 200 && data && data.code === 200) {
+    componentData.form = data.form;
     componentData.form.fileable_id = model_id;
     componentData.form.fileable_type = model_type;
 
@@ -76,6 +76,7 @@ const handleSubmit = async () => {
   if (validation?.valid) {
 
     componentData.form.company_id = authenticationStore.company.id;
+    componentData.form.user_id = authenticationStore.user.id;
 
     if (inputFile.value.imageFile) componentData.form.file = inputFile.value.imageFile
 
