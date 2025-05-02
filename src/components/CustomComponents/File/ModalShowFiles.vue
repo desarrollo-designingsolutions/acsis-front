@@ -28,9 +28,6 @@ const openModal = async (fileable_id: string, fileable_type: string, dataExtra: 
   form.value.fileable_id = fileable_id
   form.value.fileable_type = fileable_type
 
-  if (dataExtra.status == StatusFillingInvoiceEnum.FILING) {
-    showBtnDelete.value = false;
-  }
 
   console.log(dataExtra, 'dataExtra');
   console.log(showBtnDelete.value, 'showBtnDelete');
@@ -46,12 +43,9 @@ defineExpose({
 
 
 //TABLE
-const tableFull = ref()
-const showBtnDelete = ref(true);
-
+const refTableFull = ref()
 const optionsTable = {
   url: "file/listTableV2",
-  params: {},
   headers: [
     { key: 'filename', title: 'Nombre' },
     { key: 'support_type_name', title: 'Tipo de soporte' },
@@ -72,6 +66,8 @@ const optionsTable = {
   }
 }
 
+const showBtnDelete = ref(true);
+
 const updateTableParams = () => {
   optionsTable.params = {
     fileable_type: form.value.fileable_type,
@@ -81,22 +77,20 @@ const updateTableParams = () => {
   optionsTable.actions.delete.show = showBtnDelete.value;
 };
 
-//FILTER
-const filterTable = ref()
-const optionsFilter = ref({
-  inputGeneral: {
-    relationsGeneral: {
-      all: ['filename', 'created_at|custom'],
-      supportType: ['name'],
-    },
-  },
-})
-
 const viewFile = (pathname: any) => {
   window.open(
     `${import.meta.env.VITE_API_BASE_BACK}/storage/${pathname}`,
     "_blank"
   );
+};
+
+const tableLoading = ref(false); // Estado de carga de la tabla
+
+// Método para refrescar los datos
+const refreshTable = () => {
+  if (refTableFull.value) {
+    refTableFull.value.fetchTableData(null, false, true); // Forzamos la búsqueda
+  }
 };
 </script>
 
@@ -113,7 +107,8 @@ const viewFile = (pathname: any) => {
 
 
         <VCardText class="mt-2">
-          <TableFull ref="tableFull" :optionsTable="optionsTable" :optionsFilter="optionsFilter">
+          <TableFull ref="refTableFull" :options="optionsTable" @update:loading="tableLoading = $event">
+
             <template #item.actions2="{ item }">
               <VListItem @click="viewFile(item.pathname)">
                 <template #prepend>
