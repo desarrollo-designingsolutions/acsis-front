@@ -78,7 +78,7 @@ onMounted(() => {
   <div>
     <VCard :loading="componentData.isLoading">
       <VCardTitle v-if="!disabled">
-        <VBtn v-if="componentData.files.length < maxFiles" :disabled="disabled" color="success"
+        <VBtn v-if="componentData.files.length < maxFiles" :disabled="disabled"
           @click="refModalFileForm?.setFormCreate()">
           Cargar archivo
         </VBtn>

@@ -120,7 +120,7 @@ const tabs = ref([
     errorsValidations: false,
   },
   {
-    title: "Anexos",
+    title: "Documentos",
     show: false,
     errorsValidations: false,
   },

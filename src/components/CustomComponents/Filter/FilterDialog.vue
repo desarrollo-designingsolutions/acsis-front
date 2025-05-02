@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { OptionsFilter, Queries } from '@/components/CustomComponents/FilterNew/types'; // Ajusta la ruta según tu proyecto
+import { OptionsFilter, Queries } from '@/components/CustomComponents/Filter/types'; // Ajusta la ruta según tu proyecto
 import { computed, defineProps, onMounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
