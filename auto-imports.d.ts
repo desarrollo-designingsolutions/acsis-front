@@ -238,6 +238,7 @@ declare global {
   const useFavicon: typeof import('@vueuse/core')['useFavicon']
   const useFetch: typeof import('@vueuse/core')['useFetch']
   const useFileDialog: typeof import('@vueuse/core')['useFileDialog']
+  const useFileDrop: typeof import('./src/composables/useFileDrop')['useFileDrop']
   const useFileSystemAccess: typeof import('@vueuse/core')['useFileSystemAccess']
   const useFileUpload: typeof import('./src/composables/useFileUpload')['useFileUpload']
   const useFloor: typeof import('@vueuse/math')['useFloor']
@@ -614,6 +615,7 @@ declare module 'vue' {
     readonly useFavicon: UnwrapRef<typeof import('@vueuse/core')['useFavicon']>
     readonly useFetch: UnwrapRef<typeof import('@vueuse/core')['useFetch']>
     readonly useFileDialog: UnwrapRef<typeof import('@vueuse/core')['useFileDialog']>
+    readonly useFileDrop: UnwrapRef<typeof import('./src/composables/useFileDrop')['useFileDrop']>
     readonly useFileSystemAccess: UnwrapRef<typeof import('@vueuse/core')['useFileSystemAccess']>
     readonly useFileUpload: UnwrapRef<typeof import('./src/composables/useFileUpload')['useFileUpload']>
     readonly useFloor: UnwrapRef<typeof import('@vueuse/math')['useFloor']>

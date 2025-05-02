@@ -61,14 +61,16 @@ const submitForm = async () => {
     fileItem.progress = 0; // Aunque no lo usemos en la UI, lo mantenemos por consistencia
   });
   formData.append('company_id', authenticationStore.company.id);
+  formData.append('user_id', authenticationStore.user.id);
   formData.append('fileable_type', form.value.fileable_type);
   formData.append('fileable_id', form.value.fileable_id);
 
   try {
-    const { data, response } = await useApi('/file/massUpload').post(formData);
-    if (response.value?.ok && data.value) {
-      uploadId.value = data.value.upload_id;
-      listenToProgress(data.value.upload_id);
+    const { data, response } = await useAxios('/file/massUpload').post(formData);
+    if (response.status == 202 && data) {
+
+      uploadId.value = data.upload_id;
+      listenToProgress(data.upload_id);
     }
   } catch (error) {
     console.error('Error al enviar archivos:', error);
@@ -82,8 +84,11 @@ const submitForm = async () => {
 };
 
 const listenToProgress = (uploadId: string) => {
+
+  console.log("uploadId", uploadId);
+
   window.Echo.channel(`upload-progress.${uploadId}`)
-    .listen('.file-progress', (event: any) => {
+    .listen('FileUploadProgress', (event: any) => {
       progress.value = event.progress; // Actualizar progreso general
 
       const fileItem = fileData.value.find((item) => item.file.name === event.fileName);
