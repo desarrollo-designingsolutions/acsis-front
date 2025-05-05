@@ -2,12 +2,14 @@
 
 import ModalMassUpload from "@/components/CustomComponents/File/ModalMassUpload.vue";
 
+const id = "019686bb-ee3d-7125-8edb-67fa2eb14600";
+const type = "User";
 
 //ModalMassUpload
 const refModalMassUpload = ref()
 
 const openModalMassUpload = () => {
-  refModalMassUpload.value.openModal("0196911c-3982-7158-a916-a37be3d3762a", "User");
+  refModalMassUpload.value.openModal(id, type);
 }
 
 
@@ -16,7 +18,7 @@ const openModalMassUpload = () => {
 const refModalShowFiles = ref()
 
 const openModalShowFiles = () => {
-  refModalShowFiles.value.openModal("0196911c-3982-7158-a916-a37be3d3762a", "User")
+  refModalShowFiles.value.openModal(id, type)
 }
 
 </script>
