@@ -28,6 +28,8 @@ declare module 'vue-router/auto-routes' {
     'Entity-Form': RouteRecordInfo<'Entity-Form', 'entity-Form/:action/:id?', Record<never, never>, Record<never, never>>,
     'Entity-List': RouteRecordInfo<'Entity-List', '/Entity/List', Record<never, never>, Record<never, never>>,
     'Home': RouteRecordInfo<'Home', '/home', Record<never, never>, Record<never, never>>,
+    'Invoice-Form': RouteRecordInfo<'Invoice-Form', 'invoice-Form/:action/:type?/:id?', Record<never, never>, Record<never, never>>,
+    'Invoice-List': RouteRecordInfo<'Invoice-List', '/Invoice/List', Record<never, never>, Record<never, never>>,
     'redis-components-cache-hit-rate-chart': RouteRecordInfo<'redis-components-cache-hit-rate-chart', '/Redis/Components/CacheHitRateChart', Record<never, never>, Record<never, never>>,
     'redis-components-list-cache-keys': RouteRecordInfo<'redis-components-list-cache-keys', '/Redis/Components/ListCacheKeys', Record<never, never>, Record<never, never>>,
     'redis-components-request-volume-chart': RouteRecordInfo<'redis-components-request-volume-chart', '/Redis/Components/RequestVolumeChart', Record<never, never>, Record<never, never>>,
