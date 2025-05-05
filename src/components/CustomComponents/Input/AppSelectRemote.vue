@@ -10,6 +10,10 @@ const props = defineProps({
     type: [Array, Object, String, Number],
     default: () => []
   },
+  params: {
+    type: [Object],
+    default: () => { }
+  },
   multiple: {
     type: Boolean,
     default: false
@@ -69,7 +73,8 @@ const loadItems = async (newSearch = false) => {
 
     const { data } = await useAxios(props.url).post({
       [props.searchParam]: search.value,
-      page: page.value
+      page: page.value,
+      ...props.params,
     })
 
     const arrayInfo = props.arrayInfo + "_arrayInfo";
@@ -79,8 +84,8 @@ const loadItems = async (newSearch = false) => {
       items.value = newSearch ? data.data : [...items.value, ...data.data];
       hasMore.value = data.current_page < data.last_page;
     } else { // Si es un endpoint personalizado
-      items.value = newSearch ? data.value[arrayInfo] : [...items.value, ...data.value[arrayInfo]];
-      hasMore.value = data.value[countLinks].length > 1;
+      items.value = newSearch ? data[arrayInfo] : [...items.value, ...data[arrayInfo]];
+      hasMore.value = data[countLinks].length > 1;
     }
 
     page.value++;
@@ -151,24 +156,29 @@ const clearText = () => {
 <style scoped>
 :deep(.sticky-search) {
   position: sticky;
-  top: 0;
   z-index: 999;
+
   /* Asegúrate de que esté encima de otros elementos */
   background: white;
-  /* Color de fondo según tu tema */
-  padding-top: 8px;
-  padding-bottom: 8px;
-  width: 100%;
+
   /* Asegura que ocupe todo el ancho del contenedor */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 10%);
+  inline-size: 100%;
+  inset-block-start: 0;
+
+  /* Color de fondo según tu tema */
+  padding-block: 8px;
+
   /* Agrega sombra para hacerlo más visible */
 }
 
 /* Para temas oscuros */
 :deep(.v-theme--dark .sticky-search) {
   background: #1e1e1e;
+
   /* Color de fondo oscuro */
   color: white;
+
   /* Asegura que el texto sea visible en tema oscuro */
 }
 </style>
