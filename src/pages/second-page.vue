@@ -7,7 +7,7 @@ import ModalMassUpload from "@/components/CustomComponents/File/ModalMassUpload.
 const refModalMassUpload = ref()
 
 const openModalMassUpload = () => {
-  refModalMassUpload.value.openModal("019686bb-ee3d-7125-8edb-67fa2eb14600", "User");
+  refModalMassUpload.value.openModal("0196911c-3982-7158-a916-a37be3d3762a", "User");
 }
 
 
@@ -16,7 +16,7 @@ const openModalMassUpload = () => {
 const refModalShowFiles = ref()
 
 const openModalShowFiles = () => {
-  refModalShowFiles.value.openModal("019686bb-ee3d-7125-8edb-67fa2eb14600", "User")
+  refModalShowFiles.value.openModal("0196911c-3982-7158-a916-a37be3d3762a", "User")
 }
 
 </script>
