@@ -38,6 +38,7 @@ const form = ref({
   value_glosa: null as string | null,
   type: null as string | null,
   value_approved: null as string | null,
+  total: null as string | null,
   invoice_date: null as string | null,
   radication_date: null as string | null,
   patient_id: null as string | null,
@@ -58,6 +59,7 @@ const soat = ref({
 
 const totalValueGlosa = ref<string>('')
 const totalValueApproved = ref<string>('')
+const totalValueTotal = ref<string>('')
 
 const clearForm = () => {
   for (const key in form.value) {
@@ -82,6 +84,7 @@ const fetchDataForm = async () => {
 
       totalValueGlosa.value = form.value.value_glosa;
       totalValueApproved.value = form.value.value_approved;
+      totalValueTotal.value = form.value.total;
 
       form.value.value_glosa = currencyFormat(
         formatToCurrencyFormat(totalValueGlosa.value)
@@ -89,8 +92,12 @@ const fetchDataForm = async () => {
       form.value.value_approved = currencyFormat(
         formatToCurrencyFormat(totalValueApproved.value)
       );
+      form.value.total = currencyFormat(
+        formatToCurrencyFormat(totalValueTotal.value)
+      );
       dataCalculate.real_value_glosa = cloneObject(totalValueGlosa.value);
       dataCalculate.real_value_approved = cloneObject(totalValueApproved.value);
+      dataCalculate.real_total = cloneObject(totalValueTotal.value);
 
       if (data.form.id) changeEntity(form.value.entity)
     }
@@ -124,6 +131,7 @@ const submitForm = async () => {
       ...form.value,
       value_glosa: dataCalculate.real_value_glosa,
       value_approved: dataCalculate.real_value_approved,
+      total: dataCalculate.real_total,
       ...document,
     });
 
@@ -181,6 +189,7 @@ const changeEntity = async (event: any) => {
 const dataCalculate = reactive({
   real_value_glosa: 0 as number,
   real_value_approved: 0 as number,
+  real_total: 0 as number,
 })
 
 const dataReal = (data: any, field: string) => {
@@ -285,6 +294,13 @@ const openModalListInvoicePayment = () => {
                         label="Valor Aprobado" :rules="[requiredValidator]" v-model="form.value_approved"
                         @realValue="dataReal($event, 'real_value_approved')" :error-messages="errorsBack.value_approved"
                         @input="errorsBack.value_approved = ''" clearable />
+                    </VCol>
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency v-show="!isLoading" :requiredField="true" :disabled="disabledFiledsView"
+                        label="Valor Factura" :rules="[requiredValidator]" v-model="form.total"
+                        @realValue="dataReal($event, 'real_total')" :error-messages="errorsBack.total"
+                        @input="errorsBack.total = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
