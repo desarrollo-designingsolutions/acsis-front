@@ -124,14 +124,12 @@ const submitForm = async () => {
     const { data, response } = await useAxios(url).post(formData);
 
     if (response.status === 200 && data) {
-      toast('Glosa guardada exitosamente', '', 'success');
       handleDialogVisible();
       emit('execute');
     }
 
     if (data.code === 422) {
       errorsBack.value = data.errors ?? {};
-      toast('Por favor revise los errores', '', 'warning');
     }
   } catch (error) {
     toast('Error al guardar la glosa', '', 'error');

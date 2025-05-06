@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import ListInvoicePayment from "@/pages/InvoicePayment/Components/List.vue";
-import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
-const authenticationStore = useAuthenticationStore();
 
 const emit = defineEmits(["execute"])
 
@@ -58,7 +56,7 @@ defineExpose({
         </VToolbar>
 
         <VCardText class="px-0">
-          <ListInvoicePayment v-if="showList" :service_id="form.id"></ListInvoicePayment>
+          <ListInvoicePayment v-if="showList" :invoice_id="form.id"></ListInvoicePayment>
         </VCardText>
       </VCard>
     </VDialog>

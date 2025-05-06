@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useToast } from '@/composables/useToast';
 import IErrorsBack from "@/interfaces/Axios/IErrorsBack";
+import ModalListInvoicePayment from "@/pages/InvoicePayment/Components/ModalList.vue";
 import ListService from "@/pages/Service/Components/List.vue";
 import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
@@ -214,6 +215,13 @@ const refModalShowFiles = ref()
 const openModalShowFiles = () => {
   refModalShowFiles.value.openModal(form.value.id, 'Invoice')
 }
+
+//ModalListInvoicePayment
+const refModalListInvoicePayment = ref()
+
+const openModalListInvoicePayment = () => {
+  refModalListInvoicePayment.value.openModal({ invoice_id: form.value.id })
+}
 </script>
 
 
@@ -400,6 +408,9 @@ const openModalShowFiles = () => {
           Más Acciones
           <VMenu activator="parent">
             <VList>
+              <VListItem @click="openModalListInvoicePayment()">
+                Pagos
+              </VListItem>
               <VListItem @click="openModalMassUpload()">
                 Añadir Soportes
               </VListItem>
@@ -421,5 +432,8 @@ const openModalShowFiles = () => {
     <ModalMassUpload ref="refModalMassUpload" />
 
     <ModalShowFiles ref="refModalShowFiles"></ModalShowFiles>
+
+    <ModalListInvoicePayment ref="refModalListInvoicePayment"></ModalListInvoicePayment>
+
   </div>
 </template>

@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import ModalForm from "@/pages/Glosa/Components/ModalForm.vue";
-import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
-
-const authenticationStore = useAuthenticationStore();
+import ModalForm from "@/pages/InvoicePayment/Components/ModalForm.vue";
 
 const props = defineProps({
-  service_id: {
+  invoice_id: {
     type: String,
   },
-  total_value: {
+  total: {
     type: String,
   },
   showBtnsView: {
@@ -21,17 +18,15 @@ const props = defineProps({
 const refTableFull = ref()
 
 const optionsTable = ref({
-  url: "/glosa/paginate",
+  url: "/invoicePayment/paginate",
   headers: [
-    { key: 'user_full_name', title: 'Usuario' },
-    { key: 'service_description', title: 'Servicio' },
-    { key: 'code_glosa_description', title: 'Código de glosa', width: 200 },
-    { key: 'glosa_value', title: 'Valor', width: 200 },
-    { key: 'observation', title: 'Observación', width: 200 },
+    { key: 'value_paid', title: 'Valor pagado', width: 200 },
+    { key: 'date_payment', title: 'Fecha', width: 200 },
+    { key: 'observations', title: 'Observación', width: 200 },
     { key: 'actions', title: 'Acciones' },
   ],
   paramsGlobal: {
-    service_id: props.service_id
+    invoice_id: props.invoice_id
   },
   actions: {
     delete: {
@@ -54,15 +49,15 @@ const optionsFilter = ref({
 const refModalForm = ref()
 
 const openModalFormCreate = () => {
-  refModalForm.value.openModal({ service_id: props.service_id, total_value: props.total_value })
+  refModalForm.value.openModal({ invoice_id: props.invoice_id, total: props.total })
 }
 
 const openModalFormEdit = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value })
+  refModalForm.value.openModal({ invoice_id: props.invoice_id, id: data.id, total: props.total })
 }
 
 const openModalFormView = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value }, true)
+  refModalForm.value.openModal({ invoice_id: props.invoice_id, id: data.id, total: props.total }, true)
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -91,12 +86,12 @@ const handleForceSearch = (params) => {
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
         <span>
-          Glosas
+          Pagos
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
           <VBtn v-if="showBtnsView" @click="openModalFormCreate()">
-            Crear Glosa
+            Crear Pago
           </VBtn>
         </div>
       </VCardTitle>

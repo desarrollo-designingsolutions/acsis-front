@@ -7,29 +7,24 @@ import type { VForm } from "vuetify/components/VForm";
 
 const { toast } = useToast()
 const authenticationStore = useAuthenticationStore();
-const { company } = storeToRefs(authenticationStore)
 
 const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Glosa")
+const titleModal = ref<string>("Pago")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 const disabledTotal = ref(false)
-const loadFirstTime = ref(true)
 
 const form = ref({
   id: null as string | null,
-  company_id: null as string | null,
-  user_id: null as string | null,
-  service_id: null as string | null,
-  code_glosa_id: null as string | null,
-  glosa_value: null as number | string | null,
+  invoice_id: null as string | null,
+  value_paid: null as string | null,
+  date_payment: null as string | null,
   observation: null as string | null,
   file: null as string | File | null,
-  date: null as string | null,
 })
 
 const totalValueService = ref<string>('')
@@ -42,14 +37,11 @@ const dataCalculate = reactive({
 const handleClearForm = () => {
   form.value = {
     id: null,
-    company_id: null,
-    user_id: null,
-    service_id: null,
-    code_glosa_id: null,
-    glosa_value: null,
+    invoice_id: null,
+    value_paid: null,
+    date_payment: null,
     observation: null,
     file: null,
-    date: null,
   }
 }
 
@@ -112,26 +104,21 @@ const submitForm = async () => {
 
     const formData = new FormData();
     formData.append("id", String(form.value.id));
-    formData.append("company_id", String(authenticationStore.company.id));
-    formData.append("user_id", String(authenticationStore.user.id));
-    formData.append("service_id", String(form.value.service_id));
-    formData.append("code_glosa_id", String(form.value.code_glosa_id.value));
-    formData.append("glosa_value", String(dataCalculate.real_glosa_value));
+    formData.append("invoice_id", String(form.value.invoice_id));
+    formData.append("value_paid", String(form.value.value_paid));
+    formData.append("date_payment", String(form.value.date_payment));
     formData.append("observation", String(form.value.observation));
     formData.append("file", inputFile.value.imageFile || form.value.file);
-    formData.append("date", String(form.value.date));
 
     const { data, response } = await useAxios(url).post(formData);
 
     if (response.status === 200 && data) {
-      toast('Glosa guardada exitosamente', '', 'success');
       handleDialogVisible();
       emit('execute');
     }
 
     if (data.code === 422) {
       errorsBack.value = data.errors ?? {};
-      toast('Por favor revise los errores', '', 'warning');
     }
   } catch (error) {
     toast('Error al guardar la glosa', '', 'error');
