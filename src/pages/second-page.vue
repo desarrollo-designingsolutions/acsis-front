@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
 import ModalForm from "@/pages/ModalForm.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
@@ -74,10 +75,32 @@ const handleForceSearch = (params) => {
   }
 };
 
+
+//ModalListGlosa
+const refModalListGlosa = ref()
+
+const openModalListGlosa = (data: any) => {
+  refModalListGlosa.value.openModal({
+    ...data,
+  })
+}
+
+//select AutoCompleteData  
+const changeTaker = (event: any) => {
+  if (isObject(event)) {
+    console.log("event", event);
+
+    // form.value.taker_name = event.title
+    // form.value.taker_document = event.document_number
+  }
+}
 </script>
 
 <template>
   <div>
+
+    <AutoCompleteData clearable :requiredField="true" label="Nombre Tomador" url="/searchClient"
+      :rules="[requiredValidator]" @update:model-value="changeTaker($event)" />
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
@@ -87,7 +110,7 @@ const handleForceSearch = (params) => {
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
           <VBtn @click="openModalFormCreate()">
-            Crear Glosa
+            Crear Servicio
           </VBtn>
         </div>
       </VCardTitle>
@@ -104,12 +127,24 @@ const handleForceSearch = (params) => {
         <TableFull v-model:selected="servicesIds" ref="refTableFull" :options="optionsTable"
           @update:loading="tableLoading = $event" @edit="openModalFormEdit" @view="openModalFormView">
 
+          <template #item.actions2="{ item }">
+
+            <VListItem @click="openModalListGlosa(item)">
+              <template #prepend>
+                <VIcon size="22" icon="tabler-square-rounded-arrow-right" />
+              </template>
+              <span>Listado Glosas</span>
+            </VListItem>
+          </template>
 
         </TableFull>
       </VCardText>
     </VCard>
 
     <ModalForm ref="refModalForm" @execute="handleForceSearch"></ModalForm>
+
+    <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
+
 
   </div>
 </template>
