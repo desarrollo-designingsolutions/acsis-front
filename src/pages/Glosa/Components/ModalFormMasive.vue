@@ -15,7 +15,6 @@ const emit = defineEmits(["execute"])
 const titleModal = ref<string>("Glosas Masivas")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
-
 const isLoading = ref<boolean>(false)
 
 const form = ref({
@@ -26,6 +25,8 @@ const form = ref({
     observation: string | null,
     user_id: string | number | null,
     service_id: string | number | null,
+    file: string | File | null,
+    date: string | null,
   }>,
   servicesIds: null as Array<string> | null,
   company_id: null as string | null
@@ -34,173 +35,216 @@ const form = ref({
 const handleClearForm = () => {
   form.value = {
     glosas: [],
+    servicesIds: null,
+    company_id: null
   }
 }
 
 const handleDialogVisible = () => {
   isDialogVisible.value = !isDialogVisible.value;
-  handleClearForm()
 };
 
 const openModal = async (servicesIds: Array<string> | null = null) => {
-
-
+  handleClearForm()
   handleDialogVisible();
   addDataArray();
-
-  titleModal.value = "Glosas Masivas: " + servicesIds?.length + " Servicio/s Seleccionado/s";
-
+  titleModal.value = `Glosas Masivas: ${servicesIds?.length || 0} Servicio/s Seleccionado/s`;
   form.value.servicesIds = servicesIds;
 };
 
 const submitForm = async (isCreateAndNew: boolean = false) => {
   const validation = await refForm.value?.validate()
-  if (validation?.valid) {
-    form.value.glosas.forEach(element => {
-      element.code_glosa_id = element.codeGlosa.value;
-      element.partialValue = parseEuropeanNumber(element.partialValue);
-      element.user_id = authenticationStore.user.id;
+  if (!validation?.valid) {
+    toast('Faltan Campos Por Diligenciar', '', 'danger')
+    return
+  }
+
+  try {
+    isLoading.value = true;
+
+    const formData = new FormData();
+    const processedGlosas = form.value.glosas.map(element => ({
+      ...element,
+      code_glosa_id: element.codeGlosa.value,
+      partialValue: parseEuropeanNumber(element.partialValue),
+      user_id: authenticationStore.user.id
+    }));
+
+    formData.append('company_id', String(authenticationStore.company.id))
+    formData.append('glosas', JSON.stringify(processedGlosas))
+    formData.append('servicesIds', JSON.stringify(form.value.servicesIds))
+    formData.append('cantfiles', String(processedGlosas.length))
+
+    processedGlosas.forEach((glosa, i) => {
+      formData.append(`file_id${i}`, glosa.id)
+      if (glosa.file) formData.append(`file_file${i}`, glosa.file)
     });
 
-    form.value.company_id = authenticationStore.company.id;
+    const { data, response } = await useAxios('/glosa/storeMasive').post(formData);
 
-    const url = `/glosa/storeMasive`
-
-    isLoading.value = true;
-    const { data, response } = await useApi(url).post(form);
-
-    if (response.value?.ok && data.value) {
+    if (response.status === 200 && data) {
       handleDialogVisible();
     }
-    if (data.value.code === 422) errorsBack.value = data.value.errors ?? {};
 
+    if (data.code === 422) {
+      errorsBack.value = data.errors ?? {};
+    }
+  } catch (error) {
+    toast('Error al guardar las glosas', '', 'danger')
+  } finally {
     isLoading.value = false;
   }
-  else {
-    toast('Faltan Campos Por Diligenciar', '', 'danger')
-  }
 }
 
-function parseEuropeanNumber(value: string): number {
+const parseEuropeanNumber = (value: string): number => {
   if (!value) return 0;
-  // Quitar el punto de miles y reemplazar la coma decimal
-  const cleaned = value.replace(/\./g, '').replace(',', '.');
-  return parseFloat(cleaned);
+  return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 }
 
-defineExpose({
-  openModal
-})
-
-const addDataArray = async () => {
-
-  const nextId = form.value.glosas.length
-
+const addDataArray = () => {
+  const nextId = form.value.glosas.length.toString()
   form.value.glosas.push({
-    id: nextId.toString(),
+    id: nextId,
     codeGlosa: null,
     partialValue: 0,
     observation: null,
     user_id: null,
     service_id: null,
+    file: null,
+    date: null,
   })
 }
 
 const deleteDataArray = (index: number) => {
   form.value.glosas.splice(index, 1);
 }
-const shouldShowDeleteButton = () => {
-  const visibleItems = form.value.glosas;
-  return visibleItems.length > 1; // Mostrar el botón si hay más de un elemento visible
-}
+
+const shouldShowDeleteButton = () => form.value.glosas.length > 1;
 
 const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value
-  if (isNaN(num) || num <= 0) {
-    return 'El valor debe ser mayor que cero'
-  }
-  return true
+  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true
 }
 
-//FORMATO COMPONENTE MONEDA
 const dataPercentage = reactive({
   partial_value_real: 0 as number,
 })
 
-//FORMATO COMPONENTE PORCENTAJES
 const dataReal = (data: any, field: string) => {
   dataPercentage[field] = data
 }
 
+const changeFile = (e: any, item: any) => {
+  item.file = e
+}
+
+defineExpose({
+  openModal
+})
 </script>
 
+
 <template>
-  <div>
-    <VDialog v-model="isDialogVisible" :overlay="false" max-width="50rem" transition="dialog-transition" persistent>
-      <DialogCloseBtn @click="handleDialogVisible" />
-      <VCard :loading="isLoading" :disabled="isLoading" class="w-100">
-        <!-- Toolbar -->
+  <VDialog v-model="isDialogVisible" :overlay="false" max-width="65rem" transition="dialog-transition" persistent>
+    <DialogCloseBtn @click="handleDialogVisible" />
+    <VCard :loading="isLoading" :disabled="isLoading" class="glosas-modal">
 
-        <div>
-          <VToolbar color="primary">
-            <VToolbarTitle>{{ titleModal }}</VToolbarTitle>
-          </VToolbar>
-        </div>
+      <VToolbar color="primary" class="rounded-t">
+        <VToolbarTitle>
+          {{ titleModal }}
+        </VToolbarTitle>
+      </VToolbar>
 
-        <VCardText>
-          <VForm ref="refForm" @submit.prevent="() => { }">
+      <VCardText class="pt-6">
+        <VForm ref="refForm" @submit.prevent>
+          <div class="d-flex justify-space-between align-center mb-4">
+            <div class="text-subtitle-1 font-weight-medium">
+              Registros de Glosas
+            </div>
+            <VBtn prepend-icon="tabler-plus" color="success" variant="tonal" @click="addDataArray"
+              :disabled="isLoading">
+              Agregar Glosa
+            </VBtn>
+          </div>
+
+          <VDivider class="mb-6" />
+
+          <div v-for="(item, index) in form.glosas" :key="index" class="glosa-item">
+            <div class="d-flex align-center mb-4">
+              <div class="text-subtitle-2 font-weight-medium">
+                Glosa #{{ index + 1 }}
+              </div>
+              <VSpacer />
+              <VBtn v-if="shouldShowDeleteButton() && !disabledFiledsView" icon="tabler-trash" color="error"
+                variant="tonal" size="small" @click="deleteDataArray(index)" />
+            </div>
+
             <VRow>
-              <VCol cols="12">
-                <VBtn class="ml-3" icon color="success" @click="addDataArray()">
-                  <VIcon icon="tabler-plus" />
-                </VBtn>
+              <VCol cols="12" md="8">
+                <AppSelectRemote label="Código de Glosa" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="item.codeGlosa" url="/selectInfiniteCodeGlosa" array-info="codeGlosa"
+                  :error-messages="errorsBack[`${item.id}.codeGlosa`]" @input="errorsBack[`${item.id}.codeGlosa`] = ''"
+                  clearable />
               </VCol>
-              <template v-for="(item, index) in form.glosas" :key="index">
-                <VCol cols="8">
-                  <AppSelectRemote label="Glosa" :requiredField="true" :rules="[requiredValidator]"
-                    v-model="item.codeGlosa" url="/selectInfiniteCodeGlosa" array-info="codeGlosa"
-                    :error-messages="errorsBack[`${item.id}.codeGlosa`]"
-                    @input="errorsBack[`${item.id}.codeGlosa`] = ''" clearable>
-                  </AppSelectRemote>
-                </VCol>
 
-                <VCol cols="12" md="4">
-                  <PercentageInput label="Valor glosa" clearable maxDecimal="2" v-model="item.partialValue"
-                    @realValue="dataReal($event, 'partial_value_real')"
-                    :rules="[requiredValidator, positiveValidator]" />
-                </VCol>
+              <VCol cols="12" md="4">
+                <PercentageInput :requiredField="true" label="Valor de la Glosa" clearable maxDecimal="2"
+                  v-model="item.partialValue" @realValue="dataReal($event, 'partial_value_real')"
+                  :rules="[requiredValidator, positiveValidator]" />
+              </VCol>
 
-                <VCol cols="12" md="10">
-                  <AppTextarea :requiredField="true" label="Observación" :rules="[requiredValidator]" clearable
-                    v-model="item.observation" outlined :error-messages="errorsBack[`${item.id}.observation`]"
-                    @input="errorsBack[`${item.id}.observation`] = ''">
-                  </AppTextarea>
-                </VCol>
+              <VCol cols="12">
+                <AppTextarea :requiredField="true" label="Observación" :rules="[requiredValidator]" clearable
+                  v-model="item.observation" outlined :error-messages="errorsBack[`${item.id}.observation`]"
+                  @input="errorsBack[`${item.id}.observation`] = ''" rows="3" />
+              </VCol>
 
-                <VCol cols="12" sm="2">
-                  <VBtn icon v-if="shouldShowDeleteButton() && !disabledFiledsView" size="30" class="mt-7" color="error"
-                    @click="deleteDataArray(index)">
-                    <VIcon icon="tabler-trash"></VIcon>
-                  </VBtn>
-                </VCol>
-                <VDivider />
-              </template>
+              <VCol cols="12" md="6">
+                <AppFileInput :requiredField="!form.id" label="Archivo Adjunto"
+                  :label2="item.file ? '1 archivo agregado' : ''" clearable :key="index"
+                  @update:model-value="changeFile($event, item)" />
+              </VCol>
 
+              <VCol cols="12" md="6">
+                <AppDateTimePicker clearable :requiredField="true" label="Fecha" v-model="item.date"
+                  :error-messages="errorsBack.date" :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
+              </VCol>
             </VRow>
-          </VForm>
-        </VCardText>
 
-        <VCardText class="d-flex justify-end gap-3 flex-wrap mt-5">
-          <VBtn color="secondary" :disabled="isLoading" :loading="isLoading" @click="handleDialogVisible">Cancelar
-          </VBtn>
-          <VBtn :disabled="isLoading" :loading="isLoading" @click="submitForm()" color="primary">
-            Guardar
-          </VBtn>
-        </VCardText>
+            <VDivider v-if="index < form.glosas.length - 1" class="my-6" />
+          </div>
+        </VForm>
+      </VCardText>
 
+      <VDivider />
 
-      </VCard>
-    </VDialog>
-
-  </div>
+      <VCardText class="d-flex justify-end gap-3 flex-wrap">
+        <VSpacer />
+        <VBtn color="secondary" :disabled="isLoading" @click="handleDialogVisible" class="me-3">
+          Cancelar
+        </VBtn>
+        <VBtn color="primary" :loading="isLoading" :disabled="isLoading" @click="submitForm">
+          Guardar Glosas
+        </VBtn>
+      </VCardText>
+    </VCard>
+  </VDialog>
 </template>
+
+<style scoped>
+.glosas-modal {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.glosa-item {
+  background-color: rgba(var(--v-theme-surface-variant), 0.05);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.glosa-item:last-child {
+  margin-bottom: 0;
+}
+</style>

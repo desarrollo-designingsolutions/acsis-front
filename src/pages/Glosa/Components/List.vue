@@ -25,9 +25,9 @@ const optionsTable = ref({
   headers: [
     { key: 'user_full_name', title: 'Usuario' },
     { key: 'service_description', title: 'Servicio' },
-    { key: 'code_glosa_description', title: 'Código de glosa' },
-    { key: 'glosa_value', title: 'Valor' },
-    { key: 'observation', title: 'Observación' },
+    { key: 'code_glosa_description', title: 'Código de glosa', width: 200 },
+    { key: 'glosa_value', title: 'Valor', width: 200 },
+    { key: 'observation', title: 'Observación', width: 200 },
     { key: 'actions', title: 'Acciones' },
   ],
   paramsGlobal: {

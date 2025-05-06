@@ -1,8 +1,10 @@
 <script setup lang="ts">
-
+import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
 import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
-import ModalForm from "@/pages/ModalForm.vue";
+import ModalFormService from "@/pages/ModalFormService.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+
+const { toast } = useToast();
 
 const authenticationStore = useAuthenticationStore();
 const invoice_id = "1111"
@@ -42,19 +44,19 @@ const optionsTable = {
 }
 
 
-//ModalForm
-const refModalForm = ref()
+//ModalFormService
+const refModalFormService = ref()
 
-const openModalFormCreate = () => {
-  refModalForm.value.openModal({ invoice_id: invoice_id })
+const openModalFormServiceCreate = () => {
+  refModalFormService.value.openModal({ invoice_id: invoice_id })
 }
 
-const openModalFormEdit = async (data: any) => {
-  refModalForm.value.openModal({ invoice_id: invoice_id, id: data.id })
+const openModalFormServiceEdit = async (data: any) => {
+  refModalFormService.value.openModal({ invoice_id: invoice_id, id: data.id })
 }
 
-const openModalFormView = async (data: any) => {
-  refModalForm.value.openModal({ id: data.id }, true)
+const openModalFormServiceView = async (data: any) => {
+  refModalFormService.value.openModal({ id: data.id }, true)
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -94,6 +96,17 @@ const changeTaker = (event: any) => {
     // form.value.taker_document = event.document_number
   }
 }
+
+//ModalFormMasiveGlosa
+const refModalFormMasiveGlosa = ref()
+
+const openModalFormMasiveGlosa = () => {
+  if (servicesIds.value.length > 0) {
+    refModalFormMasiveGlosa.value.openModal(servicesIds.value)
+  } else {
+    toast("Debe seleccionar almenos un servicio", "", "info")
+  }
+}
 </script>
 
 <template>
@@ -109,14 +122,19 @@ const changeTaker = (event: any) => {
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
-          <VBtn @click="openModalFormCreate()">
+          <VBtn class="me-2 mb-2" @click="openModalFormMasiveGlosa">
+            <template #prepend>
+              <VIcon start icon="tabler-folder" />
+            </template>
+            Glosa Masiva
+          </VBtn>
+          <VBtn @click="openModalFormServiceCreate()">
             Crear Servicio
           </VBtn>
         </div>
       </VCardTitle>
 
       <VCardText>
-
         <FilterDialog ref="refFilterDialog" :options-filter="optionsFilter" @force-search="handleForceSearch"
           :table-loading="tableLoading">
         </FilterDialog>
@@ -125,7 +143,7 @@ const changeTaker = (event: any) => {
       <VCardText class="mt-2">
 
         <TableFull v-model:selected="servicesIds" ref="refTableFull" :options="optionsTable"
-          @update:loading="tableLoading = $event" @edit="openModalFormEdit" @view="openModalFormView">
+          @update:loading="tableLoading = $event" @edit="openModalFormServiceEdit" @view="openModalFormServiceView">
 
           <template #item.actions2="{ item }">
 
@@ -141,9 +159,11 @@ const changeTaker = (event: any) => {
       </VCardText>
     </VCard>
 
-    <ModalForm ref="refModalForm" @execute="handleForceSearch"></ModalForm>
+    <ModalFormService ref="refModalFormService" @execute="handleForceSearch"></ModalFormService>
 
     <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
+
+    <ModalFormMasiveGlosa ref="refModalFormMasiveGlosa"></ModalFormMasiveGlosa>
 
 
   </div>
