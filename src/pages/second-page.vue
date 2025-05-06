@@ -82,6 +82,8 @@ const handleForceSearch = (params) => {
 const refModalListGlosa = ref()
 
 const openModalListGlosa = (data: any) => {
+  console.log("data", data);
+
   refModalListGlosa.value.openModal({
     ...data,
   })

@@ -31,7 +31,7 @@ const handleDialogVisible = () => {
   handleClearForm()
 };
 
-const openModal = async ({ id, description, total_value_origin, showBtnsView }: any, disabled: boolean = false) => {
+const openModal = async ({ id, cups_rip_nombre, cups_rip_codigo, total_value_origin, showBtnsView }: any, disabled: boolean = false) => {
   disabledFiledsView.value = disabled
   btnsView.value = showBtnsView
 
@@ -39,7 +39,7 @@ const openModal = async ({ id, description, total_value_origin, showBtnsView }: 
 
   form.value.id = id;
   form.value.total_value_origin = total_value_origin;
-  titleModal.value = "Listado de Glosas: " + description;
+  titleModal.value = `Listado de Glosas: ${cups_rip_nombre} - ${cups_rip_codigo}`
 };
 
 defineExpose({
