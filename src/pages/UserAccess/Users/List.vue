@@ -74,8 +74,6 @@ const openModalForm = () => {
 
 
 const goViewEdit = (data: any) => {
-  console.log(data);
-
   refModalForm.value.openModal(data.id)
 }
 

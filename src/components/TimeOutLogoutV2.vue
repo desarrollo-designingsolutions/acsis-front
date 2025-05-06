@@ -19,14 +19,12 @@ export default {
             //         this.logout();
             //     }
             // }
-            console.log('checkSession')
         },
         logout() {
             // localStorage.removeItem('token');
             // this.$router.push('/login');
             // // Opcional: Mostrar un mensaje al usuario
             // alert('Tu sesión ha expirado debido a inactividad.');
-            console.log('logout')
 
         },
     },
@@ -36,7 +34,6 @@ export default {
             idle: 5 * 1000, // 15 minutos en milisegundos
             events: ['mousemove', 'keydown', 'mousedown', 'touchstart'], // Eventos que reinician el temporizador
             onIdle: () => {
-            console.log('onIdle')
 
                 this.checkSession();
             },
@@ -45,7 +42,6 @@ export default {
 
         // También puedes verificar periódicamente la sesión
         setInterval(() => {
-          console.log('setInterval')
 
             this.checkSession();
         }, 5 * 1000); // Cada 5 minutos

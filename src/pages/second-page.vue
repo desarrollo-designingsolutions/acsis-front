@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
-import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
+import ModalListGlosa from "@/pages/Glosa/Components/ModalListGlosa.vue";
+import ModalListInvoicePayment from "@/pages/InvoicePayment/Components/ModalListInvoicePayment.vue";
 import ModalFormService from "@/pages/ModalFormService.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
@@ -82,21 +83,9 @@ const handleForceSearch = (params) => {
 const refModalListGlosa = ref()
 
 const openModalListGlosa = (data: any) => {
-  console.log("data", data);
-
   refModalListGlosa.value.openModal({
     ...data,
   })
-}
-
-//select AutoCompleteData  
-const changeTaker = (event: any) => {
-  if (isObject(event)) {
-    console.log("event", event);
-
-    // form.value.taker_name = event.title
-    // form.value.taker_document = event.document_number
-  }
 }
 
 //ModalFormMasiveGlosa
@@ -109,13 +98,17 @@ const openModalFormMasiveGlosa = () => {
     toast("Debe seleccionar almenos un servicio", "", "info")
   }
 }
+
+//ModalListInvoicePayment
+const refModalListInvoicePayment = ref()
+
+const openModalListInvoicePayment = () => {
+  refModalListInvoicePayment.value.openModal({ invoice_id: invoice_id })
+}
 </script>
 
 <template>
   <div>
-
-    <AutoCompleteData clearable :requiredField="true" label="Nombre Tomador" url="/searchClient"
-      :rules="[requiredValidator]" @update:model-value="changeTaker($event)" />
 
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
@@ -132,6 +125,9 @@ const openModalFormMasiveGlosa = () => {
           </VBtn>
           <VBtn @click="openModalFormServiceCreate()">
             Crear Servicio
+          </VBtn>
+          <VBtn @click="openModalListInvoicePayment()">
+            Pagos
           </VBtn>
         </div>
       </VCardTitle>
@@ -164,6 +160,8 @@ const openModalFormMasiveGlosa = () => {
     <ModalFormService ref="refModalFormService" @execute="handleForceSearch"></ModalFormService>
 
     <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
+
+    <ModalListInvoicePayment ref="refModalListInvoicePayment"></ModalListInvoicePayment>
 
     <ModalFormMasiveGlosa ref="refModalFormMasiveGlosa"></ModalFormMasiveGlosa>
 

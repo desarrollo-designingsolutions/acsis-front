@@ -85,8 +85,6 @@ const submitForm = async () => {
 
 const listenToProgress = (uploadId: string) => {
 
-  console.log("uploadId", uploadId);
-
   window.Echo.channel(`upload-progress.${uploadId}`)
     .listen('FileUploadProgress', (event: any) => {
       progress.value = event.progress; // Actualizar progreso general
