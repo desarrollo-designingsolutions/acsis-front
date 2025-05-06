@@ -196,10 +196,20 @@ const dataReal = (data: any, field: string) => {
   dataCalculate[field] = data
 }
 
+const patientData = ref({
+  id: null as string | null,
+  type_document: null as string | null,
+  document: null as string | null,
+  first_name: null as string | null,
+  second_name: null as string | null,
+  first_surname: null as string | null,
+  second_surname: null as string | null,
+})
 const changePatientData = (event: any) => {
 
-  if (event == null) form.value.patient_id = null
   if (isObject(event)) {
+    patientData.value = cloneObject(event)
+
     form.value.patient_id = String(event.id)
     form.value.typeDocument = event.type_document
     form.value.document = String(event.document)
@@ -231,6 +241,32 @@ const refModalListInvoicePayment = ref()
 const openModalListInvoicePayment = () => {
   refModalListInvoicePayment.value.openModal({ invoice_id: form.value.id })
 }
+
+
+const clearAutoCompleteDataPatients = () => {
+}
+
+const clearPatientFields = () => {
+  form.value.patient_id = null;
+  form.value.typeDocument = null;
+  form.value.document = null;
+  form.value.first_name = null;
+  form.value.second_name = null;
+  form.value.first_surname = null;
+  form.value.second_surname = null;
+
+  // Clear the patientData ref as well
+  patientData.value = {
+    id: null,
+    type_document: null,
+    document: null,
+    first_name: null,
+    second_name: null,
+    first_surname: null,
+    second_surname: null,
+  };
+};
+
 </script>
 
 
@@ -327,7 +363,13 @@ const openModalListInvoicePayment = () => {
                   <VRow>
                     <VCol cols="12">
                       <AutoCompleteData clearable label="Paciente" url="/autoCompleteDataPatients"
-                        @update:model-value="changePatientData($event)" />
+                        @update:model-value="changePatientData($event)"
+                        @click.clearable="clearAutoCompleteDataPatients" />
+
+                      <VBtn class="mt-2" v-if="!disabledFiledsView" color="primary" variant="outlined"
+                        @click="clearPatientFields" :disabled="!form.patient_id && !form.document">
+                        Nuevo paciente
+                      </VBtn>
                     </VCol>
                     <VCol cols="12" sm="4">
                       <AppSelectRemote :disabled="form.patient_id ? true : false" label="Tipo de Documento"
