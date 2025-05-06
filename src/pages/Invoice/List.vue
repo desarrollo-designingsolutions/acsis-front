@@ -29,6 +29,11 @@ const optionsFilter = ref({
         value: null,
         placeholder: "Ingrese valor"
       },
+      {
+        type: "dateRange",
+        label: "Fecha Radicación",
+        name: "invoices.radication_date",
+      },
     ],
   },
 })
@@ -46,7 +51,7 @@ const optionsTable = {
     { key: 'type_name', title: 'Tipo Factura' },
     { key: "value_approved", title: 'Valor Aprobado', width: '150px', minWidth: '100px' },
     { key: "value_glosa", title: 'Valor Glosa' },
-    { key: "radication_date", title: 'Fecha Radicación', sortable: false },
+    { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
     { key: "is_active", title: 'Estado', },
     { key: 'actions', title: 'Acciones', sortable: false },
