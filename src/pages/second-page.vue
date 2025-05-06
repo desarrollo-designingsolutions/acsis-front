@@ -23,8 +23,8 @@ const refTableFull = ref()
 const optionsTable = {
   url: `/service/paginate`,
   headers: [
-    { key: 'code', title: 'Código' },
-    { key: 'description', title: 'Descripcion' },
+    { key: 'cups_rip_codigo', title: 'Código' },
+    { key: 'cups_rip_nombre', title: 'Descripcion' },
     { key: 'quantity', title: 'Cantidad' },
     { key: "unit_value", title: 'Valor Unitario' },
     { key: "total_value", title: 'Valor Total' },
@@ -82,6 +82,8 @@ const handleForceSearch = (params) => {
 const refModalListGlosa = ref()
 
 const openModalListGlosa = (data: any) => {
+  console.log("data", data);
+
   refModalListGlosa.value.openModal({
     ...data,
   })

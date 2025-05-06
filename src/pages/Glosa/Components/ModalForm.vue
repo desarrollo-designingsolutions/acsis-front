@@ -202,7 +202,7 @@ defineExpose({
       <VCard :loading="isLoading" :disabled="isLoading" class="glosa-modal">
 
         <VToolbar color="primary" class="rounded-t">
-          <VToolbarTitle class="text-h6 font-weight-medium">
+          <VToolbarTitle>
             {{ titleModal }}
           </VToolbarTitle>
         </VToolbar>
