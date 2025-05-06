@@ -49,9 +49,8 @@ const optionsTable = ref({
   url: "file/paginate",
   headers: [
     { key: 'filename', title: 'Nombre' },
-    { key: 'support_type_name', title: 'Tipo de soporte' },
     { key: "created_at", title: 'Fecha' },
-    { key: 'actions', title: 'Acciones' },
+    { key: 'actions', title: 'Acciones', width: 50  },
   ],
   actions: {
     view: {

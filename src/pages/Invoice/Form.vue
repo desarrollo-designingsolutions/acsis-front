@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useToast } from '@/composables/useToast';
 import IErrorsBack from "@/interfaces/Axios/IErrorsBack";
+import ListService from "@/pages/Service/Components/List.vue";
 import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 import type { VForm } from 'vuetify/components/VForm';
@@ -199,6 +200,20 @@ const changePatientData = (event: any) => {
   }
 
 }
+
+//ModalMassUpload
+const refModalMassUpload = ref()
+
+const openModalMassUpload = () => {
+  refModalMassUpload.value.openModal(form.value.id, 'Invoice');
+}
+
+//ModalShowFiles
+const refModalShowFiles = ref()
+
+const openModalShowFiles = () => {
+  refModalShowFiles.value.openModal(form.value.id, 'Invoice')
+}
 </script>
 
 
@@ -378,6 +393,33 @@ const changePatientData = (event: any) => {
       </VCardText>
     </VCard>
 
+    <VCard v-if="form.id">
+
+      <VCardText>
+        <VBtn color="primary" append-icon="tabler-chevron-down">
+          Más Acciones
+          <VMenu activator="parent">
+            <VList>
+              <VListItem @click="openModalMassUpload()">
+                Añadir Soportes
+              </VListItem>
+              <VListItem @click="openModalShowFiles">
+                Listar Soportes
+              </VListItem>
+            </VList>
+          </VMenu>
+        </VBtn>
+      </VCardText>
+
+      <VCardText>
+        <ListService :invoice_id="form.id" />
+      </VCardText>
+    </VCard>
+
     <ModalQuestion ref="refModalQuestion" />
+
+    <ModalMassUpload ref="refModalMassUpload" />
+
+    <ModalShowFiles ref="refModalShowFiles"></ModalShowFiles>
   </div>
 </template>

@@ -144,9 +144,6 @@ onMounted(() => {
             </VTooltip>
           </VBtn>
 
-          <!-- <VBtn @click="goViewCreate()">
-            Registrar Factura
-          </VBtn> -->
           <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.btnCreate"
             :disabled="loading.btnCreate">
             Registrar Factura
