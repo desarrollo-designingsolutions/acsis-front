@@ -65,6 +65,7 @@ declare module 'vue' {
     Notifications: typeof import('./src/@core/components/Notifications.vue')['default']
     NotificationsList: typeof import('./src/components/CustomComponents/Notifications/NotificationsList.vue')['default']
     PaymentProvidersDialog: typeof import('./src/components/dialogs/PaymentProvidersDialog.vue')['default']
+    PercentageInput: typeof import('./src/components/CustomComponents/Input/PercentageInput.vue')['default']
     PricingPlanDialog: typeof import('./src/components/dialogs/PricingPlanDialog.vue')['default']
     ProductDescriptionEditor: typeof import('./src/@core/components/ProductDescriptionEditor.vue')['default']
     ProgressBar: typeof import('./src/components/CustomComponents/ProgressBar.vue')['default']

@@ -120,14 +120,14 @@ const handleForceSearch = (params) => {
         </div>
 
         <VCardText>
-          <FilterDialogNew ref="refFilterDialogNew" :options-filter="optionsFilter" @force-search="handleForceSearch"
+          <FilterDialog ref="refFilterDialogNew" :options-filter="optionsFilter" @force-search="handleForceSearch"
             :table-loading="tableLoading" :disable-url-update="disableUrlUpdate">
-          </FilterDialogNew>
+          </FilterDialog>
         </VCardText>
 
         <VCardText class="mt-2">
 
-          <TableFullNew ref="refTableFull" :options="optionsTable" @update:loading="tableLoading = $event"
+          <TableFull ref="refTableFull" :options="optionsTable" @update:loading="tableLoading = $event"
             :disable-url-update="disableUrlUpdate">
             <template #item.actions2="{ item }">
               <VListItem @click="viewFile(item.pathname)">
@@ -137,7 +137,7 @@ const handleForceSearch = (params) => {
                 <span>Ver soporte</span>
               </VListItem>
             </template>
-          </TableFullNew>
+          </TableFull>
 
 
         </VCardText>

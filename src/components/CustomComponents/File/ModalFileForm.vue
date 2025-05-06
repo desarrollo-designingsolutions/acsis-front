@@ -73,7 +73,6 @@ const setFormEdit = async (id: string) => {
 
 const handleSubmit = async () => {
   const validation = await refForm.value?.validate();
-  console.log(validation)
   if (validation?.valid) {
 
     componentData.form.company_id = authenticationStore.company.id;
