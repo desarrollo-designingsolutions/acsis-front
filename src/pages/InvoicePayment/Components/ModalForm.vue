@@ -18,7 +18,7 @@ const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 const invoiceData = ref<{
   id: string;
-  total: string;
+  remaining_balance: string;
 } | null>(null)
 
 const form = ref({
@@ -29,8 +29,6 @@ const form = ref({
   observations: null as string | null,
   file: null as string | File | null,
 })
-
-const totalValueService = ref<string>('')
 
 const dataCalculate = reactive({
   real_value_paid: 0 as number,
@@ -54,7 +52,7 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async ({ id = null, invoice_id, total }: any, disabled: boolean = false) => {
+const openModal = async ({ id = null, invoice_id }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
 
@@ -130,19 +128,13 @@ const positiveValidator = (value: number | string) => {
   return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
 };
 
-const mayorTotalValueServiceValidator = () => {
+const mayorRemainingBalanceInvoiceValidator = () => {
   console.log("dataCalculate.real_value_paid", dataCalculate.real_value_paid);
-  console.log("invoiceData?.total", invoiceData.value?.total);
+  console.log("invoiceData?.remaining_balance", invoiceData.value?.remaining_balance);
 
-  return parseFloat(dataCalculate.real_value_paid) > parseFloat(invoiceData.value?.total)
-    ? 'El valor debe ser menor o igual al valor total de la factura'
+  return parseFloat(dataCalculate.real_value_paid) > parseFloat(invoiceData.value?.remaining_balance)
+    ? 'El valor debe ser menor o igual al valor restante de la factura'
     : true;
-};
-
-// Utility functions
-const parseEuropeanNumber = (value: string): number => {
-  if (!value) return 0;
-  return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 };
 
 const dataReal = (data: any, field: string) => {
@@ -206,7 +198,7 @@ defineExpose({
                 <div>
                   <div class="text-subtitle-2 text-medium-emphasis">Total a Pagar</div>
                   <div class="text-h5 font-weight-bold primary--text">
-                    {{ formatCurrency(invoiceData?.total) }}
+                    {{ formatCurrency(invoiceData?.remaining_balance) }}
                   </div>
                 </div>
                 <VIcon size="32" color="primary" icon="tabler-file"></VIcon>
@@ -219,7 +211,7 @@ defineExpose({
               <VRow>
                 <VCol cols="12" md="6">
                   <FormatCurrency label="Valor del Pago" :requiredField="true" :disabled="disabledFiledsView"
-                    :rules="[requiredValidator, positiveValidator, mayorTotalValueServiceValidator]"
+                    :rules="[requiredValidator, positiveValidator, mayorRemainingBalanceInvoiceValidator]"
                     v-model="form.value_paid" @realValue="dataReal($event, 'real_value_paid')"
                     :error-messages="errorsBack.value_paid" @input="errorsBack.value_paid = ''" clearable
                     class="payment-dialog__input" />
