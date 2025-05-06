@@ -23,12 +23,10 @@ const refTableFull = ref()
 const optionsTable = ref({
   url: "/glosa/paginate",
   headers: [
-    { key: 'user_full_name', title: 'Usuario' },
-    { key: 'service_description', title: 'Servicio' },
-    { key: 'code_glosa_description', title: 'Código de glosa', width: 200 },
+    { key: 'code_glosa_description', title: 'Código de glosa', width: 400 },
     { key: 'glosa_value', title: 'Valor', width: 200 },
     { key: 'observation', title: 'Observación', width: 200 },
-    { key: 'actions', title: 'Acciones' },
+    { key: 'actions', title: 'Acciones', width: 50 },
   ],
   paramsGlobal: {
     service_id: props.service_id

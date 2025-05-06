@@ -29,6 +29,11 @@ const optionsFilter = ref({
         value: null,
         placeholder: "Ingrese valor"
       },
+      {
+        type: "dateRange",
+        label: "Fecha Radicación",
+        name: "invoices.radication_date",
+      },
     ],
   },
 })
@@ -43,10 +48,10 @@ const optionsTable = {
   headers: [
     { key: 'entity_name', title: 'Entidad' },
     { key: 'invoice_number', title: 'Factura No.' },
-    { key: 'type', title: 'Tipo Factura' },
+    { key: 'type_name', title: 'Tipo Factura' },
     { key: "value_approved", title: 'Valor Aprobado', width: '150px', minWidth: '100px' },
     { key: "value_glosa", title: 'Valor Glosa' },
-    { key: "radication_date", title: 'Fecha Radicación', sortable: false },
+    { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
     { key: "is_active", title: 'Estado', },
     { key: 'actions', title: 'Acciones', sortable: false },
@@ -66,11 +71,11 @@ const optionsTable = {
 }
 
 const goViewEdit = (data: any) => {
-  router.push({ name: "Invoice-Form", params: { action: "edit", id: data.id } })
+  router.push({ name: "Invoice-Form", params: { action: "edit", type: data.type_id, id: data.id } })
 }
 
-const goViewCreate = () => {
-  router.push({ name: "Invoice-Form", params: { action: "create" } })
+const goViewCreate = (type: any) => {
+  router.push({ name: "Invoice-Form", params: { action: "create", type: type.invoice_type_id } })
 }
 
 const goViewView = (data: any) => {
@@ -111,7 +116,7 @@ const fetchDataBtn = async () => {
   const { data, response } = await useAxios("/invoice/loadBtnCreate").get()
 
   if (response.status == 200 && data) {
-    invoiceTypeBtn.value = data.invoice_type;
+    invoiceTypeBtn.value = data.TypeInvoiceEnumValues;
   }
   loading.btnCreate = false
 }
@@ -139,10 +144,7 @@ onMounted(() => {
             </VTooltip>
           </VBtn>
 
-          <VBtn @click="goViewCreate()">
-            Registrar Factura
-          </VBtn>
-          <!-- <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.btnCreate"
+          <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.btnCreate"
             :disabled="loading.btnCreate">
             Registrar Factura
             <VMenu activator="parent">
@@ -153,7 +155,7 @@ onMounted(() => {
                 </VListItem>
               </VList>
             </VMenu>
-          </VBtn> -->
+          </VBtn>
         </div>
       </VCardTitle>
 
