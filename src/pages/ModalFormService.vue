@@ -21,9 +21,8 @@ const disabledTotal = ref(false)
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
+  cups_rip_id: null as string | null,
   company_id: null as string | null,
-  code: null as string | null,
-  description: null as string | null,
   quantity: null as string | null,
   unit_value: null as number | string | null,
 })
@@ -36,9 +35,8 @@ const handleClearForm = () => {
   form.value = {
     id: null,
     invoice_id: null,
+    cups_rip_id: null,
     company_id: null,
-    code: null,
-    description: null,
     quantity: null,
     unit_value: null,
   }
@@ -162,15 +160,10 @@ defineExpose({
 
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField label="Código" :requiredField="true" :rules="[requiredValidator]"
-                  :disabled="disabledFiledsView" v-model="form.code" :error-messages="errorsBack.code"
-                  @input="errorsBack.code = ''" clearable />
-              </VCol>
-
-              <VCol cols="12">
-                <AppTextarea label="Descripción" :requiredField="true" :rules="[requiredValidator]"
-                  :disabled="disabledFiledsView" v-model="form.description" :error-messages="errorsBack.description"
-                  @input="errorsBack.description = ''" clearable rows="3" />
+                <AppSelectRemote label="Diagnostico" :requiredField="true" :rules="[requiredValidator]"
+                  :disabled="disabledFiledsView" v-model="form.cups_rip_id" url="/selectInfiniteCupsRips"
+                  array-info="cupsRips" :error-messages="errorsBack.cups_rip_id" @input="errorsBack.cups_rip_id = ''"
+                  clearable />
               </VCol>
 
               <VCol cols="12" md="6">

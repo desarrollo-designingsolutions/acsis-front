@@ -55,14 +55,15 @@ defineExpose({
       <VCard :loading="isLoading" :disabled="isLoading" class="w-100">
         <!-- Toolbar -->
 
-        <div>
-          <VToolbar color="primary">
-            <VToolbarTitle>{{ titleModal }}</VToolbarTitle>
-          </VToolbar>
-        </div>
+        <VToolbar color="primary" class="rounded-t">
+          <VToolbarTitle class="text-h6 font-weight-medium">
+            {{ titleModal }}
+          </VToolbarTitle>
+        </VToolbar>
 
         <VCardText class="px-0">
-          <ListGlosa v-if="showList" :service_id="form.id" :total_value="form.total_value_origin" :showBtnsView="btnsView"></ListGlosa>
+          <ListGlosa v-if="showList" :service_id="form.id" :total_value="form.total_value_origin"
+            :showBtnsView="btnsView"></ListGlosa>
         </VCardText>
       </VCard>
     </VDialog>
