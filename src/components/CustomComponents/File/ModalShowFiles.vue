@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const emits = defineEmits(["execute"]);
 
-const titleModal = ref<string>("Visualizar soportes");
+const titleModal = ref<string>("Visualizar soportes.");
 const isDialogVisible = ref<boolean>(false);
 const isLoading = ref<boolean>(false);
 
@@ -28,13 +28,9 @@ const openModal = async (fileable_id: string, fileable_type: string, dataExtra: 
   form.value.fileable_id = fileable_id
   form.value.fileable_type = fileable_type
 
-  if (dataExtra.status == StatusFillingInvoiceEnum.FILING) {
+  if (dataExtra.status == 'FILINGINVOICE_EST_002') {
     showBtnDelete.value = false;
   }
-
-  console.log(dataExtra, 'dataExtra');
-  console.log(showBtnDelete.value, 'showBtnDelete');
-
 
   // Update optionsTable after form is filled
   updateTableParams();
@@ -46,12 +42,11 @@ defineExpose({
 
 
 //TABLE
-const tableFull = ref()
+const refTableFull = ref()
 const showBtnDelete = ref(true);
 
-const optionsTable = {
-  url: "file/listTableV2",
-  params: {},
+const optionsTable = ref({
+  url: "file/paginate",
   headers: [
     { key: 'filename', title: 'Nombre' },
     { key: 'support_type_name', title: 'Tipo de soporte' },
@@ -67,29 +62,24 @@ const optionsTable = {
     },
     delete: {
       url: "/file/delete",
-      show: false
+      show: true
     },
   }
-}
+})
 
 const updateTableParams = () => {
-  optionsTable.params = {
+  optionsTable.value.paramsGlobal = {
     fileable_type: form.value.fileable_type,
     fileable_id: form.value.fileable_id,
   };
 
-  optionsTable.actions.delete.show = showBtnDelete.value;
+  optionsTable.value.actions.delete.show = showBtnDelete.value;
 };
 
 //FILTER
-const filterTable = ref()
+const refFilterDialogNew = ref()
 const optionsFilter = ref({
-  inputGeneral: {
-    relationsGeneral: {
-      all: ['filename', 'created_at|custom'],
-      supportType: ['name'],
-    },
-  },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 const viewFile = (pathname: any) => {
@@ -98,6 +88,24 @@ const viewFile = (pathname: any) => {
     "_blank"
   );
 };
+
+// Nueva prop para controlar si se actualiza la URL
+const disableUrlUpdate = ref(true);
+
+const tableLoading = ref(false); // Estado de carga de la tabla
+
+// Nuevo método para manejar la búsqueda forzada desde el filtro
+const handleForceSearch = (params) => {
+  if (refTableFull.value) {
+    // Si disableUrlUpdate está activo, pasamos los parámetros manualmente
+    if (disableUrlUpdate.value && params) {
+      refTableFull.value.fetchTableData(null, false, true, params);
+    } else {
+      refTableFull.value.fetchTableData(null, false, true);
+    }
+  }
+};
+
 </script>
 
 <template>
@@ -111,9 +119,16 @@ const viewFile = (pathname: any) => {
           </VToolbar>
         </div>
 
+        <VCardText>
+          <FilterDialogNew ref="refFilterDialogNew" :options-filter="optionsFilter" @force-search="handleForceSearch"
+            :table-loading="tableLoading" :disable-url-update="disableUrlUpdate">
+          </FilterDialogNew>
+        </VCardText>
 
         <VCardText class="mt-2">
-          <TableFull ref="tableFull" :optionsTable="optionsTable" :optionsFilter="optionsFilter">
+
+          <TableFullNew ref="refTableFull" :options="optionsTable" @update:loading="tableLoading = $event"
+            :disable-url-update="disableUrlUpdate">
             <template #item.actions2="{ item }">
               <VListItem @click="viewFile(item.pathname)">
                 <template #prepend>
@@ -122,7 +137,9 @@ const viewFile = (pathname: any) => {
                 <span>Ver soporte</span>
               </VListItem>
             </template>
-          </TableFull>
+          </TableFullNew>
+
+
         </VCardText>
 
       </VCard>
