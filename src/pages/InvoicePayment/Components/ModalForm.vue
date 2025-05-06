@@ -80,7 +80,7 @@ const fetchDataForm = async () => {
       }
     }
   } catch (error) {
-    toast('Error al cargar los datos', '', 'danger');
+    toast('Error al cargar los datos', '', 'warning');
   } finally {
     isLoading.value = false;
   }
@@ -116,7 +116,7 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar', '', 'danger');
+    toast('Error al guardar', '', 'warning');
   } finally {
     isLoading.value = false;
   }
@@ -173,6 +173,14 @@ defineExpose({
   openModal
 });
 
+
+const remainingBalance = computed(() => {
+  // Asegúrate de que remaining_balance sea un número, con 0 como valor por defecto
+  const unitValue = Number(invoiceData.value?.remaining_balance) || 0;
+
+  // Formatear como moneda colombiana
+  return "$ " + currencyFormat(formatToCurrencyFormat(unitValue));
+});
 </script>
 
 <template>
@@ -198,7 +206,7 @@ defineExpose({
                 <div>
                   <div class="text-subtitle-2 text-medium-emphasis">Total a Pagar</div>
                   <div class="text-h5 font-weight-bold primary--text">
-                    {{ formatCurrency(invoiceData?.remaining_balance) }}
+                    {{ remainingBalance }}
                   </div>
                 </div>
                 <VIcon size="32" color="primary" icon="tabler-file"></VIcon>

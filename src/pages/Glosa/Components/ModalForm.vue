@@ -93,7 +93,7 @@ const fetchDataForm = async () => {
       dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
     }
   } catch (error) {
-    toast('Error al cargar los datos', '', 'danger');
+    toast('Error al cargar los datos', '', 'warning');
   } finally {
     isLoading.value = false;
   }
@@ -132,7 +132,7 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar la glosa', '', 'danger');
+    toast('Error al guardar la glosa', '', 'warning');
   } finally {
     isLoading.value = false;
   }

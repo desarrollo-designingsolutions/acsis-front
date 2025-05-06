@@ -72,7 +72,7 @@ const fetchDataForm = async () => {
       dataCalculate.real_unit_value = cloneObject(data.form.unit_value);
     }
   } catch (error) {
-    toast('Error al cargar los datos', '', 'danger');
+    toast('Error al cargar los datos', '', 'warning');
   } finally {
     isLoading.value = false;
   }
@@ -106,7 +106,7 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar el servicio', '', 'danger');
+    toast('Error al guardar el servicio', '', 'warning');
   } finally {
     isLoading.value = false;
   }
