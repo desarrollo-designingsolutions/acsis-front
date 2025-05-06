@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
-import ModalListGlosa from "@/pages/Glosa/Components/ModalListGlosa.vue";
-import ModalListInvoicePayment from "@/pages/InvoicePayment/Components/ModalListInvoicePayment.vue";
-import ModalFormService from "@/pages/ModalFormService.vue";
+import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
+import ModalFormService from "@/pages/Service/Components/ModalFormService.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
