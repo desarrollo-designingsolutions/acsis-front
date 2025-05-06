@@ -25,6 +25,7 @@ const optionsTable = ref({
   headers: [
     { key: 'code_glosa_description', title: 'Código de glosa', width: 400 },
     { key: 'glosa_value', title: 'Valor', width: 200 },
+    { key: 'date', title: 'Fecha', width: 200 },
     { key: 'observation', title: 'Observación', width: 200 },
     { key: 'actions', title: 'Acciones', width: 50 },
   ],

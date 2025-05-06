@@ -50,13 +50,13 @@ defineExpose({
         <!-- Toolbar -->
 
         <VToolbar color="primary" class="rounded-t">
-          <VToolbarTitle class="text-h6 font-weight-medium">
+          <VToolbarTitle>
             {{ titleModal }}
           </VToolbarTitle>
         </VToolbar>
 
         <VCardText class="px-0">
-          <ListInvoicePayment v-if="showList" :invoice_id="form.id"></ListInvoicePayment>
+          <ListInvoicePayment v-if="showList" :invoice_id="form.invoice_id"></ListInvoicePayment>
         </VCardText>
       </VCard>
     </VDialog>

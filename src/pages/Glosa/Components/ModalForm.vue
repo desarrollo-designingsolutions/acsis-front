@@ -93,7 +93,7 @@ const fetchDataForm = async () => {
       dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
     }
   } catch (error) {
-    toast('Error al cargar los datos', '', 'error');
+    toast('Error al cargar los datos', '', 'danger');
   } finally {
     isLoading.value = false;
   }
@@ -132,7 +132,7 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar la glosa', '', 'error');
+    toast('Error al guardar la glosa', '', 'danger');
   } finally {
     isLoading.value = false;
   }
@@ -197,7 +197,7 @@ defineExpose({
   <div>
     <VDialog v-model="isDialogVisible" :overlay="false" max-width="65rem" transition="dialog-transition" persistent>
       <DialogCloseBtn @click="handleDialogVisible" />
-      <VCard :loading="isLoading" :disabled="isLoading" class="glosa-modal">
+      <VCard :loading="isLoading" :disabled="isLoading" class="class-modal">
 
         <VToolbar color="primary" class="rounded-t">
           <VToolbarTitle>
@@ -217,8 +217,7 @@ defineExpose({
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <FormatCurrency v-show="!isLoading" label="Valor glosa" :requiredField="true"
-                    :disabled="disabledFiledsView"
+                  <FormatCurrency label="Valor glosa" :requiredField="true" :disabled="disabledFiledsView"
                     :rules="[requiredValidator, positiveValidator, mayorTotalValueServiceValidator]"
                     v-model="form.glosa_value" @realValue="dataReal($event, 'real_glosa_value')"
                     :error-messages="errorsBack.glosa_value" @input="errorsBack.glosa_value = ''" clearable />
@@ -237,9 +236,8 @@ defineExpose({
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppDateTimePicker label="Fecha" :requiredField="true" v-model="form.date"
-                    :error-messages="errorsBack.date" :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }"
-                    clearable />
+                  <AppTextField clearable type="date" :requiredField="true" :error-messages="errorsBack.date"
+                    :rules="[requiredValidator]" v-model="form.date" label="Fecha" @input="errorsBack.date = ''" />
                 </VCol>
               </VRow>
             </div>
@@ -266,7 +264,7 @@ defineExpose({
 </template>
 
 <style scoped>
-.glosa-modal {
+.class-modal {
   border-radius: 8px;
   overflow: hidden;
 }

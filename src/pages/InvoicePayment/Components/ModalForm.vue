@@ -16,22 +16,24 @@ const titleModal = ref<string>("Pago")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const disabledTotal = ref(false)
+const invoiceData = ref<{
+  id: string;
+  total: string;
+} | null>(null)
 
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
   value_paid: null as string | null,
   date_payment: null as string | null,
-  observation: null as string | null,
+  observations: null as string | null,
   file: null as string | File | null,
 })
 
 const totalValueService = ref<string>('')
-const totalValueGlosa = ref<string>('')
 
 const dataCalculate = reactive({
-  real_glosa_value: 0 as number,
+  real_value_paid: 0 as number,
 })
 
 const handleClearForm = () => {
@@ -40,7 +42,7 @@ const handleClearForm = () => {
     invoice_id: null,
     value_paid: null,
     date_payment: null,
-    observation: null,
+    observations: null,
     file: null,
   }
 }
@@ -52,40 +54,35 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async ({ id, service_id, total_value }: any, disabled: boolean = false) => {
+const openModal = async ({ id = null, invoice_id, total }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
 
   disabledFiledsView.value = disabled;
   form.value.id = id;
-  form.value.service_id = service_id;
-  totalValueService.value = total_value;
+  form.value.invoice_id = invoice_id;
+  await fetchDataForm();
 
-  if (form.value.id) {
-    disabledTotal.value = false;
-    await fetchDataForm();
-  } else {
-    totalValueGlosa.value = total_value;
-    form.value.glosa_value = cloneObject(totalValueGlosa.value);
-    dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
-    disabledTotal.value = true;
-  }
 };
 
 const fetchDataForm = async () => {
   try {
     isLoading.value = true;
-    const url = form.value.id ? `/glosa/${form.value.id}/edit` : `/glosa/create`;
+    const url = form.value.id ? `/invoicePayment/${form.value.id}/edit` : `/invoicePayment/create/${form.value.invoice_id}`;
     const { data, response } = await useAxios(url).get();
 
-    if (response.status === 200 && data?.form) {
-      form.value = cloneObject(data.form);
-      totalValueGlosa.value = form.value.glosa_value;
-      form.value.glosa_value = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
-      dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
+    if (response.status === 200 && data.code == 200) {
+
+      invoiceData.value = cloneObject(data.invoice);
+
+      if (data.form) {
+        form.value = cloneObject(data.form);
+        form.value.value_paid = currencyFormat(formatToCurrencyFormat(data.form.value_paid));
+        dataCalculate.real_value_paid = cloneObject(data.form.value_paid);
+      }
     }
   } catch (error) {
-    toast('Error al cargar los datos', '', 'error');
+    toast('Error al cargar los datos', '', 'danger');
   } finally {
     isLoading.value = false;
   }
@@ -100,14 +97,14 @@ const submitForm = async () => {
     }
 
     isLoading.value = true;
-    const url = form.value.id ? `/glosa/update/${form.value.id}` : `/glosa/store`;
+    const url = form.value.id ? `/invoicePayment/update/${form.value.id}` : `/invoicePayment/store`;
 
     const formData = new FormData();
     formData.append("id", String(form.value.id));
     formData.append("invoice_id", String(form.value.invoice_id));
-    formData.append("value_paid", String(form.value.value_paid));
+    formData.append("value_paid", String(dataCalculate.real_value_paid));
     formData.append("date_payment", String(form.value.date_payment));
-    formData.append("observation", String(form.value.observation));
+    formData.append("observations", String(form.value.observations));
     formData.append("file", inputFile.value.imageFile || form.value.file);
 
     const { data, response } = await useAxios(url).post(formData);
@@ -121,7 +118,7 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar la glosa', '', 'error');
+    toast('Error al guardar', '', 'danger');
   } finally {
     isLoading.value = false;
   }
@@ -134,8 +131,11 @@ const positiveValidator = (value: number | string) => {
 };
 
 const mayorTotalValueServiceValidator = () => {
-  return parseEuropeanNumber(form.value.glosa_value) > totalValueService.value
-    ? 'El valor debe ser menor o igual al valor total del servicio'
+  console.log("dataCalculate.real_value_paid", dataCalculate.real_value_paid);
+  console.log("invoiceData?.total", invoiceData.value?.total);
+
+  return parseFloat(dataCalculate.real_value_paid) > parseFloat(invoiceData.value?.total)
+    ? 'El valor debe ser menor o igual al valor total de la factura'
     : true;
 };
 
@@ -180,71 +180,91 @@ const openModalQuestion = (response: IImageSelected) => {
 defineExpose({
   openModal
 });
+
 </script>
 
 <template>
   <div>
-    <VDialog v-model="isDialogVisible" :overlay="false" max-width="65rem" transition="dialog-transition" persistent>
+    <VDialog v-model="isDialogVisible" :overlay="false" max-width="800px" transition="dialog-transition" persistent>
       <DialogCloseBtn @click="handleDialogVisible" />
-      <VCard :loading="isLoading" :disabled="isLoading" class="glosa-modal">
 
-        <VToolbar color="primary" class="rounded-t">
+      <VCard :loading="isLoading" :disabled="isLoading" class="payment-dialog">
+        <!-- Header -->
+        <VToolbar color="primary" class="payment-dialog__header">
           <VToolbarTitle>
             {{ titleModal }}
           </VToolbarTitle>
+          <VSpacer />
         </VToolbar>
 
-        <VCardText class="pt-6">
+        <!-- Content -->
+        <VCardText class="pa-6">
+          <!-- Invoice Summary -->
+          <div class="payment-dialog__summary mb-6">
+            <VCard variant="outlined" class="pa-4">
+              <div class="d-flex align-center justify-space-between">
+                <div>
+                  <div class="text-subtitle-2 text-medium-emphasis">Total a Pagar</div>
+                  <div class="text-h5 font-weight-bold primary--text">
+                    {{ formatCurrency(invoiceData?.total) }}
+                  </div>
+                </div>
+                <VIcon size="32" color="primary" icon="tabler-file"></VIcon>
+              </div>
+            </VCard>
+          </div>
+
           <VForm ref="refForm" @submit.prevent>
-            <div class="glosa-form pa-4">
+            <div class="payment-dialog__form pa-4 rounded-lg">
               <VRow>
                 <VCol cols="12" md="6">
-                  <AppSelectRemote label="Código Glosa" :requiredField="true" :rules="[requiredValidator]"
-                    :disabled="disabledFiledsView" v-model="form.code_glosa_id" url="/selectInfiniteCodeGlosa"
-                    array-info="codeGlosa" :error-messages="errorsBack.code_glosa_id"
-                    @input="errorsBack.code_glosa_id = ''" clearable />
+                  <FormatCurrency label="Valor del Pago" :requiredField="true" :disabled="disabledFiledsView"
+                    :rules="[requiredValidator, positiveValidator, mayorTotalValueServiceValidator]"
+                    v-model="form.value_paid" @realValue="dataReal($event, 'real_value_paid')"
+                    :error-messages="errorsBack.value_paid" @input="errorsBack.value_paid = ''" clearable
+                    class="payment-dialog__input" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <FormatCurrency v-show="!isLoading" label="Valor glosa" :requiredField="true"
-                    :disabled="disabledFiledsView"
-                    :rules="[requiredValidator, positiveValidator, mayorTotalValueServiceValidator]"
-                    v-model="form.glosa_value" @realValue="dataReal($event, 'real_glosa_value')"
-                    :error-messages="errorsBack.glosa_value" @input="errorsBack.glosa_value = ''" clearable />
+                  <AppTextField clearable type="date" :requiredField="true" :error-messages="errorsBack.date_payment"
+                    :rules="[requiredValidator]" v-model="form.date_payment" label="Fecha de Pago"
+                    class="payment-dialog__input" />
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextarea label="Observación" :requiredField="true" :rules="[requiredValidator]"
-                    :disabled="disabledFiledsView" v-model="form.observation" :error-messages="errorsBack.observation"
-                    @input="errorsBack.observation = ''" clearable rows="3" />
+                  <AppTextarea label="Observaciones" :requiredField="true" :rules="[requiredValidator]"
+                    :disabled="disabledFiledsView" v-model="form.observations" :error-messages="errorsBack.observations"
+                    @input="errorsBack.observations = ''" clearable rows="3" class="payment-dialog__input" />
                 </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppFileInput :requiredField="!form.id" label="Archivo adjunto"
-                    :label2="form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
-                    @change="changeFile($event)" :rules="[form.id ? true : requiredValidator]" clearable />
-                </VCol>
+                <VCol cols="12">
+                  <VCard variant="outlined" class="pa-4">
+                    <div class="d-flex align-center mb-2">
+                      <VIcon color="info" class="mr-2" icon="tabler-files"></VIcon>
 
-                <VCol cols="12" md="6">
-                  <AppDateTimePicker label="Fecha" :requiredField="true" v-model="form.date"
-                    :error-messages="errorsBack.date" :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }"
-                    clearable />
+                      <span class="text-subtitle-1">Documentación de Soporte</span>
+                    </div>
+                    <AppFileInput :requiredField="!form.id" label="Adjuntar comprobante de pago"
+                      :label2="form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
+                      @change="changeFile($event)" :rules="[form.id ? true : requiredValidator]" clearable
+                      class="payment-dialog__input" />
+                  </VCard>
                 </VCol>
               </VRow>
             </div>
           </VForm>
         </VCardText>
 
+        <!-- Actions -->
         <VDivider />
-
         <VCardText class="d-flex justify-end gap-3 flex-wrap">
           <VSpacer />
-          <VBtn color="secondary" :disabled="isLoading" @click="handleDialogVisible" class="me-3">
+          <VBtn color="secondary" :disabled="isLoading" @click="handleDialogVisible">
             Cancelar
           </VBtn>
           <VBtn v-if="!disabledFiledsView" color="primary" :loading="isLoading" :disabled="isLoading"
             @click="submitForm">
-            Guardar
+            Confirmar Pago
           </VBtn>
         </VCardText>
       </VCard>
@@ -254,14 +274,42 @@ defineExpose({
   </div>
 </template>
 
-<style scoped>
-.glosa-modal {
-  border-radius: 8px;
+<style lang="scss" scoped>
+.payment-dialog {
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+
+  &__header {
+    border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
+  }
+
+  &__summary {
+    background-color: rgb(var(--v-theme-background));
+  }
+
+  &__form {
+    background-color: rgb(var(--v-theme-surface-variant), 0.05);
+    border: 1px solid rgba(var(--v-border-color), 0.12);
+  }
+
+  &__input {
+    :deep(.v-field) {
+      border-radius: 8px;
+      background-color: rgb(var(--v-theme-surface));
+    }
+  }
 }
 
-.glosa-form {
-  background-color: rgba(var(--v-theme-surface-variant), 0.05);
-  border-radius: 8px;
+// Animation
+.dialog-transition-enter-active,
+.dialog-transition-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.dialog-transition-enter-from,
+.dialog-transition-leave-to {
+  transform: translateY(20px);
+  opacity: 0;
 }
 </style>

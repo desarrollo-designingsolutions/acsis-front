@@ -314,39 +314,39 @@ const openModalListInvoicePayment = () => {
                         @update:model-value="changePatientData($event)" />
                     </VCol>
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote :disabled="form.patient_id" label="Tipo de Documento" v-model="form.typeDocument"
-                        url="/selectInfiniteTypeDocument" arrayInfo="typeDocuments" :requiredField="true"
-                        :rules="[requiredValidator]" clearable :params="company">
+                      <AppSelectRemote :disabled="form.patient_id ? true : false" label="Tipo de Documento"
+                        v-model="form.typeDocument" url="/selectInfiniteTypeDocument" arrayInfo="typeDocuments"
+                        :requiredField="true" :rules="[requiredValidator]" clearable :params="company">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :disabled="form.patient_id" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.document" label="No. Documento Paciente" :error-messages="errorsBack.document"
-                        @input="errorsBack.document = ''" clearable />
+                      <AppTextField :disabled="form.patient_id ? true : false" :requiredField="true"
+                        :rules="[requiredValidator]" v-model="form.document" label="No. Documento Paciente"
+                        :error-messages="errorsBack.document" @input="errorsBack.document = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :disabled="form.patient_id" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.first_name" label="Primer Nombre" :error-messages="errorsBack.first_name"
-                        @input="errorsBack.first_name = ''" clearable />
+                      <AppTextField :disabled="form.patient_id ? true : false" :requiredField="true"
+                        :rules="[requiredValidator]" v-model="form.first_name" label="Primer Nombre"
+                        :error-messages="errorsBack.first_name" @input="errorsBack.first_name = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :disabled="form.patient_id" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.second_name" label="Segundo Nombre" :error-messages="errorsBack.second_name"
-                        @input="errorsBack.second_name = ''" clearable />
+                      <AppTextField :disabled="form.patient_id ? true : false" :requiredField="true"
+                        :rules="[requiredValidator]" v-model="form.second_name" label="Segundo Nombre"
+                        :error-messages="errorsBack.second_name" @input="errorsBack.second_name = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :disabled="form.patient_id" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.first_surname" label="Primer Apellido" :error-messages="errorsBack.first_surname"
-                        @input="errorsBack.first_surname = ''" clearable />
+                      <AppTextField :disabled="form.patient_id ? true : false" :requiredField="true"
+                        :rules="[requiredValidator]" v-model="form.first_surname" label="Primer Apellido"
+                        :error-messages="errorsBack.first_surname" @input="errorsBack.first_surname = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :disabled="form.patient_id" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.second_surname" label="Segundo Apellido"
+                      <AppTextField :disabled="form.patient_id ? true : false" :requiredField="true"
+                        :rules="[requiredValidator]" v-model="form.second_surname" label="Segundo Apellido"
                         :error-messages="errorsBack.second_surname" @input="errorsBack.second_surname = ''" clearable />
                     </VCol>
                   </VRow>
@@ -393,17 +393,6 @@ const openModalListInvoicePayment = () => {
       </VCardText>
 
       <VCardText class="d-flex justify-end gap-3 flex-wrap mt-5">
-        <BtnBack :disabled="isLoading" :loading="isLoading" />
-        <VBtn v-if="!disabledFiledsView" :disabled="isLoading" :loading="isLoading" @click="submitForm()"
-          color="primary">
-          Guardar
-        </VBtn>
-      </VCardText>
-    </VCard>
-
-    <VCard v-if="form.id">
-
-      <VCardText>
         <VBtn color="primary" append-icon="tabler-chevron-down">
           Más Acciones
           <VMenu activator="parent">
@@ -420,12 +409,17 @@ const openModalListInvoicePayment = () => {
             </VList>
           </VMenu>
         </VBtn>
-      </VCardText>
-
-      <VCardText>
-        <ListService :invoice_id="form.id" />
+        <BtnBack :disabled="isLoading" :loading="isLoading" />
+        <VBtn v-if="!disabledFiledsView" :disabled="isLoading" :loading="isLoading" @click="submitForm()"
+          color="primary">
+          Guardar
+        </VBtn>
       </VCardText>
     </VCard>
+
+    <div v-if="form.id" class="mt-5">
+      <ListService :invoice_id="form.id" />
+    </div>
 
     <ModalQuestion ref="refModalQuestion" />
 

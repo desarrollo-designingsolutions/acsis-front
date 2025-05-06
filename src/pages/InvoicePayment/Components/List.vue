@@ -23,7 +23,7 @@ const optionsTable = ref({
     { key: 'value_paid', title: 'Valor pagado', width: 200 },
     { key: 'date_payment', title: 'Fecha', width: 200 },
     { key: 'observations', title: 'Observación', width: 200 },
-    { key: 'actions', title: 'Acciones' },
+    { key: 'actions', title: 'Acciones', width: 50, sortable: false },
   ],
   paramsGlobal: {
     invoice_id: props.invoice_id
