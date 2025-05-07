@@ -1,158 +1,107 @@
 <script setup lang="ts">
-import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
-import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
-import ModalFormService from "@/pages/Service/Components/ModalFormService.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
 
 const props = defineProps<{
-    invoice_id: string
+  invoice_id: string
 }>()
 
 const invoice_id = props.invoice_id;
 const authenticationStore = useAuthenticationStore();
 const servicesIds = ref<Array<string>>([]);
 
-//FILTER
-const refFilterDialog = ref()
-
-const optionsFilter = ref({
-  filterLabels: { inputGeneral: 'Buscar en todo' }
+const currentTab = ref(0)
+const servicesCount = ref({
+  consultas: 0,
+  procedimientos: 0,
+  urgencias: 0,
+  hospitalizacion: 0,
+  recienNacidos: 0,
+  medicamentos: 0,
+  otrosServicios: 0
 })
-
-//TABLE
-const refTableFull = ref()
-
-const optionsTable = {
-  url: `/service/paginate`,
-  headers: [
-    { key: 'cups_rip_codigo', title: 'Código' },
-    { key: 'cups_rip_nombre', title: 'Descripcion' },
-    { key: 'quantity', title: 'Cantidad' },
-    { key: "unit_value", title: 'Valor Unitario' },
-    { key: "total_value", title: 'Valor Total' },
-    { key: 'actions', title: 'Acciones', sortable: false },
-  ],
-  showSelect: true,
-  paramsGlobal: {
-    company_id: authenticationStore.company.id,
-    user_id: authenticationStore.user.id,
-    invoice_id: invoice_id,
-  },
-  actions: {
-    delete: {
-      url: '/service/delete',
-    },
+const keyComponent = ref(0)
+const dataUser = ref({
+  servicios: {
+    consultas: [],
+    procedimientos: [],
+    urgencias: [],
+    hospitalizacion: [],
+    recienNacidos: [],
+    medicamentos: [],
+    otrosServicios: []
   }
-}
-
-
-//ModalFormService
-const refModalFormService = ref()
-
-const openModalFormServiceCreate = () => {
-  refModalFormService.value.openModal({ invoice_id: invoice_id })
-}
-
-const openModalFormServiceEdit = async (data: any) => {
-  refModalFormService.value.openModal({ invoice_id: invoice_id, id: data.id })
-}
-
-const openModalFormServiceView = async (data: any) => {
-  refModalFormService.value.openModal({ id: data.id }, true)
-}
-
-const tableLoading = ref(false); // Estado de carga de la tabla
-
-
-// Nueva prop para controlar si se actualiza la URL
-const disableUrlUpdate = ref(true);
-
-// Nuevo método para manejar la búsqueda forzada desde el filtro
-const handleForceSearch = (params) => {
-  if (refTableFull.value) {
-    // Si disableUrlUpdate está activo, pasamos los parámetros manualmente
-    if (disableUrlUpdate.value && params) {
-      refTableFull.value.fetchTableData(null, false, true, params);
-    } else {
-      refTableFull.value.fetchTableData(null, false, true);
-    }
-  }
-};
-
-
-//ModalListGlosa
-const refModalListGlosa = ref()
-
-const openModalListGlosa = (data: any) => {
-  refModalListGlosa.value.openModal({
-    ...data,
-  })
-}
-
-//ModalFormMasiveGlosa
-const refModalFormMasiveGlosa = ref()
-
-const openModalFormMasiveGlosa = () => {
-  if (servicesIds.value.length > 0) {
-    refModalFormMasiveGlosa.value.openModal(servicesIds.value)
-  } else {
-    toast("Debe seleccionar almenos un servicio", "", "info")
-  }
-}
+}) 
 </script>
 
 <template>
   <div>
-    <VCard>
-      <VCardTitle class="d-flex justify-space-between">
-        <span>
-          Servicios
-        </span>
-
-        <div class="d-flex justify-end gap-3 flex-wrap ">
-          <VBtn class="me-2 mb-2" @click="openModalFormMasiveGlosa">
-            <template #prepend>
-              <VIcon start icon="tabler-folder" />
-            </template>
-            Glosa Masiva
-          </VBtn>
-          <VBtn @click="openModalFormServiceCreate()">
-            Crear Servicio
-          </VBtn>
-        </div>
-      </VCardTitle>
-
+    <VCard class="mt-5" title="Listado de servicios">
       <VCardText>
-        <FilterDialog ref="refFilterDialog" :options-filter="optionsFilter" @force-search="handleForceSearch"
-          :table-loading="tableLoading">
-        </FilterDialog>
-      </VCardText>
 
-      <VCardText class="mt-2">
+        <VTabs v-model="currentTab" grow>
+          <VTab>
+            <span>Consultas</span>
+            <VBadge :content="servicesCount.consultas" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Procedimientos</span>
+            <VBadge :content="servicesCount.procedimientos" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Urgencias</span>
+            <VBadge :content="servicesCount.urgencias" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Hospitalización</span>
+            <VBadge :content="servicesCount.hospitalizacion" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Recien nacidos</span>
+            <VBadge :content="servicesCount.recienNacidos" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Medicamentos</span>
+            <VBadge :content="servicesCount.medicamentos" :offset-x="-18" :offset-y="0" />
+          </VTab>
+          <VTab>
+            <span>Otros servicios</span>
+            <VBadge :content="servicesCount.otrosServicios" :offset-x="-18" :offset-y="0" />
+          </VTab>
+        </VTabs>
 
-        <TableFull v-model:selected="servicesIds" ref="refTableFull" :options="optionsTable"
-          @update:loading="tableLoading = $event" @edit="openModalFormServiceEdit" @view="openModalFormServiceView">
-
-          <template #item.actions2="{ item }">
-
-            <VListItem @click="openModalListGlosa(item)">
-              <template #prepend>
-                <VIcon size="22" icon="tabler-square-rounded-arrow-right" />
-              </template>
-              <span>Listado Glosas</span>
-            </VListItem>
-          </template>
-
-        </TableFull>
+        <VWindow v-model="currentTab" class="my-5">
+          <VWindowItem>
+            <QueriesForm :key="keyComponent" :data-list="dataUser?.servicios?.consultas"></QueriesForm>
+          </VWindowItem>
+          <VWindowItem>
+            ProcedureForm
+            <!-- <ProcedureForm :key="keyComponent" :data-list="dataUser?.servicios?.procedimientos"></ProcedureForm> -->
+          </VWindowItem>
+          <VWindowItem>
+            EmergenciesForm
+            <!-- <EmergenciesForm :key="keyComponent" :data-list="dataUser?.servicios?.urgencias"></EmergenciesForm> -->
+          </VWindowItem>
+          <VWindowItem>
+            HospitalizationForm
+            <!-- <HospitalizationForm :key="keyComponent" :data-list="dataUser?.servicios?.hospitalizacion">
+            </HospitalizationForm> -->
+          </VWindowItem>
+          <VWindowItem>
+            NewlyBornForm
+            <!-- <NewlyBornForm :key="keyComponent" :data-list="dataUser?.servicios?.recienNacidos"></NewlyBornForm> -->
+          </VWindowItem>
+          <VWindowItem>
+            MedicinesForm
+            <!-- <MedicinesForm :key="keyComponent" :data-list="dataUser?.servicios?.medicamentos"></MedicinesForm> -->
+          </VWindowItem>
+          <VWindowItem>
+            OtherServicesForm
+            <!-- <OtherServicesForm :key="keyComponent" :data-list="dataUser?.servicios?.otrosServicios"></OtherServicesForm> -->
+          </VWindowItem>
+        </VWindow>
       </VCardText>
     </VCard>
-
-    <ModalFormService ref="refModalFormService" @execute="handleForceSearch"></ModalFormService>
-
-    <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
-
-    <ModalFormMasiveGlosa ref="refModalFormMasiveGlosa"></ModalFormMasiveGlosa>
   </div>
 </template>
