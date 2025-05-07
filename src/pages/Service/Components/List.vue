@@ -73,7 +73,7 @@ const dataUser = ref({
 
         <VWindow v-model="currentTab" class="my-5">
           <VWindowItem>
-            <QueriesForm :key="keyComponent" :data-list="dataUser?.servicios?.consultas"></QueriesForm>
+            <!-- <QueriesForm :key="keyComponent" :data-list="dataUser?.servicios?.consultas"></QueriesForm> -->
           </VWindowItem>
           <VWindowItem>
             ProcedureForm

@@ -204,7 +204,7 @@ const checkInvoiceNumber = async () => {
 
     const { response, data } = await useAxios(url).post({
       invoice_number: form.value.invoice_number,
-      company_id: company.value.id,
+      company_id: authenticationStore.company.id,
     });
 
     if (response.status == 200 && data) {

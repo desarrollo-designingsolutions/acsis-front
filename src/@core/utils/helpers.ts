@@ -117,3 +117,18 @@ export function cloneObject(data: any) {
   }
   return JSON.parse(JSON.stringify(data));
 }
+
+export const formatoMoneda = (numero: any) => {
+  if (numero) {
+    let numeroFormateado = numero.replace(/\D/g, "");
+    if (!isNaN(numeroFormateado)) {
+      // Aplicar el formato de miles utilizando expresiones regulares
+      numeroFormateado = numeroFormateado.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    } else {
+      // Si no es un número, eliminar el último caracter ingresado
+      numeroFormateado = numeroFormateado.slice(0, -1);
+    }
+
+    return numeroFormateado;
+  }
+};
