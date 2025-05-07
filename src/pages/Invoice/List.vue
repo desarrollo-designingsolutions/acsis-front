@@ -79,7 +79,7 @@ const goViewCreate = (type: any) => {
 }
 
 const goViewView = (data: any) => {
-  router.push({ name: "Invoice-Form", params: { action: "view", id: data.id } })
+  router.push({ name: "Invoice-Form", params: { action: "view", type: data.type_id, id: data.id } })
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla

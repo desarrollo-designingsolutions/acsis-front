@@ -20,6 +20,10 @@ const invoiceData = ref<{
   id: string;
   remaining_balance: string;
 } | null>(null)
+const paymentData = ref<{
+  id: string;
+  value_paid: string;
+} | null>(null)
 
 const form = ref({
   id: null as string | null,
@@ -43,6 +47,8 @@ const handleClearForm = () => {
     observations: null,
     file: null,
   }
+  paymentData.value = null;
+  invoiceData.value = null;
 }
 
 const handleDialogVisible = () => {
@@ -74,7 +80,9 @@ const fetchDataForm = async () => {
       invoiceData.value = cloneObject(data.invoice);
 
       if (data.form) {
+
         form.value = cloneObject(data.form);
+        paymentData.value = cloneObject(data.form);
         form.value.value_paid = currencyFormat(formatToCurrencyFormat(data.form.value_paid));
         dataCalculate.real_value_paid = cloneObject(data.form.value_paid);
       }
@@ -129,10 +137,12 @@ const positiveValidator = (value: number | string) => {
 };
 
 const mayorRemainingBalanceInvoiceValidator = () => {
-  console.log("dataCalculate.real_value_paid", dataCalculate.real_value_paid);
-  console.log("invoiceData?.remaining_balance", invoiceData.value?.remaining_balance);
 
-  return parseFloat(dataCalculate.real_value_paid) > parseFloat(invoiceData.value?.remaining_balance)
+  const unitValue = Number(invoiceData.value?.remaining_balance) || 0;
+  const value_paid = Number(paymentData.value?.value_paid) || 0;
+  const total = unitValue + value_paid;
+
+  return parseFloat(dataCalculate.real_value_paid) > parseFloat(total)
     ? 'El valor debe ser menor o igual al valor restante de la factura'
     : true;
 };
@@ -176,10 +186,15 @@ defineExpose({
 
 const remainingBalance = computed(() => {
   // Asegúrate de que remaining_balance sea un número, con 0 como valor por defecto
+  console.log("remaining_balance 11", invoiceData.value?.remaining_balance);
+  console.log("value_paid 11", paymentData.value?.value_paid);
+
   const unitValue = Number(invoiceData.value?.remaining_balance) || 0;
+  const value_paid = Number(paymentData.value?.value_paid) || 0;
+  const total = unitValue + value_paid;
 
   // Formatear como moneda colombiana
-  return "$ " + currencyFormat(formatToCurrencyFormat(unitValue));
+  return "$ " + currencyFormat(formatToCurrencyFormat(total));
 });
 </script>
 
@@ -221,20 +236,19 @@ const remainingBalance = computed(() => {
                   <FormatCurrency label="Valor del Pago" :requiredField="true" :disabled="disabledFiledsView"
                     :rules="[requiredValidator, positiveValidator, mayorRemainingBalanceInvoiceValidator]"
                     v-model="form.value_paid" @realValue="dataReal($event, 'real_value_paid')"
-                    :error-messages="errorsBack.value_paid" @input="errorsBack.value_paid = ''" clearable
-                    class="payment-dialog__input" />
+                    :error-messages="errorsBack.value_paid" @input="errorsBack.value_paid = ''" clearable />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField clearable type="date" :requiredField="true" :error-messages="errorsBack.date_payment"
-                    :rules="[requiredValidator]" v-model="form.date_payment" label="Fecha de Pago"
-                    class="payment-dialog__input" />
+                  <AppTextField clearable type="date" :disabled="disabledFiledsView" :requiredField="true"
+                    :error-messages="errorsBack.date_payment" :rules="[requiredValidator]" v-model="form.date_payment"
+                    label="Fecha de Pago" />
                 </VCol>
 
                 <VCol cols="12">
                   <AppTextarea label="Observaciones" :requiredField="true" :rules="[requiredValidator]"
                     :disabled="disabledFiledsView" v-model="form.observations" :error-messages="errorsBack.observations"
-                    @input="errorsBack.observations = ''" clearable rows="3" class="payment-dialog__input" />
+                    @input="errorsBack.observations = ''" clearable rows="3" />
                 </VCol>
 
                 <VCol cols="12">
@@ -244,10 +258,10 @@ const remainingBalance = computed(() => {
 
                       <span class="text-subtitle-1">Documentación de Soporte</span>
                     </div>
-                    <AppFileInput :requiredField="!form.id" label="Adjuntar comprobante de pago"
-                      :label2="form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
-                      @change="changeFile($event)" :rules="[form.id ? true : requiredValidator]" clearable
-                      class="payment-dialog__input" />
+                    <AppFileInput :disabled="disabledFiledsView" :requiredField="!form.id"
+                      label="Adjuntar comprobante de pago" :label2="form.id ? '1 archivo agregado' : ''"
+                      :loading="inputFile.loading" @change="changeFile($event)"
+                      :rules="[form.id ? true : requiredValidator]" clearable />
                   </VCard>
                 </VCol>
               </VRow>

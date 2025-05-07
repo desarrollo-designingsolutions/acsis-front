@@ -206,8 +206,9 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppDateTimePicker clearable :requiredField="true" label="Fecha" v-model="item.date"
-                  :error-messages="errorsBack.date" :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
+                <AppTextField clearable type="date" :disabled="disabledFiledsView" :requiredField="true"
+                  :error-messages="errorsBack.date" :rules="[requiredValidator]" v-model="item.date" label="Fecha"
+                  @input="errorsBack[`${item.id}.date`] = ''" />
               </VCol>
             </VRow>
 
