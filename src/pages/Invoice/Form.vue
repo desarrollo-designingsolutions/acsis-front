@@ -31,10 +31,10 @@ const loading = reactive({
 const form = ref({
   id: null as string | null,
   company_id: null as string | null,
-  serviceVendor: null as string | null,
-  entity: null as string | null,
-  patient: null as string | null,
-  TipoNota: null as string | null,
+  service_vendor_id: null as string | null,
+  entity_id: null as string | null,
+  patient_id: null as string | null,
+  tipo_nota_id: null as string | null,
   invoice_number: null as string | null,
   note_number: null as string | null,
   radication_number: null as string | null,
@@ -150,6 +150,7 @@ onMounted(async () => {
   clearForm()
 
   form.value.total = '0,00';
+  form.value.value_paid = '0,00';
 
   if (route.params.id) {
     await fetchDataForm()
@@ -176,21 +177,6 @@ const dataReal = (data: any, field: string) => {
   dataCalculate[field] = data
 }
 
-// const changePatientData = (event: any) => {
-
-//   if (event == null) form.value.patient_id = null
-//   if (isObject(event)) {
-//     form.value.patient_id = String(event.id)
-//     form.value.typeDocument = event.type_document
-//     form.value.document = String(event.document)
-//     form.value.first_name = String(event.first_name)
-//     form.value.second_name = String(event.second_name)
-//     form.value.first_surname = String(event.first_surname)
-//     form.value.second_surname = String(event.second_surname)
-//   }
-
-// }
-
 //ModalMassUpload
 const refModalMassUpload = ref()
 
@@ -211,6 +197,24 @@ const refModalListInvoicePayment = ref()
 const openModalListInvoicePayment = () => {
   refModalListInvoicePayment.value.openModal({ invoice_id: form.value.id })
 }
+
+const checkInvoiceNumber = async () => {
+  if (form.value.invoice_number) {
+    const url = '/invoice/validateInvoiceNumber'
+
+    const { response, data } = await useAxios(url).post({
+      invoice_number: form.value.invoice_number,
+      company_id: company.value.id,
+    });
+
+    if (response.status == 200 && data) {
+      errorsBack.value.invoice_number = data.message_licences;
+    } else {
+      errorsBack.value.invoice_number = "";
+    }
+  }
+};
+
 </script>
 
 
@@ -232,28 +236,28 @@ const openModalListInvoicePayment = () => {
                 <VCardText>
                   <VRow>
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Prestador" v-model="form.serviceVendor" url="/selectInfiniteServiceVendor"
-                        arrayInfo="serviceVendors" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="company">
+                      <AppSelectRemote label="Prestador" v-model="form.service_vendor_id"
+                        url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" :requiredField="true"
+                        :rules="[requiredValidator]" clearable :params="company">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Entidad" v-model="form.entity" url="/selectInfiniteEntities"
+                      <AppSelectRemote label="Entidad" v-model="form.entity_id" url="/selectInfiniteEntities"
                         arrayInfo="entities" :requiredField="true" :rules="[requiredValidator]" clearable
                         :params="company">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Paciente" v-model="form.patient" url="/selectInfinitePatients"
+                      <AppSelectRemote label="Paciente" v-model="form.patient_id" url="/selectInfinitePatients"
                         arrayInfo="patients" :requiredField="true" :rules="[requiredValidator]" clearable
                         :params="company">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Tipo Nota" v-model="form.TipoNota" url="/selectInfinitetipoNota"
+                      <AppSelectRemote label="Tipo Nota" v-model="form.tipo_nota_id" url="/selectInfinitetipoNota"
                         arrayInfo="tipoNotas" :requiredField="true" :rules="[requiredValidator]" clearable
                         :params="company">
                       </AppSelectRemote>
@@ -266,35 +270,15 @@ const openModalListInvoicePayment = () => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.invoice_number"
-                        label="Número de Factura" :error-messages="errorsBack.invoice_number"
-                        @input="errorsBack.invoice_number = ''" clearable />
+                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="[requiredValidator]"
+                        v-model="form.invoice_number" label="Número de Factura"
+                        :error-messages="errorsBack.invoice_number" @input="errorsBack.invoice_number = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
                       <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.radication_number"
                         label="Número de Radicado" :error-messages="errorsBack.radication_number"
                         @input="errorsBack.radication_number = ''" clearable />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <FormatCurrency v-show="!isLoading" :requiredField="true" :disabled="disabledFiledsView"
-                        label="Valor Glosado" :rules="[requiredValidator]" v-model="form.value_glosa"
-                        @realValue="dataReal($event, 'real_value_glosa')" :error-messages="errorsBack.value_glosa"
-                        @input="errorsBack.value_glosa = ''" clearable />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <FormatCurrency v-show="!isLoading" :requiredField="true" :disabled="disabledFiledsView"
-                        label="Valor Pagado" :rules="[requiredValidator]" v-model="form.value_paid"
-                        @realValue="dataReal($event, 'real_value_paid')" :error-messages="errorsBack.value_paid"
-                        @input="errorsBack.value_paid = ''" clearable />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <FormatCurrency v-show="!isLoading" :requiredField="true" :disabled="true" label="Valor Factura"
-                        :rules="[requiredValidator]" v-model="form.total" @realValue="dataReal($event, 'real_total')"
-                        :error-messages="errorsBack.total" @input="errorsBack.total = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
@@ -308,6 +292,24 @@ const openModalListInvoicePayment = () => {
                         v-model="form.radication_date" :error-messages="errorsBack.radication_date"
                         :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
                     </VCol>
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency :requiredField="true" :disabled="disabledFiledsView" label="Valor Glosado"
+                        :rules="[requiredValidator]" v-model="form.value_glosa"
+                        @realValue="dataReal($event, 'real_value_glosa')" :error-messages="errorsBack.value_glosa"
+                        @input="errorsBack.value_glosa = ''" clearable />
+                    </VCol>
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency disabled label="Valor Pagado" v-model="form.value_paid"
+                        @realValue="dataReal($event, 'real_value_paid')" />
+                    </VCol>
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency disabled label="Valor Factura" v-model="form.total"
+                        @realValue="dataReal($event, 'real_total')" />
+                    </VCol>
+
                   </VRow>
                 </VCardText>
               </AppCardActions>

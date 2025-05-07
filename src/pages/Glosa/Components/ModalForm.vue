@@ -230,14 +230,15 @@ defineExpose({
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppFileInput :requiredField="!form.id" label="Archivo adjunto"
+                  <AppFileInput :disabled="disabledFiledsView" :requiredField="!form.id" label="Archivo adjunto"
                     :label2="form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
                     @change="changeFile($event)" :rules="[form.id ? true : requiredValidator]" clearable />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField clearable type="date" :requiredField="true" :error-messages="errorsBack.date"
-                    :rules="[requiredValidator]" v-model="form.date" label="Fecha" @input="errorsBack.date = ''" />
+                  <AppTextField :disabled="disabledFiledsView" clearable type="date" :requiredField="true"
+                    :error-messages="errorsBack.date" :rules="[requiredValidator]" v-model="form.date" label="Fecha"
+                    @input="errorsBack.date = ''" />
                 </VCol>
               </VRow>
             </div>
