@@ -198,17 +198,18 @@ const openModalListInvoicePayment = () => {
   refModalListInvoicePayment.value.openModal({ invoice_id: form.value.id })
 }
 
-const checkInvoiceNumber = async () => {
-  if (form.value.invoice_number) {
+const checkInvoiceNumber = () => {
+
+  if (form.value.invoice_number != null) {
     const url = '/invoice/validateInvoiceNumber'
 
-    const { response, data } = await useAxios(url).post({
+    const { response, data } = useAxios(url).post({
       invoice_number: form.value.invoice_number,
       company_id: company.value.id,
     });
 
     if (response.status == 200 && data) {
-      errorsBack.value.invoice_number = data.message_licences;
+      errorsBack.value.invoice_number = data.message_invoice;
     } else {
       errorsBack.value.invoice_number = "";
     }

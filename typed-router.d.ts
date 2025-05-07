@@ -37,6 +37,8 @@ declare module 'vue-router/auto-routes' {
     'invoice-payment-components-list': RouteRecordInfo<'invoice-payment-components-list', '/InvoicePayment/Components/List', Record<never, never>, Record<never, never>>,
     'invoice-payment-components-modal-form': RouteRecordInfo<'invoice-payment-components-modal-form', '/InvoicePayment/Components/ModalForm', Record<never, never>, Record<never, never>>,
     'invoice-payment-components-modal-list': RouteRecordInfo<'invoice-payment-components-modal-list', '/InvoicePayment/Components/ModalList', Record<never, never>, Record<never, never>>,
+    'Patient-List': RouteRecordInfo<'Patient-List', '/Patient/List', Record<never, never>, Record<never, never>>,
+    'Patient-Form': RouteRecordInfo<'Patient-Form', 'patient-Form/:action/:id?', Record<never, never>, Record<never, never>>,
     'redis-components-cache-hit-rate-chart': RouteRecordInfo<'redis-components-cache-hit-rate-chart', '/Redis/Components/CacheHitRateChart', Record<never, never>, Record<never, never>>,
     'redis-components-list-cache-keys': RouteRecordInfo<'redis-components-list-cache-keys', '/Redis/Components/ListCacheKeys', Record<never, never>, Record<never, never>>,
     'redis-components-request-volume-chart': RouteRecordInfo<'redis-components-request-volume-chart', '/Redis/Components/RequestVolumeChart', Record<never, never>, Record<never, never>>,
