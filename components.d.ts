@@ -51,7 +51,7 @@ declare module 'vue' {
     ErrorHeader: typeof import('./src/components/ErrorHeader.vue')['default']
     Files: typeof import('./src/components/CustomComponents/File/Files.vue')['default']
     FilterDialog: typeof import('./src/components/CustomComponents/Filter/FilterDialog.vue')['default']
-    FormatCurrency: typeof import('./src/components/FormatCurrency.vue')['default']
+    FormatCurrency: typeof import('./src/components/CustomComponents/Input/FormatCurrency.vue')['default']
     I18n: typeof import('./src/@core/components/I18n.vue')['default']
     ListGroup: typeof import('./src/components/CustomComponents/Permissions/ListGroup.vue')['default']
     Loading: typeof import('./src/components/CustomComponents/Loading.vue')['default']
