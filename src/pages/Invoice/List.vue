@@ -49,7 +49,7 @@ const optionsTable = {
     { key: 'entity_name', title: 'Entidad' },
     { key: 'invoice_number', title: 'Factura No.' },
     { key: 'type_name', title: 'Tipo Factura' },
-    { key: "value_approved", title: 'Valor Aprobado', width: '150px', minWidth: '100px' },
+    { key: "value_paid", title: 'Valor Pagado', width: '150px', minWidth: '100px' },
     { key: "value_glosa", title: 'Valor Glosa' },
     { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
