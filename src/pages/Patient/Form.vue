@@ -2,9 +2,8 @@
 import { useToast } from '@/composables/useToast';
 import IErrorsBack from "@/interfaces/Axios/IErrorsBack";
 import { router } from '@/plugins/1.router';
-import moment from "moment";
-import type { VForm } from 'vuetify/components/VForm';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+import type { VForm } from 'vuetify/components/VForm';
 
 const authenticationStore = useAuthenticationStore();
 
@@ -110,16 +109,8 @@ const isLoading = computed(() => {
   return Object.values(loading).some(value => value);
 });
 
-const nitRules = [
-  value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
-  value => requiredValidator(value),
-];
-const phoneRules = [
-  value => requiredValidator(value),
-  value => integerValidator(value),
-  value => (!value || value.length <= 10) || "El número no debe tener mas de 10 caracteres",
-  value => positiveNumberValidator(value),
-];
+const company = authenticationStore.company.id;
+
 </script>
 
 

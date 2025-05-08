@@ -33,7 +33,11 @@ const props = defineProps({
   arrayInfo: {
     type: String,
     required: true,
-  }
+  },
+  show: {
+    type: Boolean,
+    required: false,
+  },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -105,7 +109,9 @@ watch(search, (newVal) => {
 
 // Cargar datos iniciales
 onMounted(() => {
-  loadItems();
+  if (!props.show) {
+    loadItems();
+  }
 });
 
 

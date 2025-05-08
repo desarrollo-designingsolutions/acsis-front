@@ -251,10 +251,8 @@ const checkInvoiceNumber = () => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Paciente" v-model="form.patient_id" url="/selectInfinitePatients"
-                        arrayInfo="patients" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="company">
-                      </AppSelectRemote>
+                      <SelectPatientForm :rules="[requiredValidator]" :requiredField="true" label="Paciente"
+                        v-model="form.patient_id" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
