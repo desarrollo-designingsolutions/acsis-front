@@ -9,7 +9,6 @@ const props = defineProps<{
 
 const invoice_id = props.invoice_id;
 const authenticationStore = useAuthenticationStore();
-const servicesIds = ref<Array<string>>([]);
 
 const currentTab = ref(0)
 const servicesCount = ref({
@@ -21,18 +20,26 @@ const servicesCount = ref({
   medicamentos: 0,
   otrosServicios: 0
 })
-const keyComponent = ref(0)
-const dataUser = ref({
-  servicios: {
-    consultas: [],
-    procedimientos: [],
-    urgencias: [],
-    hospitalizacion: [],
-    recienNacidos: [],
-    medicamentos: [],
-    otrosServicios: []
+
+const getData = async () => {
+  try {
+
+    const { data, response } = await useAxios(`/invoice/getInfoJson`).post({
+      id: invoice_id,
+    });
+
+    if (response.status === 200 && data) {
+    }
+
+
+  } catch (error) {
+    toast("Error al cargar los servicios", "", "danger")
   }
-}) 
+}
+
+onMounted(() => {
+  getData()
+})
 </script>
 
 <template>
