@@ -45,12 +45,14 @@ const form = ref({
   value_glosa: null as string | null,
   type: null as string | null,
   value_paid: null as string | null,
+  remaining_balance: null as string | null,
   total: null as string | null,
   invoice_date: null as string | null,
   radication_date: null as string | null,
 })
 
 const soat = ref({
+  id: null as string | null,
   policy_number: null as string | null,
   accident_date: null as string | null,
   start_date: null as string | null,
@@ -58,8 +60,9 @@ const soat = ref({
 })
 
 const totalValueGlosa = ref<string>('')
-const totalValueApproved = ref<string>('')
+const totalValuePaid = ref<string>('')
 const totalValueTotal = ref<string>('')
+const totalValueRemainingBalance = ref<string>('')
 
 const clearForm = () => {
   for (const key in form.value) {
@@ -92,22 +95,16 @@ const fetchDataForm = async () => {
       form.value = cloneObject(data.form)
       soat.value = cloneObject(data?.soat)
 
-      totalValueGlosa.value = form.value.value_glosa;
-      totalValueApproved.value = form.value.value_paid;
-      totalValueTotal.value = form.value.total;
+      totalValuePaid.value = currencyFormat(formatToCurrencyFormat(form.value.value_paid));
+      totalValueTotal.value = currencyFormat(formatToCurrencyFormat(form.value.total));
+      totalValueRemainingBalance.value = currencyFormat(formatToCurrencyFormat(form.value.remaining_balance));
 
-      form.value.value_glosa = currencyFormat(
-        formatToCurrencyFormat(totalValueGlosa.value)
-      );
-      form.value.value_paid = currencyFormat(
-        formatToCurrencyFormat(totalValueApproved.value)
-      );
-      form.value.total = currencyFormat(
-        formatToCurrencyFormat(totalValueTotal.value)
-      );
+      totalValueGlosa.value = form.value.value_glosa;
+      form.value.value_glosa = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
       dataCalculate.real_value_glosa = cloneObject(totalValueGlosa.value);
-      dataCalculate.real_value_paid = cloneObject(totalValueApproved.value);
-      dataCalculate.real_total = cloneObject(totalValueTotal.value);
+
+      listenForInvoiceUpdates();
+
     }
   }
   loading.form = false
@@ -138,16 +135,17 @@ const submitForm = async () => {
     const { data, response } = await useAxios(url).post({
       ...form.value,
       value_glosa: dataCalculate.real_value_glosa,
-      value_paid: dataCalculate.real_value_paid,
-      total: dataCalculate.real_total,
       ...document,
     });
 
     if (response.status == 200 && data) {
 
-      if (data.code == 200) {
-        router.push({ name: 'Invoice-List' })
-      }
+      form.value.id = data.form.id
+      soat.value.id = data.soat.id
+
+      router.replace({ name: "Invoice-Form", params: { type: data.invoice.type, id: data.form.id } });
+
+      listenForInvoiceUpdates()
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};
 
@@ -181,8 +179,6 @@ const paramsSelectInfinite = {
 //FORMATO COMPONENTE MONEDA
 const dataCalculate = reactive({
   real_value_glosa: 0 as number,
-  real_value_paid: 0 as number,
-  real_total: 0 as number,
 })
 
 const dataReal = (data: any, field: string) => {
@@ -210,12 +206,12 @@ const openModalListInvoicePayment = () => {
   refModalListInvoicePayment.value.openModal({ invoice_id: form.value.id })
 }
 
-const checkInvoiceNumber = () => {
+const checkInvoiceNumber = async () => {
 
   if (form.value.invoice_number != null) {
     const url = '/invoice/validateInvoiceNumber'
 
-    const { response, data } = useAxios(url).post({
+    const { response, data } = await useAxios(url).post({
       invoice_number: form.value.invoice_number,
       company_id: authenticationStore.company.id,
     });
@@ -228,6 +224,29 @@ const checkInvoiceNumber = () => {
   }
 };
 
+const listenForInvoiceUpdates = () => {
+  if (form.value.id) {
+
+    window.Echo
+      .channel(`invoice.${form.value.id}`)
+      .listen('InvoiceRowUpdatedNow', (event: any) => {
+
+        totalValueTotal.value = currencyFormat(formatToCurrencyFormat(event.total));
+        totalValuePaid.value = currencyFormat(formatToCurrencyFormat(event.value_paid));
+        totalValueRemainingBalance.value = currencyFormat(formatToCurrencyFormat(event.remaining_balance));
+      });
+  }
+};
+
+const stopListening = () => {
+  if (form.value.id) {
+    window.Echo.leave(`invoice.${form.value.id}`);
+  }
+};
+
+onUnmounted(() => {
+  stopListening();
+});
 </script>
 
 
@@ -265,7 +284,7 @@ const checkInvoiceNumber = () => {
 
                     <VCol cols="12" sm="4">
                       <SelectPatientForm :rules="[requiredValidator]" :requiredField="true" label="Paciente"
-                        v-model="form.patient_id" :itemsData="entities_arrayInfo" :firstFetch="false" />
+                        v-model="form.patient_id" :itemsData="patients_arrayInfo" :firstFetch="false" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
@@ -313,13 +332,21 @@ const checkInvoiceNumber = () => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <FormatCurrency disabled label="Valor Pagado" v-model="form.value_paid"
-                        @realValue="dataReal($event, 'real_value_paid')" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <FormatCurrency disabled label="Valor Factura" v-model="form.total"
-                        @realValue="dataReal($event, 'real_total')" />
+                    </VCol>
+
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency disabled label="Valor Factura" v-model="totalValueTotal" />
+                    </VCol>
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency disabled label="Valor Pagado" v-model="totalValuePaid" />
+                    </VCol>
+
+                    <VCol cols="12" sm="4">
+                      <FormatCurrency disabled label="Valor restante" v-model="totalValueRemainingBalance" />
                     </VCol>
 
                   </VRow>

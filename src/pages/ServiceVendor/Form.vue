@@ -76,7 +76,11 @@ const submitForm = async () => {
     if (response.status == 200 && data) {
 
       if (data.code == 200) {
-        router.push({ name: 'ServiceVendor-List' })
+        form.value.id = data.form.id
+        tabs.value[1].show = true;
+
+
+        router.replace({ name: "ServiceVendor-Form", params: { action: "edit", id: data.form.id } });
       }
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};
