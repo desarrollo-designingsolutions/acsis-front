@@ -2,7 +2,6 @@
 import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
 import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
-import ModalFormService from "@/pages/Service/Components/ModalFormService.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
@@ -109,8 +108,7 @@ const fetchDataBtn = async () => {
 }
 
 
-//ModalFormService
-const refModalFormService = ref()
+//Modales se los tipos de servicios
 const refModalFormOtherService = ref()
 
 const openModalFormServiceCreate = (type: string) => {
@@ -192,7 +190,6 @@ onMounted(() => {
       </VCardText>
     </VCard>
 
-    <ModalFormService ref="refModalFormService" @execute="handleForceSearch"></ModalFormService>
 
     <ModalFormOtherService ref="refModalFormOtherService" @execute="handleForceSearch"></ModalFormOtherService>
 

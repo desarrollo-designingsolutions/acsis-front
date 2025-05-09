@@ -17,8 +17,7 @@ const titleModal = ref<string>("Glosa")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const disabledTotal = ref(false)
-const loadFirstTime = ref(true)
+const codeGlosa_arrayInfo = ref([])
 
 const form = ref({
   id: null as string | null,
@@ -33,23 +32,15 @@ const form = ref({
 })
 
 const totalValueService = ref<string>('')
-const totalValueGlosa = ref<string>('')
+const totalValueGlosa = ref<number | string | null>(0)
 
 const dataCalculate = reactive({
   real_glosa_value: 0 as number,
 })
 
 const handleClearForm = () => {
-  form.value = {
-    id: null,
-    company_id: null,
-    user_id: null,
-    service_id: null,
-    code_glosa_id: null,
-    glosa_value: null,
-    observation: null,
-    file: null,
-    date: null,
+  for (const key in form.value) {
+    form.value[key] = null
   }
 }
 
@@ -69,15 +60,7 @@ const openModal = async ({ id, service_id, total_value }: any, disabled: boolean
   form.value.service_id = service_id;
   totalValueService.value = total_value;
 
-  if (form.value.id) {
-    disabledTotal.value = false;
-    await fetchDataForm();
-  } else {
-    totalValueGlosa.value = total_value;
-    form.value.glosa_value = cloneObject(totalValueGlosa.value);
-    dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
-    disabledTotal.value = true;
-  }
+  await fetchDataForm();
 };
 
 const fetchDataForm = async () => {
@@ -86,11 +69,15 @@ const fetchDataForm = async () => {
     const url = form.value.id ? `/glosa/${form.value.id}/edit` : `/glosa/create`;
     const { data, response } = await useAxios(url).get();
 
-    if (response.status === 200 && data?.form) {
-      form.value = cloneObject(data.form);
-      totalValueGlosa.value = form.value.glosa_value;
-      form.value.glosa_value = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
-      dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
+    if (response.status === 200 && data) {
+      codeGlosa_arrayInfo.value = data.codeGlosa_arrayInfo
+
+      if (data.form) {
+        form.value = cloneObject(data.form);
+        totalValueGlosa.value = form.value.glosa_value;
+        form.value.glosa_value = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
+        dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
+      }
     }
   } catch (error) {
     toast('Error al cargar los datos', '', 'warning');
@@ -145,7 +132,7 @@ const positiveValidator = (value: number | string) => {
 };
 
 const mayorTotalValueServiceValidator = () => {
-  return parseEuropeanNumber(form.value.glosa_value) > totalValueService.value
+  return parseEuropeanNumber(String(form.value.glosa_value)) > parseEuropeanNumber(totalValueService.value)
     ? 'El valor debe ser menor o igual al valor total del servicio'
     : true;
 };
@@ -213,7 +200,8 @@ defineExpose({
                   <AppSelectRemote label="Código Glosa" :requiredField="true" :rules="[requiredValidator]"
                     :disabled="disabledFiledsView" v-model="form.code_glosa_id" url="/selectInfiniteCodeGlosa"
                     array-info="codeGlosa" :error-messages="errorsBack.code_glosa_id"
-                    @input="errorsBack.code_glosa_id = ''" clearable />
+                    @input="errorsBack.code_glosa_id = ''" clearable :itemsData="codeGlosa_arrayInfo"
+                    :firstFetch="false" />
                 </VCol>
 
                 <VCol cols="12" md="6">

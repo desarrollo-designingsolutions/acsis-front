@@ -16,7 +16,6 @@ const titleModal = ref<string>("Servicio")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const disabledTotal = ref(false)
 const tipoOtrosServicios_arrayInfo = ref([])
 const conceptoRecaudo_arrayInfo = ref([])
 const service_id = ref<null | string>(null)
@@ -151,6 +150,20 @@ const dataReal = (data: any, field: string) => {
 defineExpose({
   openModal
 });
+
+
+watch(
+  [() => form.value.cantidadOS, () => dataCalculate.real_vrUnitOS],
+  ([newCantidadOS, newVrUnitOS]) => {
+    const quantity = parseInt(newCantidadOS || '0', 10);
+    const unitValue = newVrUnitOS || 0;
+    const total = unitValue * quantity;
+    form.value.vrServicio = currencyFormat(formatToCurrencyFormat(total));
+    dataCalculate.real_vrServicio = total;
+  },
+  { immediate: true }
+);
+
 </script>
 
 <template>
@@ -208,21 +221,19 @@ defineExpose({
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrUnitOS" v-model="form.vrUnitOS" :requiredField="true"
                   :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrUnitOS"
-                  @input="errorsBack.vrUnitOS = ''" :disabled="disabledFiledsView || disabledTotal"
+                  @input="errorsBack.vrUnitOS = ''" :disabled="disabledFiledsView"
                   @realValue="dataReal($event, 'real_vrUnitOS')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
                   :requiredField="true" :rules="[requiredValidator, positiveValidator]"
                   :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
-                  :disabled="disabledFiledsView || disabledTotal"
-                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
                   :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" :disabled="disabledFiledsView || disabledTotal"
-                  @realValue="dataReal($event, 'real_vrServicio')" />
+                  @input="errorsBack.vrServicio = ''" disabled @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"

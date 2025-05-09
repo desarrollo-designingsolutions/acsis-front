@@ -40,6 +40,9 @@ const openModal = async ({ id, cups_rip_nombre, cups_rip_codigo, total_value_ori
   form.value.id = id;
   form.value.total_value_origin = total_value_origin;
   titleModal.value = `Listado de Glosas: ${cups_rip_nombre} - ${cups_rip_codigo}`
+
+  console.log("total_value_origin", total_value_origin);
+
 };
 
 defineExpose({

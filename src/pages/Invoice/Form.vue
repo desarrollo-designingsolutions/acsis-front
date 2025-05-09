@@ -27,6 +27,10 @@ const formValidation = ref<VForm>()
 const loading = reactive({
   form: false,
 })
+const serviceVendors_arrayInfo = ref([])
+const entities_arrayInfo = ref([])
+const tipoNotas_arrayInfo = ref([])
+const patients_arrayInfo = ref([])
 
 const form = ref({
   id: null as string | null,
@@ -70,9 +74,19 @@ const fetchDataForm = async () => {
   const url = form.value.id ? `/invoice/${route.params.type}/${form.value.id}/edit` : `/invoice/${route.params.type}/create`
 
   loading.form = true
-  const { response, data } = await useAxios(url).get();
+  const { response, data } = await useAxios(url).get({
+    params: {
+      company_id: authenticationStore.company.id,
+    }
+  });
 
   if (response.status == 200 && data) {
+
+    serviceVendors_arrayInfo.value = data.serviceVendors_arrayInfo
+    entities_arrayInfo.value = data.entities_arrayInfo
+    tipoNotas_arrayInfo.value = data.tipoNotas_arrayInfo
+    patients_arrayInfo.value = data.patients_arrayInfo
+
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
@@ -152,9 +166,7 @@ onMounted(async () => {
   form.value.total = '0,00';
   form.value.value_paid = '0,00';
 
-  if (route.params.id) {
-    await fetchDataForm()
-  }
+  await fetchDataForm()
 })
 
 // Computed que verifica si al menos uno de los valores es true
@@ -162,7 +174,7 @@ const isLoading = computed(() => {
   return Object.values(loading).some(value => value);
 });
 
-const company = {
+const paramsSelectInfinite = {
   company_id: authenticationStore.company.id,
 }
 
@@ -239,26 +251,27 @@ const checkInvoiceNumber = () => {
                     <VCol cols="12" sm="4">
                       <AppSelectRemote label="Prestador" v-model="form.service_vendor_id"
                         url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" :requiredField="true"
-                        :rules="[requiredValidator]" clearable :params="company">
+                        :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
+                        :itemsData="serviceVendors_arrayInfo" :firstFetch="false">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
                       <AppSelectRemote label="Entidad" v-model="form.entity_id" url="/selectInfiniteEntities"
                         arrayInfo="entities" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="company">
+                        :params="paramsSelectInfinite" :itemsData="entities_arrayInfo" :firstFetch="false">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
                       <SelectPatientForm :rules="[requiredValidator]" :requiredField="true" label="Paciente"
-                        v-model="form.patient_id" />
+                        v-model="form.patient_id" :itemsData="entities_arrayInfo" :firstFetch="false" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
                       <AppSelectRemote label="Tipo Nota" v-model="form.tipo_nota_id" url="/selectInfinitetipoNota"
                         arrayInfo="tipoNotas" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="company">
+                        :params="paramsSelectInfinite" :itemsData="tipoNotas_arrayInfo" :firstFetch="false">
                       </AppSelectRemote>
                     </VCol>
 
