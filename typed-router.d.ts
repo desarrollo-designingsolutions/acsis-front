@@ -47,7 +47,7 @@ declare module 'vue-router/auto-routes' {
     'Redis-Index': RouteRecordInfo<'Redis-Index', '/Redis/Index', Record<never, never>, Record<never, never>>,
     'second-page': RouteRecordInfo<'second-page', '/second-page', Record<never, never>, Record<never, never>>,
     'service-components-list': RouteRecordInfo<'service-components-list', '/Service/Components/List', Record<never, never>, Record<never, never>>,
-    'service-components-list copy': RouteRecordInfo<'service-components-list copy', '/Service/Components/List copy', Record<never, never>, Record<never, never>>,
+    'service-components-modal-form-other-service': RouteRecordInfo<'service-components-modal-form-other-service', '/Service/Components/ModalFormOtherService', Record<never, never>, Record<never, never>>,
     'service-components-modal-form-service': RouteRecordInfo<'service-components-modal-form-service', '/Service/Components/ModalFormService', Record<never, never>, Record<never, never>>,
     'ServiceVendor-List': RouteRecordInfo<'ServiceVendor-List', '/ServiceVendor/List', Record<never, never>, Record<never, never>>,
     'ServiceVendor-Form': RouteRecordInfo<'ServiceVendor-Form', 'serviceVendor-form/:action/:id?', Record<never, never>, Record<never, never>>,

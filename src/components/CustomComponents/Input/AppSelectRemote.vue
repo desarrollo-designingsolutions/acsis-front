@@ -34,9 +34,19 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  show: {
+  disabled: {
     type: Boolean,
     required: false,
+  },
+  itemsData: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  firstFetch: {
+    type: Boolean,
+    required: false,
+    default: true,
   },
 });
 
@@ -55,7 +65,8 @@ const page = ref(1);
 const loading = ref(false);
 const hasMore = ref(true);
 const error = ref('');
-
+const isSearching = ref(false); // Nueva variable para controlar si estamos en modo búsqueda
+const fetching = ref(false);
 
 // Debounce para la búsqueda
 let searchTimeout: ReturnType<typeof setTimeout>;
@@ -64,15 +75,16 @@ let searchTimeout: ReturnType<typeof setTimeout>;
 const loadItems = async (newSearch = false) => {
   error.value = '';
   if (loading.value) return;
-  // if (loading.value || !hasMore.value) return;
 
   loading.value = true;
+  fetching.value = true;
 
   try {
     if (newSearch) {
       page.value = 1;
       items.value = [];
       hasMore.value = true;
+      isSearching.value = !!search.value; // Marcamos que estamos en modo búsqueda si hay texto
     }
 
     const { data } = await useAxios(props.url).post({
@@ -97,23 +109,67 @@ const loadItems = async (newSearch = false) => {
     error.value = 'Error al buscar datos.' + err;
   } finally {
     loading.value = false;
+    fetching.value = false;
   }
 };
-
 
 // Búsqueda con debounce
 watch(search, (newVal) => {
   clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadItems(true), 500);
+
+  // Si se borra la búsqueda y tenemos itemsData, restauramos los datos originales
+  if (!newVal && props.itemsData.length > 0 && isSearching.value) {
+    isSearching.value = false;
+    items.value = [...props.itemsData];
+    return;
+  }
+
+  // Solo hacemos búsqueda si hay texto
+  if (newVal) {
+    searchTimeout = setTimeout(() => loadItems(true), 500);
+  }
 });
+
+// Watcher para itemsData, solo actualiza si no estamos en modo búsqueda
+watch(() => props.itemsData, (newItemsData) => {
+  if (newItemsData && newItemsData.length > 0 && !isSearching.value) {
+    // Solo actualizamos los items si no estamos en medio de una búsqueda
+    items.value = [...newItemsData];
+  }
+}, { deep: true });
 
 // Cargar datos iniciales
 onMounted(() => {
-  if (!props.show) {
+  // Si hay datos proporcionados, los usamos directamente
+  if (props.itemsData.length > 0) {
+    items.value = [...props.itemsData];
+    return; // No hacemos petición si ya tenemos datos
+  }
+
+  // Si está deshabilitado, no hacemos petición
+  if (props.disabled) {
+    return;
+  }
+
+  // Solo hacemos la petición si firstFetch es true
+  if (props.firstFetch) {
     loadItems();
   }
 });
 
+// Método para limpiar la búsqueda
+const clearText = () => {
+  search.value = '';
+  // Si tenemos itemsData, restauramos los datos originales
+  if (props.itemsData.length > 0) {
+    isSearching.value = false;
+    items.value = [...props.itemsData];
+  } else if (isSearching.value) {
+    // Si no tenemos itemsData pero estábamos buscando, recargamos los datos
+    isSearching.value = false;
+    loadItems(true);
+  }
+}
 
 // Mensaje para el slot no-data basado en el valor de localValue
 const noDataMessage = computed(() => {
@@ -128,16 +184,12 @@ const noDataMessage = computed(() => {
     ? 'Escribe algo para buscar...'
     : `No se encontraron resultados para "<strong>${search.value}</strong>".`;
 });
-
-const clearText = () => {
-  search.value = '';
-}
 </script>
 
 <template>
   <AppSelect @blur="clearText" returnObject v-model="localValue" :items="items" :item-title="itemTitle"
-    :item-value="itemValue" :multiple="multiple" :search="search" :loading="loading"
-    @update:search="(value) => search = value" clearable>
+    :item-value="itemValue" :multiple="multiple" :search="search" :loading="fetching"
+    @update:search="(value) => search = value" clearable :disabled="props.disabled">
     <template #prepend-item class="sticky-search">
       <VListItem>
         <AppTextField v-model="search" placeholder="Teclee para buscar..." variant="outlined" density="compact"
@@ -150,7 +202,6 @@ const clearText = () => {
     </template>
     <!-- Codigo que itera sobre las ranuras disponibles en el componente padre e individualmente rinde cada ranura con sus propias propiedades -->
 
-
     <template v-slot:no-data>
       <VListItem>
         <VListItemTitle class="text-center" v-html="noDataMessage"></VListItemTitle>
@@ -158,33 +209,3 @@ const clearText = () => {
     </template>
   </AppSelect>
 </template>
-
-<style scoped>
-:deep(.sticky-search) {
-  position: sticky;
-  z-index: 999;
-
-  /* Asegúrate de que esté encima de otros elementos */
-  background: white;
-
-  /* Asegura que ocupe todo el ancho del contenedor */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 10%);
-  inline-size: 100%;
-  inset-block-start: 0;
-
-  /* Color de fondo según tu tema */
-  padding-block: 8px;
-
-  /* Agrega sombra para hacerlo más visible */
-}
-
-/* Para temas oscuros */
-:deep(.v-theme--dark .sticky-search) {
-  background: #1e1e1e;
-
-  /* Color de fondo oscuro */
-  color: white;
-
-  /* Asegura que el texto sea visible en tema oscuro */
-}
-</style>

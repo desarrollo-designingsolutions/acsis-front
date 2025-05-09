@@ -7,7 +7,6 @@ const invoice_id = ref('0196ac8c-07ea-7248-9e62-6956c264c9e9')
 
 <template>
   <div>
-
     <ListService :invoice_id="invoice_id" />
 
   </div>
