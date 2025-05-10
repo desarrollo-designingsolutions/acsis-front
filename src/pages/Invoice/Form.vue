@@ -144,7 +144,7 @@ const submitForm = async () => {
       form.value.id = data.form.id
       soat.value.id = data.soat.id
 
-      router.replace({ name: "Invoice-Form", params: { type: data.invoice.type, id: data.form.id } });
+      router.replace({ name: "Invoice-Form", params: { type: data.form.type, id: data.form.id } });
 
       listenForInvoiceUpdates()
     }
