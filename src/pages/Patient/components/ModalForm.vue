@@ -179,8 +179,8 @@ defineExpose({
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Pais de Residencia"
                   v-model="form.pais_residency_id" url="/selectInfinitePais" arrayInfo="paises" :requiredField="true"
-                  :rules="[requiredValidator]" clearable>
-                </AppSelectRemote :itemsData="paises_arrayInfo" :firstFetch="false">
+                  :rules="[requiredValidator]" clearable :itemsData="paises_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
               </VCol>
 
               <VCol cols="12" sm="4">
