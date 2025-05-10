@@ -16,6 +16,15 @@ const loading = reactive({
   form: false,
 })
 
+const tipoIdPisiss_arrayInfo = ref([])
+const ripsTipoUsuarioVersion2s_arrayInfo = ref([])
+const sexos_arrayInfo = ref([])
+const municipios_arrayInfo = ref([])
+const paises_arrayInfo = ref([])
+const zonaVersion2s_arrayInfo = ref([])
+
+
+
 const form = ref({
   id: null as string | null,
   tipo_id_pisi_id: null as string | null,
@@ -48,6 +57,13 @@ const fetchDataForm = async () => {
   const { response, data } = await useAxios(url).get();
 
   if (response.status == 200 && data) {
+    tipoIdPisiss_arrayInfo.value = data.tipoIdPisiss_arrayInfo
+    ripsTipoUsuarioVersion2s_arrayInfo.value = data.ripsTipoUsuarioVersion2s_arrayInfo
+    sexos_arrayInfo.value = data.sexos_arrayInfo
+    municipios_arrayInfo.value = data.municipios_arrayInfo
+    paises_arrayInfo.value = data.paises_arrayInfo
+    zonaVersion2s_arrayInfo.value = data.zonaVersion2s_arrayInfo
+
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
@@ -126,10 +142,13 @@ defineExpose({
         <VCardText>
           <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
+
+
+
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Tipo de Documento" v-model="form.tipo_id_pisi_id"
                   url="/selectInfiniteTipoDocumento" arrayInfo="tipoIdPisiss" :requiredField="true"
-                  :rules="[requiredValidator]" clearable>
+                  :rules="[requiredValidator]" clearable :itemsData="tipoIdPisiss_arrayInfo" :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
@@ -141,7 +160,8 @@ defineExpose({
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Tipo de Usuario"
                   v-model="form.rips_tipo_usuario_version2_id" url="/selectInfiniteTipoUsuario"
-                  arrayInfo="ripsTipoUsuarioVersion2s" :requiredField="true" :rules="[requiredValidator]" clearable>
+                  arrayInfo="ripsTipoUsuarioVersion2s" :requiredField="true" :rules="[requiredValidator]" clearable
+                  :itemsData="ripsTipoUsuarioVersion2s_arrayInfo" :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
@@ -154,7 +174,7 @@ defineExpose({
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Sexo" v-model="form.sexo_id"
                   url="/selectInfiniteSexo" arrayInfo="sexos" :requiredField="true" :rules="[requiredValidator]"
-                  clearable>
+                  clearable :itemsData="sexos_arrayInfo" :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
@@ -162,20 +182,22 @@ defineExpose({
                 <AppSelectRemote :disabled="disabledFiledsView" label="Pais de Residencia"
                   v-model="form.pais_residency_id" url="/selectInfinitePais" arrayInfo="paises" :requiredField="true"
                   :rules="[requiredValidator]" clearable>
-                </AppSelectRemote>
+                </AppSelectRemote :itemsData="paises_arrayInfo" :firstFetch="false">
               </VCol>
 
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Municipio de Residencia"
                   v-model="form.municipio_residency_id" url="/selectInfiniteMunicipio" arrayInfo="municipios"
-                  :requiredField="true" :rules="[requiredValidator]" clearable>
+                  :requiredField="true" :rules="[requiredValidator]" clearable :itemsData="municipios_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Zona Territorial de Residencia"
                   v-model="form.zona_version2_id" url="/selectInfiniteZonaVersion2" arrayInfo="zonaVersion2s"
-                  :requiredField="true" :rules="[requiredValidator]" clearable>
+                  :requiredField="true" :rules="[requiredValidator]" clearable :itemsData="zonaVersion2s_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
@@ -186,7 +208,7 @@ defineExpose({
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Pais de Origen" v-model="form.pais_origin_id"
                   url="/selectInfinitePais" arrayInfo="paises" :requiredField="true" :rules="[requiredValidator]"
-                  clearable>
+                  clearable :itemsData="paises_arrayInfo" :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 
