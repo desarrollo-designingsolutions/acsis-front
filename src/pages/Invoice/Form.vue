@@ -82,6 +82,8 @@ const fetchDataForm = async () => {
       company_id: authenticationStore.company.id,
     }
   });
+  loading.form = false
+
 
   if (response.status == 200 && data) {
 
@@ -107,7 +109,6 @@ const fetchDataForm = async () => {
 
     }
   }
-  loading.form = false
 }
 
 const submitForm = async () => {
