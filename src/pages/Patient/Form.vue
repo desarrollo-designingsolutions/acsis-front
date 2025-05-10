@@ -26,6 +26,13 @@ const loading = reactive({
   form: false,
 })
 
+const tipoIdPisiss_arrayInfo = ref([])
+const ripsTipoUsuarioVersion2s_arrayInfo = ref([])
+const sexos_arrayInfo = ref([])
+const municipios_arrayInfo = ref([])
+const paises_arrayInfo = ref([])
+const zonaVersion2s_arrayInfo = ref([])
+
 const form = ref({
   id: null as string | null,
   tipo_id_pisi_id: null as string | null,
@@ -60,6 +67,13 @@ const fetchDataForm = async () => {
   const { response, data } = await useAxios(url).get();
 
   if (response.status == 200 && data) {
+    tipoIdPisiss_arrayInfo.value = data.tipoIdPisiss_arrayInfo
+    ripsTipoUsuarioVersion2s_arrayInfo.value = data.ripsTipoUsuarioVersion2s_arrayInfo
+    sexos_arrayInfo.value = data.sexos_arrayInfo
+    municipios_arrayInfo.value = data.municipios_arrayInfo
+    paises_arrayInfo.value = data.paises_arrayInfo
+    zonaVersion2s_arrayInfo.value = data.zonaVersion2s_arrayInfo
+
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
@@ -99,9 +113,7 @@ if (route.params.action == 'view') disabledFiledsView.value = true
 onMounted(async () => {
   clearForm()
 
-  if (route.params.id) {
-    await fetchDataForm()
-  }
+  await fetchDataForm()
 })
 
 // Computed que verifica si al menos uno de los valores es true
@@ -129,7 +141,8 @@ const company = authenticationStore.company.id;
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Tipo de Documento" v-model="form.tipo_id_pisi_id"
                 url="/selectInfiniteTipoDocumento" arrayInfo="tipoIdPisiss" :requiredField="true"
-                :rules="[requiredValidator]" clearable :params="company">
+                :rules="[requiredValidator]" clearable :params="company" :itemsData="tipoIdPisiss_arrayInfo"
+                :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
@@ -141,7 +154,8 @@ const company = authenticationStore.company.id;
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Tipo de Usuario" v-model="form.rips_tipo_usuario_version2_id"
                 url="/selectInfiniteTipoUsuario" arrayInfo="ripsTipoUsuarioVersion2s" :requiredField="true"
-                :rules="[requiredValidator]" clearable :params="company">
+                :rules="[requiredValidator]" clearable :params="company" :itemsData="ripsTipoUsuarioVersion2s_arrayInfo"
+                :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
@@ -153,27 +167,30 @@ const company = authenticationStore.company.id;
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Sexo" v-model="form.sexo_id" url="/selectInfiniteSexo" arrayInfo="sexos"
-                :requiredField="true" :rules="[requiredValidator]" clearable :params="company">
+                :requiredField="true" :rules="[requiredValidator]" clearable :params="company"
+                :itemsData="sexos_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Pais de Residencia" v-model="form.pais_residency_id" url="/selectInfinitePais"
-                arrayInfo="paises" :requiredField="true" :rules="[requiredValidator]" clearable :params="company">
+                arrayInfo="paises" :requiredField="true" :rules="[requiredValidator]" clearable :params="company"
+                :itemsData="paises_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Municipio de Residencia" v-model="form.municipio_residency_id"
                 url="/selectInfiniteMunicipio" arrayInfo="municipios" :requiredField="true" :rules="[requiredValidator]"
-                clearable :params="company">
+                clearable :params="company" :itemsData="municipios_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Zona Territorial de Residencia" v-model="form.zona_version2_id"
                 url="/selectInfiniteZonaVersion2" arrayInfo="zonaVersion2s" :requiredField="true"
-                :rules="[requiredValidator]" clearable :params="company">
+                :rules="[requiredValidator]" clearable :params="company" :itemsData="zonaVersion2s_arrayInfo"
+                :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
@@ -183,7 +200,8 @@ const company = authenticationStore.company.id;
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Pais de Origen" v-model="form.pais_origin_id" url="/selectInfinitePais"
-                arrayInfo="paises" :requiredField="true" :rules="[requiredValidator]" clearable :params="company">
+                arrayInfo="paises" :requiredField="true" :rules="[requiredValidator]" clearable :params="company"
+                :itemsData="paises_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 

@@ -23,8 +23,6 @@ const municipios_arrayInfo = ref([])
 const paises_arrayInfo = ref([])
 const zonaVersion2s_arrayInfo = ref([])
 
-
-
 const form = ref({
   id: null as string | null,
   tipo_id_pisi_id: null as string | null,
@@ -140,9 +138,6 @@ defineExpose({
         <VCardText>
           <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
-
-
-
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Tipo de Documento" v-model="form.tipo_id_pisi_id"
                   url="/selectInfiniteTipoDocumento" arrayInfo="tipoIdPisiss" :requiredField="true"
