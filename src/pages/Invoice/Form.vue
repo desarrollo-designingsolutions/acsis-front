@@ -217,7 +217,9 @@ const checkInvoiceNumber = async () => {
     });
 
     if (response.status == 200 && data) {
-      errorsBack.value.invoice_number = data.message_invoice;
+      if (data.exists) {
+        errorsBack.value.invoice_number = data.message_invoice;
+      }
     } else {
       errorsBack.value.invoice_number = "";
     }
