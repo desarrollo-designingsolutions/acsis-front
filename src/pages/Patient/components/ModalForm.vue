@@ -116,9 +116,7 @@ const openModal = async (id: any = null, disabled: boolean = false) => {
   disabledFiledsView.value = disabled;
   form.value.id = id;
 
-  if (form.value.id) {
-    await fetchDataForm();
-  }
+  await fetchDataForm();
 };
 
 defineExpose({
