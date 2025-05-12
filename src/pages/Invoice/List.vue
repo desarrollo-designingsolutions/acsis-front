@@ -27,6 +27,7 @@ const optionsFilter = ref({
         label: "Estado",
         type: "selectApi",
         value: null,
+        multiple: true,
         url: "/selectStatusInvoiceEnum",
         arrayInfo: "statusInvoiceEnum",
       },
