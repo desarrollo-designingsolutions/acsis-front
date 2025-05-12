@@ -32,8 +32,8 @@ const refTableFull = ref()
 const optionsTable = {
   url: `/service/paginate`,
   headers: [
-    { key: 'cups_rip_codigo', title: 'Código' },
-    { key: 'cups_rip_nombre', title: 'Descripcion' },
+    { key: 'codigo_servicio', title: 'Código' },
+    { key: 'nombre_servicio', title: 'Descripcion' },
     { key: 'quantity', title: 'Cantidad' },
     { key: "unit_value", title: 'Valor Unitario' },
     { key: "total_value", title: 'Valor Total' },

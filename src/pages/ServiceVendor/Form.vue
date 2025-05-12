@@ -78,8 +78,6 @@ const submitForm = async () => {
       if (data.code == 200) {
         form.value.id = data.form.id
         tabs.value[1].show = true;
-
-
         router.replace({ name: "ServiceVendor-Form", params: { action: "edit", id: data.form.id } });
       }
     }

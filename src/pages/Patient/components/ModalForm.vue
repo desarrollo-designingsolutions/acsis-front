@@ -211,8 +211,8 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" :rules="[requiredValidator]" clearable v-model="form.second_name"
-                  label="Segundo Nombre" :error-messages="errorsBack.second_name" />
+                <AppTextField clearable v-model="form.second_name" label="Segundo Nombre"
+                  :error-messages="errorsBack.second_name" />
               </VCol>
 
               <VCol cols="12" sm="4">
@@ -221,8 +221,8 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" :rules="[requiredValidator]" clearable v-model="form.second_surname"
-                  label="Segundo Apellido" :error-messages="errorsBack.second_surname" />
+                <AppTextField clearable v-model="form.second_surname" label="Segundo Apellido"
+                  :error-messages="errorsBack.second_surname" />
               </VCol>
             </VRow>
           </VForm>

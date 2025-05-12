@@ -18,6 +18,7 @@ const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 const tipoOtrosServicios_arrayInfo = ref([])
 const conceptoRecaudo_arrayInfo = ref([])
+const cupsRips_arrayInfo = ref([])
 const service_id = ref<null | string>(null)
 
 const form = ref({
@@ -74,6 +75,7 @@ const fetchDataForm = async () => {
 
       tipoOtrosServicios_arrayInfo.value = data.tipoOtrosServicios_arrayInfo
       conceptoRecaudo_arrayInfo.value = data.conceptoRecaudo_arrayInfo
+      cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -153,17 +155,23 @@ defineExpose({
 
 
 watch(
-  [() => form.value.cantidadOS, () => dataCalculate.real_vrUnitOS],
-  ([newCantidadOS, newVrUnitOS]) => {
+  [() => form.value.cantidadOS, () => dataCalculate.real_vrUnitOS, () => dataCalculate.real_valorPagoModerador],
+  ([newCantidadOS, newVrUnitOS, newValorPagoModerador]) => {
     const quantity = parseInt(newCantidadOS || '0', 10);
     const unitValue = newVrUnitOS || 0;
-    const total = unitValue * quantity;
+    const valuePagoModerador = newValorPagoModerador || 0;
+    const total = (unitValue * quantity) - valuePagoModerador;
     form.value.vrServicio = currencyFormat(formatToCurrencyFormat(total));
     dataCalculate.real_vrServicio = total;
   },
   { immediate: true }
 );
 
+const changeCodTecnologiaSalud = (event) => {
+  if (event) {
+    form.value.nomTecnologiaSalud = event.nombre
+  }
+}
 </script>
 
 <template>
@@ -182,14 +190,11 @@ watch(
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
-                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
+                  :disabled="disabledFiledsView" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
-                  :disabled="disabledFiledsView" />
+                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :disabled="disabledFiledsView" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaSuministroTecnologia" v-model="form.fechaSuministroTecnologia"
@@ -204,14 +209,16 @@ watch(
                   :itemsData="tipoOtrosServicios_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
-                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView" />
+                <AppSelectRemote clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
+                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" @update:model-value="changeCodTecnologiaSalud" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="nomTecnologiaSalud" v-model="form.nomTecnologiaSalud"
+                <AppTextField clearable label="nomTecnologiaSalud" disabled v-model="form.nomTecnologiaSalud"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.nomTecnologiaSalud"
-                  @input="errorsBack.nomTecnologiaSalud = ''" :disabled="disabledFiledsView" />
+                  @input="errorsBack.nomTecnologiaSalud = ''" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppTextField clearable label="cantidadOS" v-model="form.cantidadOS" :requiredField="true"
@@ -226,8 +233,6 @@ watch(
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :requiredField="true" :rules="[requiredValidator, positiveValidator]"
-                  :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
                   :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">

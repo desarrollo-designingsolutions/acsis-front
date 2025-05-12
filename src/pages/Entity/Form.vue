@@ -2,9 +2,8 @@
 import { useToast } from '@/composables/useToast';
 import IErrorsBack from "@/interfaces/Axios/IErrorsBack";
 import { router } from '@/plugins/1.router';
-import moment from "moment";
-import type { VForm } from 'vuetify/components/VForm';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+import type { VForm } from 'vuetify/components/VForm';
 
 const authenticationStore = useAuthenticationStore();
 
@@ -95,7 +94,9 @@ const submitForm = async () => {
     if (response.status == 200 && data) {
 
       if (data.code == 200) {
-        router.push({ name: 'Entity-List' })
+        form.value.id = data.form.id
+        tabs.value[1].show = true;
+        router.replace({ name: "Entity-Form", params: { action: "edit", id: data.form.id } });
       }
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};

@@ -234,6 +234,9 @@ const listenForInvoiceUpdates = () => {
       .channel(`invoice.${form.value.id}`)
       .listen('InvoiceRowUpdatedNow', (event: any) => {
 
+        console.log("event", event)
+
+        totalValueGlosa.value = currencyFormat(formatToCurrencyFormat(event.value_glosa));
         totalValueTotal.value = currencyFormat(formatToCurrencyFormat(event.total));
         totalValuePaid.value = currencyFormat(formatToCurrencyFormat(event.value_paid));
         totalValueRemainingBalance.value = currencyFormat(formatToCurrencyFormat(event.remaining_balance));
@@ -292,15 +295,14 @@ onUnmounted(() => {
 
                     <VCol cols="12" sm="4">
                       <AppSelectRemote label="Tipo Nota" v-model="form.tipo_nota_id" url="/selectInfinitetipoNota"
-                        arrayInfo="tipoNotas" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="paramsSelectInfinite" :itemsData="tipoNotas_arrayInfo" :firstFetch="false">
+                        arrayInfo="tipoNotas" clearable :params="paramsSelectInfinite" :itemsData="tipoNotas_arrayInfo"
+                        :firstFetch="false">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.note_number"
-                        label="Número de Nota" :error-messages="errorsBack.note_number"
-                        @input="errorsBack.note_number = ''" clearable />
+                      <AppTextField v-model="form.note_number" label="Número de Nota"
+                        :error-messages="errorsBack.note_number" @input="errorsBack.note_number = ''" clearable />
                     </VCol>
 
                     <VCol cols="12" sm="4">
@@ -327,28 +329,19 @@ onUnmounted(() => {
                         :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
                     </VCol>
 
-                    <VCol cols="12" sm="4">
-                      <FormatCurrency :requiredField="true" :disabled="disabledFiledsView" label="Valor Glosado"
-                        :rules="[requiredValidator]" v-model="form.value_glosa"
-                        @realValue="dataReal($event, 'real_value_glosa')" :error-messages="errorsBack.value_glosa"
-                        @input="errorsBack.value_glosa = ''" clearable />
+                    <VCol cols="12" sm="3">
+                      <FormatCurrency disabled label="Valor Glosado" v-model="totalValueGlosa"
+                        @realValue="dataReal($event, 'real_value_glosa')" clearable />
                     </VCol>
 
-                    <VCol cols="12" sm="4">
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                    </VCol>
-
-
-                    <VCol cols="12" sm="4">
+                    <VCol cols="12" sm="3">
                       <FormatCurrency disabled label="Valor Factura" v-model="totalValueTotal" />
                     </VCol>
-                    <VCol cols="12" sm="4">
+                    <VCol cols="12" sm="3">
                       <FormatCurrency disabled label="Valor Pagado" v-model="totalValuePaid" />
                     </VCol>
 
-                    <VCol cols="12" sm="4">
+                    <VCol cols="12" sm="3">
                       <FormatCurrency disabled label="Valor restante" v-model="totalValueRemainingBalance" />
                     </VCol>
 

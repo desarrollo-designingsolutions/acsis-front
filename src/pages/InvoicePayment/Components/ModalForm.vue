@@ -258,10 +258,9 @@ const remainingBalance = computed(() => {
 
                       <span class="text-subtitle-1">Documentación de Soporte</span>
                     </div>
-                    <AppFileInput :disabled="disabledFiledsView" :requiredField="!form.id"
-                      label="Adjuntar comprobante de pago" :label2="form.id ? '1 archivo agregado' : ''"
-                      :loading="inputFile.loading" @change="changeFile($event)"
-                      :rules="[form.id ? true : requiredValidator]" clearable />
+                    <AppFileInput :disabled="disabledFiledsView" label="Adjuntar comprobante de pago"
+                      :label2="form.file ? '1 archivo agregado' : ''" :loading="inputFile.loading"
+                      @change="changeFile($event)" clearable />
                   </VCard>
                 </VCol>
               </VRow>

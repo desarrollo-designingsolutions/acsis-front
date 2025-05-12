@@ -132,7 +132,8 @@ const positiveValidator = (value: number | string) => {
 };
 
 const mayorTotalValueServiceValidator = () => {
-  return parseEuropeanNumber(String(form.value.glosa_value)) > parseEuropeanNumber(totalValueService.value)
+
+  return dataCalculate.real_glosa_value > parseFloat(totalValueService.value)
     ? 'El valor debe ser menor o igual al valor total del servicio'
     : true;
 };
@@ -218,9 +219,9 @@ defineExpose({
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppFileInput :disabled="disabledFiledsView" :requiredField="!form.id" label="Archivo adjunto"
-                    :label2="form.id ? '1 archivo agregado' : ''" :loading="inputFile.loading"
-                    @change="changeFile($event)" :rules="[form.id ? true : requiredValidator]" clearable />
+                  <AppFileInput :disabled="disabledFiledsView" label="Archivo adjunto"
+                    :label2="form.file ? '1 archivo agregado' : ''" :loading="inputFile.loading"
+                    @change="changeFile($event)" clearable />
                 </VCol>
 
                 <VCol cols="12" md="6">
