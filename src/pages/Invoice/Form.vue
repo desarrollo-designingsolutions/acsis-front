@@ -288,7 +288,7 @@ onUnmounted(() => {
                 <VCardText>
                   <VRow>
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Prestador" v-model="form.service_vendor_id"
+                      <AppSelectRemote :disabled="disabledFiledsView" label="Prestador" v-model="form.service_vendor_id"
                         url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" :requiredField="true"
                         :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
                         :itemsData="serviceVendors_arrayInfo" :firstFetch="false">
@@ -296,22 +296,23 @@ onUnmounted(() => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Entidad" v-model="form.entity_id" url="/selectInfiniteEntities"
-                        arrayInfo="entities" :requiredField="true" :rules="[requiredValidator]" clearable
-                        :params="paramsSelectInfinite" :itemsData="entities_arrayInfo" :firstFetch="false">
+                      <AppSelectRemote :disabled="disabledFiledsView" label="Entidad" v-model="form.entity_id"
+                        url="/selectInfiniteEntities" arrayInfo="entities" :requiredField="true"
+                        :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
+                        :itemsData="entities_arrayInfo" :firstFetch="false">
                       </AppSelectRemote>
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <SelectPatientForm :requiredField="true" label="Paciente" v-model="form.patient_id"
-                        :itemsData="patients_arrayInfo" :firstFetch="false" :error-messages="errorsBack.patient_id"
-                        @update:modelValue="errorsBack.patient_id = ''" />
+                      <SelectPatientForm :disabled="disabledFiledsView" :requiredField="true" label="Paciente"
+                        v-model="form.patient_id" :itemsData="patients_arrayInfo" :firstFetch="false"
+                        :error-messages="errorsBack.patient_id" @update:modelValue="errorsBack.patient_id = ''" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppSelectRemote label="Tipo Nota" v-model="form.tipo_nota_id" url="/selectInfinitetipoNota"
-                        arrayInfo="tipoNotas" clearable :params="paramsSelectInfinite" :itemsData="tipoNotas_arrayInfo"
-                        :firstFetch="false" :error-messages="errorsBack.note_number"
+                      <AppSelectRemote :disabled="disabledFiledsView" label="Tipo Nota" v-model="form.tipo_nota_id"
+                        url="/selectInfinitetipoNota" arrayInfo="tipoNotas" clearable :params="paramsSelectInfinite"
+                        :itemsData="tipoNotas_arrayInfo" :firstFetch="false" :error-messages="errorsBack.note_number"
                         @input="errorsBack.note_number = ''">
                       </AppSelectRemote>
                     </VCol>
