@@ -23,11 +23,12 @@ const optionsFilter = ref({
     width: 500,
     inputs: [
       {
-        name: "is_active",
+        name: "status",
         label: "Estado",
-        type: "booleanActive",
+        type: "selectApi",
         value: null,
-        placeholder: "Ingrese valor"
+        url: "/selectStatusInvoiceEnum",
+        arrayInfo: "statusInvoiceEnum",
       },
       {
         type: "dateRange",
