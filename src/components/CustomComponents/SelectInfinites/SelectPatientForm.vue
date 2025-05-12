@@ -62,7 +62,7 @@ const openModalFormView = async (id = null) => {
 <template>
   <div>
     <AppSelectRemote :key="selectKey" closable-chips class="mt-1" url="/selectInfinitePatients" :loading="isLoading"
-      returnObject @update:modelValue="emit('update:modelValue', $event)" v-model="valueAppSelectRemote"
+      returnObject v-model="valueAppSelectRemote" @update:modelValue="emit('update:modelValue', $event)"
       arrayInfo="patients" clearable v-bind="{
         ...$attrs,
         id: elementId,

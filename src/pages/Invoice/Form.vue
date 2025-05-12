@@ -31,6 +31,7 @@ const serviceVendors_arrayInfo = ref([])
 const entities_arrayInfo = ref([])
 const tipoNotas_arrayInfo = ref([])
 const patients_arrayInfo = ref([])
+const statusInvoiceEnum_arrayInfo = ref([])
 
 const form = ref({
   id: null as string | null,
@@ -49,6 +50,7 @@ const form = ref({
   total: null as string | null,
   invoice_date: null as string | null,
   radication_date: null as string | null,
+  status: null as string | null,
 })
 
 const soat = ref({
@@ -74,7 +76,7 @@ const fetchDataForm = async () => {
 
   form.value.id = route.params.id || null
 
-  const url = form.value.id ? `/invoice/${route.params.type}/${form.value.id}/edit` : `/invoice/${route.params.type}/create`
+  const url = form.value.id ? `/invoice/${form.value.id}/edit` : `/invoice/create`
 
   loading.form = true
   const { response, data } = await useAxios(url).get({
@@ -91,11 +93,15 @@ const fetchDataForm = async () => {
     entities_arrayInfo.value = data.entities_arrayInfo
     tipoNotas_arrayInfo.value = data.tipoNotas_arrayInfo
     patients_arrayInfo.value = data.patients_arrayInfo
+    statusInvoiceEnum_arrayInfo.value = data.statusInvoiceEnum_arrayInfo
 
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
-      soat.value = cloneObject(data?.soat)
+
+      if (form.value.type == 'INVOICE_TYPE_002') {
+        soat.value = cloneObject(data?.infoDataExtra)
+      }
 
       totalValuePaid.value = currencyFormat(formatToCurrencyFormat(form.value.value_paid));
       totalValueTotal.value = currencyFormat(formatToCurrencyFormat(form.value.total));
@@ -113,9 +119,15 @@ const fetchDataForm = async () => {
 
 const submitForm = async () => {
   const validation = await formValidation.value?.validate()
+
+  if (!isObject(form.value.patient_id)) {
+    errorsBack.value.patient_id = 'El campo es obligatorio'
+    return false
+  }
+
   if (validation?.valid) {
 
-    const url = form.value.id ? `/invoice/${route.params.type}/update/${form.value.id}` : `/invoice/${route.params.type}/store`
+    const url = form.value.id ? `/invoice/update/${form.value.id}` : `/invoice/store`
 
     form.value.company_id = authenticationStore.company.id;
 
@@ -142,7 +154,10 @@ const submitForm = async () => {
     if (response.status == 200 && data) {
 
       form.value.id = data.form.id
-      soat.value.id = data.soat.id
+
+      if (form.value.type == 'INVOICE_TYPE_002') {
+        soat.value.id = data.infoDataExtra.id
+      }
 
       router.replace({ name: "Invoice-Form", params: { type: data.form.type, id: data.form.id } });
 
@@ -161,9 +176,6 @@ if (route.params.action == 'view') disabledFiledsView.value = true
 
 onMounted(async () => {
   clearForm()
-
-  form.value.total = '0,00';
-  form.value.value_paid = '0,00';
 
   await fetchDataForm()
 })
@@ -253,6 +265,8 @@ const stopListening = () => {
 onUnmounted(() => {
   stopListening();
 });
+
+
 </script>
 
 
@@ -289,14 +303,16 @@ onUnmounted(() => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <SelectPatientForm :rules="[requiredValidator]" :requiredField="true" label="Paciente"
-                        v-model="form.patient_id" :itemsData="patients_arrayInfo" :firstFetch="false" />
+                      <SelectPatientForm :requiredField="true" label="Paciente" v-model="form.patient_id"
+                        :itemsData="patients_arrayInfo" :firstFetch="false" :error-messages="errorsBack.patient_id"
+                        @update:modelValue="errorsBack.patient_id = ''" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
                       <AppSelectRemote label="Tipo Nota" v-model="form.tipo_nota_id" url="/selectInfinitetipoNota"
                         arrayInfo="tipoNotas" clearable :params="paramsSelectInfinite" :itemsData="tipoNotas_arrayInfo"
-                        :firstFetch="false">
+                        :firstFetch="false" :error-messages="errorsBack.note_number"
+                        @input="errorsBack.note_number = ''">
                       </AppSelectRemote>
                     </VCol>
 
@@ -306,28 +322,38 @@ onUnmounted(() => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="[requiredValidator]"
-                        v-model="form.invoice_number" label="Número de Factura"
-                        :error-messages="errorsBack.invoice_number" @input="errorsBack.invoice_number = ''" clearable />
+                      <AppSelect :items="statusInvoiceEnum_arrayInfo" v-model="form.status" label="Estado"
+                        :error-messages="errorsBack.note_number" @input="errorsBack.note_number = ''" clearable
+                        :requiredField="true" :rules="[requiredValidator]"></AppSelect>
                     </VCol>
 
-                    <VCol cols="12" sm="4">
-                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.radication_number"
-                        label="Número de Radicado" :error-messages="errorsBack.radication_number"
-                        @input="errorsBack.radication_number = ''" clearable />
-                    </VCol>
 
-                    <VCol cols="12" sm="4">
+                    <VCol cols="12" sm="3">
                       <AppDateTimePicker clearable :requiredField="true" label="Fecha Factura"
                         v-model="form.invoice_date" :error-messages="errorsBack.invoice_date"
                         :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
                     </VCol>
 
-                    <VCol cols="12" sm="4">
+                    <VCol cols="12" sm="3">
+                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="[requiredValidator]"
+                        v-model="form.invoice_number" label="Número de Factura"
+                        :error-messages="errorsBack.invoice_number" @input="errorsBack.invoice_number = ''" clearable />
+                    </VCol>
+
+                    <VCol cols="12" sm="3">
                       <AppDateTimePicker clearable :requiredField="true" label="Fecha Radicación"
                         v-model="form.radication_date" :error-messages="errorsBack.radication_date"
                         :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
                     </VCol>
+
+                    <VCol cols="12" sm="3">
+                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.radication_number"
+                        label="Número de Radicado" :error-messages="errorsBack.radication_number"
+                        @input="errorsBack.radication_number = ''" clearable />
+                    </VCol>
+
+
+
 
                     <VCol cols="12" sm="3">
                       <FormatCurrency disabled label="Valor Glosado" v-model="totalValueGlosa"

@@ -48,14 +48,15 @@ const optionsTable = {
   headers: [
     { key: 'entity_name', title: 'Entidad' },
     { key: 'invoice_number', title: 'Factura No.' },
-    { key: 'type_name', title: 'Tipo Factura' },
+    { key: 'type', title: 'Tipo Factura' },
     { key: "value_paid", title: 'Valor Pagado', width: '150px', minWidth: '100px' },
     { key: "value_glosa", title: 'Valor Glosa' },
     { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
-    { key: "is_active", title: 'Estado', },
+    { key: "status", title: 'Estado', },
     { key: 'actions', title: 'Acciones', sortable: false },
   ],
+
   actions: {
     changeStatus: {
       url: "/invoice/changeStatus"
@@ -171,6 +172,16 @@ onMounted(() => {
           @update:loading="tableLoading = $event">
 
 
+          <template #item.type="{ item }">
+            <div>
+              <VChip>{{ item.type_description }}</VChip>
+            </div>
+          </template>
+          <template #item.status="{ item }">
+            <div>
+              <VChip>{{ item.status_description }}</VChip>
+            </div>
+          </template>
 
         </TableFull>
 

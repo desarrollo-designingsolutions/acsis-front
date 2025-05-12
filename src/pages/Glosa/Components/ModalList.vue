@@ -31,17 +31,16 @@ const handleDialogVisible = () => {
   handleClearForm()
 };
 
-const openModal = async ({ id, cups_rip_nombre, cups_rip_codigo, total_value_origin, showBtnsView }: any, disabled: boolean = false) => {
+const openModal = async ({ id, nombre_servicio, codigo_servicio, total_value_origin, showBtnsView }: any, disabled: boolean = false) => {
   disabledFiledsView.value = disabled
   btnsView.value = showBtnsView
 
-  handleDialogVisible();
+  handleDialogVisible(); 
 
   form.value.id = id;
   form.value.total_value_origin = total_value_origin;
-  titleModal.value = `Listado de Glosas: ${cups_rip_nombre} - ${cups_rip_codigo}`
-
-  console.log("total_value_origin", total_value_origin);
+  titleModal.value = `Listado de Glosas: ${codigo_servicio} - ${nombre_servicio}`
+ 
 
 };
 
