@@ -200,9 +200,8 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppFileInput :requiredField="!form.id" label="Archivo Adjunto"
-                  :label2="item.file ? '1 archivo agregado' : ''" clearable :key="index"
-                  @update:model-value="changeFile($event, item)" />
+                <AppFileInput label="Archivo Adjunto" :label2="item.file ? '1 archivo agregado' : ''" clearable
+                  :key="index" @update:model-value="changeFile($event, item)" />
               </VCol>
 
               <VCol cols="12" md="6">

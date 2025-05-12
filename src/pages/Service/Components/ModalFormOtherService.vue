@@ -203,14 +203,14 @@ const changeCodTecnologiaSalud = (event) => {
                   @input="errorsBack.fechaSuministroTecnologia = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="tipoOS" v-model="form.tipoOS_id" :rules="[requiredValidator]"
+                <AppSelectRemote clearable label="tipoOS" v-model="form.tipoOS_id"
                   :error-messages="errorsBack.tipoOS_id" @input="errorsBack.tipoOS_id = ''"
                   :disabled="disabledFiledsView" url="/selectInfiniteTipoOtrosServicios" array-info="tipoOtrosServicios"
                   :itemsData="tipoOtrosServicios_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
                   @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
                   :firstFetch="false" @update:model-value="changeCodTecnologiaSalud" />
@@ -242,9 +242,8 @@ const changeCodTecnologiaSalud = (event) => {
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
-                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
+                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
               </VCol>
 
