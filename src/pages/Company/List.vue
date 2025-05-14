@@ -66,8 +66,8 @@ const goViewCreate = () => {
 
 
 
-const selectCompany = (company: object) => {
-  authenticationStore.company = company;
+const selectCompany = (company: { id: null }) => {
+  authenticationStore.company = { id: company.id };
   router.push({ name: "Home" });
 };
 
