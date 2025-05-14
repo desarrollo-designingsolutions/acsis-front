@@ -128,6 +128,35 @@ onMounted(() => {
   fetchDataBtn();
 })
 
+
+const downloadJson = async (id:string,invoice_number:string) => {
+  try { 
+
+    // Hacer la solicitud GET al endpoint
+    const response = await useAxios(`/invoice/downloadJson/${id}`).get({
+      responseType: 'blob', // Indicar que esperamos un archivo binario
+    });
+
+    // Crear un Blob a partir de la respuesta
+    const blob = new Blob([response.data], { type: 'application/json' });
+
+    // Crear un enlace temporal para la descarga
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${invoice_number}.json`); // Nombre del archivo
+    document.body.appendChild(link);
+    link.click();
+
+    // Limpiar
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+ 
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error); 
+  }
+};
+
 </script>
 
 <template>
@@ -183,6 +212,13 @@ onMounted(() => {
             <div>
               <VChip>{{ item.status_description }}</VChip>
             </div>
+          </template>
+
+          
+          <template #item.actions2="{ item }">
+            <VListItem @click="downloadJson(item.id,item.invoice_number)">
+                Descargar Json
+              </VListItem>
           </template>
 
         </TableFull>
