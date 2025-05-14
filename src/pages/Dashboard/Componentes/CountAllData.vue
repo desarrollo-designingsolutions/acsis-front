@@ -96,11 +96,11 @@ onMounted(() => {
     <VCol cols="12" class="mb-4">
       <VRow>
         <VCol cols="12" md="4">
-          <VTextField clearable v-model="startDate" label="Fecha de inicio" type="date" variant="outlined"
+          <AppTextField clearable v-model="startDate" label="Fecha de inicio" type="date" variant="outlined"
             :max="endDate" />
         </VCol>
         <VCol cols="12" md="4">
-          <VTextField clearable v-model="endDate" label="Fecha de fin" type="date" variant="outlined"
+          <AppTextField clearable v-model="endDate" label="Fecha de fin" type="date" variant="outlined"
             :min="startDate" />
         </VCol>
         <VCol cols="12" md="4" class="d-flex align-center">

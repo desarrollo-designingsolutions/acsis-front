@@ -128,9 +128,8 @@ onMounted(() => {
   fetchDataBtn();
 })
 
-
-const downloadJson = async (id:string,invoice_number:string) => {
-  try { 
+const downloadJson = async (id: string, invoice_number: string) => {
+  try {
 
     // Hacer la solicitud GET al endpoint
     const response = await useAxios(`/invoice/downloadJson/${id}`).get({
@@ -151,9 +150,9 @@ const downloadJson = async (id:string,invoice_number:string) => {
     // Limpiar
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
- 
+
   } catch (error) {
-    console.error('Error al descargar el archivo:', error); 
+    console.error('Error al descargar el archivo:', error);
   }
 };
 
@@ -214,11 +213,14 @@ const downloadJson = async (id:string,invoice_number:string) => {
             </div>
           </template>
 
-          
+
           <template #item.actions2="{ item }">
-            <VListItem @click="downloadJson(item.id,item.invoice_number)">
-                Descargar Json
-              </VListItem>
+            <VListItem @click="downloadJson(item.id, item.invoice_number)">
+              <template #prepend>
+                <VIcon icon="tabler-json"></VIcon>
+              </template>
+              Descargar Json
+            </VListItem>
           </template>
 
         </TableFull>

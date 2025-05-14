@@ -61,7 +61,7 @@ const chartOptions = computed(() => {
       horizontalAlign: 'center',
       labels: {
         colors: labelColor,
-        fontSize: '13px',
+        fontSize: '23px',
         fontFamily: 'Public Sans',
       },
       formatter: (seriesName: string, opts: any) => {
@@ -119,7 +119,7 @@ const series = computed(() => distribution.value.counts)
 </script>
 
 <template>
-  <VCard title="Distribución por Estado" subtitle="Distribución de facturas por estado actual">
+  <VCard title="Distribución por Estado" subtitle="">
     <VCardText>
       <VueApexCharts :options="chartOptions" :series="series" type="donut" height="350" />
     </VCardText>
