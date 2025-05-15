@@ -58,7 +58,7 @@ const optionsTable = {
     { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
     { key: "status", title: 'Estado', },
-    { key: "status_xml", title: 'Estado XML', },
+    // { key: "status_xml", title: 'Estado XML', },
     { key: 'actions', title: 'Acciones', sortable: false },
   ],
 
@@ -169,11 +169,11 @@ const echoChannel = () => {
 
         console.log("event listado", event);
 
-        element.status_xml = event.status_xml
-        element.status_xml_backgroundColor = event.status_xml_backgroundColor
-        element.status_xml_description = event.status_xml_description
+        // element.status_xml = event.status_xml
+        // element.status_xml_backgroundColor = event.status_xml_backgroundColor
+        // element.status_xml_description = event.status_xml_description
 
-        element.path_xml = event.path_xml
+        // element.path_xml = event.path_xml
 
       });
   });
@@ -249,11 +249,6 @@ const downloadFileData = async (file: any) => {
           <template #item.status="{ item }">
             <div>
               <VChip>{{ item.status_description }}</VChip>
-            </div>
-          </template>
-          <template #item.status_xml="{ item }">
-            <div>
-              <VChip :color="item.status_xml_backgroundColor">{{ item.status_xml_description }}</VChip>
             </div>
           </template>
 
