@@ -249,6 +249,12 @@ const downloadFileData = async (file: any) => {
             </div>
           </template>
 
+          <template #item.status_xml="{ item }">
+            <div>
+              <VChip :color="item.status_xml_backgroundColor">{{ item.status_xml_description }}</VChip>
+            </div>
+          </template>
+
 
           <template #item.actions2="{ item }">
             <VListItem @click="downloadJson(item.id, item.invoice_number)">
