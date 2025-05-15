@@ -38,9 +38,9 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async (invoice_id: string, validationXml?: ValidationError[]) => {
+const openModal = async (invoice_id: string) => {
   handleDialogVisible();
-  objData.value = { invoice_id, validationXml };
+  objData.value = { invoice_id };
   await init();
 };
 
@@ -50,17 +50,13 @@ const errorMessages = ref<ValidationError[]>([]);
 
 const init = async () => {
   try {
-    if (objData.value.validationXml && Array.isArray(objData.value.validationXml)) {
-      errorMessages.value = objData.value.validationXml;
+    errorMessages.value = [];
+    loading.getData = true;
+    const { data, response } = await useAxios(`/invoice/showErrorsValidationXml/${objData.value.invoice_id}`).get();
+    if (response.status === 200 && data?.errorMessages && Array.isArray(data.errorMessages)) {
+      errorMessages.value = data.errorMessages;
     } else {
-      errorMessages.value = [];
-      loading.getData = true;
-      const { data, response } = await useAxios(`/invoice/showErrorsValidationXml/${objData.value.invoice_id}`).get();
-      if (response.status === 200 && data?.errorMessages && Array.isArray(data.errorMessages)) {
-        errorMessages.value = data.errorMessages;
-      } else {
-        console.error("No se encontraron mensajes de error en la respuesta");
-      }
+      console.error("No se encontraron mensajes de error en la respuesta");
     }
   } catch (error) {
     console.error("Error al cargar errores de validación:", error);
@@ -72,7 +68,6 @@ const init = async () => {
 
 // Headers para la tabla
 const inputsTableFilter = [
-  { title: "Proceso", key: "type" },
   { title: "Tipo de Validación", key: "validacion_type_Y" },
   { title: "Num Factura", key: "num_invoice" },
   { title: "Archivo", key: "file" },
@@ -95,9 +90,7 @@ const search = ref("");
 const downloadExcel = async () => {
   try {
     loading.excel = true;
-    const { data, response } = await useAxios("/invoice/excelErrorsValidation").post({
-      id: objData.value.invoice_id,
-    });
+    const { data, response } = await useAxios(`/invoice/excelErrorsValidationXml/${objData.value.invoice_id}`).get();
     if (response.status === 200 && data?.excel) {
       downloadExcelBase64(data.excel, "Lista de errores de validación");
     } else {

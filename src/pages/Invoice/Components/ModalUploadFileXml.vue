@@ -59,7 +59,7 @@ const submitForm = async () => {
       handleDialogVisible();
 
       if (data.invoice.status_xml == 'INVOICE_STATUS_XML_002') {
-        openModalErrorsXml(data.invoice.id, data.validationXml);
+        openModalErrorsXml(data.invoice.id);
       }
     }
   } else {
@@ -93,8 +93,8 @@ watch(error, (newError) => {
 
 // ModalErrorsXml
 const refModalErrorsXml = ref();
-const openModalErrorsXml = (invoice_id: string, validationXml?: any) => {
-  refModalErrorsXml.value.openModal(invoice_id, validationXml);
+const openModalErrorsXml = (invoice_id: string) => {
+  refModalErrorsXml.value.openModal(invoice_id);
 };
 
 // Modificar el click handler del drop zone
