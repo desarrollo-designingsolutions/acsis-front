@@ -61,7 +61,6 @@ const optionsTable = {
     { key: "status_xml", title: 'Estado XML', },
     { key: 'actions', title: 'Acciones', sortable: false },
   ],
-
   actions: {
     changeStatus: {
       url: "/invoice/changeStatus"
