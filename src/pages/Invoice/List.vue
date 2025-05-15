@@ -167,8 +167,6 @@ const echoChannel = () => {
     window.Echo.channel(`invoice.${element.id}`)
       .listen('InvoiceRowUpdatedNow', (event: any) => {
 
-        console.log("event listado", event);
-
         element.status_xml = event.status_xml
         element.status_xml_backgroundColor = event.status_xml_backgroundColor
         element.status_xml_description = event.status_xml_description
@@ -265,10 +263,16 @@ const downloadFileData = async (file: any) => {
               </template>
               Descargar Json
             </VListItem>
-            <VListItem @click="downloadFileData(item.path_xml)">
+            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadFileData(item.path_xml)">
+              <template #prepend>
+                <VIcon icon="tabler-download"></VIcon>
+              </template>
               Descargar XML
             </VListItem>
-            <VListItem @click="openModalUploadFileXml(item)">
+            <VListItem v-if="item.status_xml != 'INVOICE_STATUS_XML_003'" @click="openModalUploadFileXml(item)">
+              <template #prepend>
+                <VIcon icon="tabler-upload"></VIcon>
+              </template>
               Subir XML
             </VListItem>
           </template>
