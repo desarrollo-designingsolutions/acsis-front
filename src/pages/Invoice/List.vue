@@ -58,7 +58,7 @@ const optionsTable = {
     { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
     { key: "status", title: 'Estado', },
-    // { key: "status_xml", title: 'Estado XML', },
+    { key: "status_xml", title: 'Estado XML', },
     { key: 'actions', title: 'Acciones', sortable: false },
   ],
   actions: {
