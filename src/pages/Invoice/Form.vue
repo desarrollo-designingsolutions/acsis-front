@@ -264,37 +264,6 @@ onUnmounted(() => {
   stopListening();
 });
 
-
-const downloadJson = async () => {
-  try {
-    loading.form = true;
-
-    // Hacer la solicitud GET al endpoint
-    const response = await useAxios(`/invoice/downloadJson/${form.value.id}`).get({
-      responseType: 'blob', // Indicar que esperamos un archivo binario
-    });
-
-    // Crear un Blob a partir de la respuesta
-    const blob = new Blob([response.data], { type: 'application/json' });
-
-    // Crear un enlace temporal para la descarga
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${form.value.invoice_number}.json`); // Nombre del archivo
-    document.body.appendChild(link);
-    link.click();
-
-    // Limpiar
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
-
-    loading.form = false;
-  } catch (error) {
-    console.error('Error al descargar el archivo:', error);
-    loading.form = false;
-  }
-};
 </script>
 
 
@@ -448,9 +417,6 @@ const downloadJson = async () => {
           Más Acciones
           <VMenu activator="parent">
             <VList>
-              <VListItem @click="downloadJson()">
-                Descargar Json
-              </VListItem>
               <VListItem @click="openModalListInvoicePayment()">
                 Pagos
               </VListItem>

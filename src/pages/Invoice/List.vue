@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ModalUploadFileXml from "@/pages/Invoice/Components/ModalUploadFileXml.vue";
+
 import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
@@ -56,6 +58,7 @@ const optionsTable = {
     { key: "radication_date", title: 'Fecha Radicación', },
     { key: "patient_name", title: 'Paciente', },
     { key: "status", title: 'Estado', },
+    { key: "status_xml", title: 'Estado XML', },
     { key: 'actions', title: 'Acciones', sortable: false },
   ],
 
@@ -156,6 +159,39 @@ const downloadJson = async (id: string, invoice_number: string) => {
   }
 };
 
+
+
+const echoChannel = () => {
+
+  refTableFull.value.options.tableData.forEach(element => {
+    window.Echo.channel(`invoice.${element.id}`)
+      .listen('InvoiceRowUpdatedNow', (event: any) => {
+
+        console.log("event listado", event);
+
+        element.status_xml = event.status_xml
+        element.status_xml_backgroundColor = event.status_xml_backgroundColor
+        element.status_xml_description = event.status_xml_description
+
+        element.path_xml = event.path_xml
+
+      });
+  });
+}
+
+//ModalUploadFileXml
+const refModalUploadFileXml = ref()
+
+const openModalUploadFileXml = (item: any) => {
+  refModalUploadFileXml.value.openModal(item)
+}
+
+//descarga de XML
+const downloadFileData = async (file: any) => {
+  const filePath = storageBack(file);
+  descargarArchivo(filePath);
+};
+
 </script>
 
 <template>
@@ -187,6 +223,9 @@ const downloadJson = async (id: string, invoice_number: string) => {
               </VList>
             </VMenu>
           </VBtn>
+          <VBtn color="primary">
+            Cargar Json
+          </VBtn>
         </div>
       </VCardTitle>
 
@@ -199,7 +238,7 @@ const downloadJson = async (id: string, invoice_number: string) => {
       <VCardText class="mt-2">
 
         <TableFull ref="refTableFull" :options="optionsTable" @edit="goViewEdit" @view="goViewView"
-          @update:loading="tableLoading = $event">
+          @update:loading="tableLoading = $event" @dataFetched="echoChannel">
 
 
           <template #item.type="{ item }">
@@ -212,6 +251,11 @@ const downloadJson = async (id: string, invoice_number: string) => {
               <VChip>{{ item.status_description }}</VChip>
             </div>
           </template>
+          <template #item.status_xml="{ item }">
+            <div>
+              <VChip :color="item.status_xml_backgroundColor">{{ item.status_xml_description }}</VChip>
+            </div>
+          </template>
 
 
           <template #item.actions2="{ item }">
@@ -221,6 +265,12 @@ const downloadJson = async (id: string, invoice_number: string) => {
               </template>
               Descargar Json
             </VListItem>
+            <VListItem @click="downloadFileData(item.path_xml)">
+              Descargar XML
+            </VListItem>
+            <VListItem @click="openModalUploadFileXml(item)">
+              Subir XML
+            </VListItem>
           </template>
 
         </TableFull>
@@ -228,5 +278,8 @@ const downloadJson = async (id: string, invoice_number: string) => {
 
       </VCardText>
     </VCard>
+
+    <ModalUploadFileXml ref="refModalUploadFileXml" />
+
   </div>
 </template>
