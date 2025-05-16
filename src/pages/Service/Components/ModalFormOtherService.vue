@@ -138,12 +138,6 @@ const positiveValidator = (value: number | string) => {
   return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
 };
 
-// Utility functions
-const parseEuropeanNumber = (value: string): number => {
-  if (!value) return 0;
-  return parseFloat(value.replace(/\./g, '').replace(',', '.'));
-};
-
 const dataReal = (data: any, field: string) => {
   dataCalculate[field] = data;
 };
