@@ -55,6 +55,7 @@ declare module 'vue-router/auto-routes' {
     'service-components-modal-form-medical-consultation': RouteRecordInfo<'service-components-modal-form-medical-consultation', '/Service/Components/ModalFormMedicalConsultation', Record<never, never>, Record<never, never>>,
     'service-components-modal-form-other-service': RouteRecordInfo<'service-components-modal-form-other-service', '/Service/Components/ModalFormOtherService', Record<never, never>, Record<never, never>>,
     'service-components-modal-form-service': RouteRecordInfo<'service-components-modal-form-service', '/Service/Components/ModalFormService', Record<never, never>, Record<never, never>>,
+    'service-components-modal-form-urgency': RouteRecordInfo<'service-components-modal-form-urgency', '/Service/Components/ModalFormUrgency', Record<never, never>, Record<never, never>>,
     'ServiceVendor-List': RouteRecordInfo<'ServiceVendor-List', '/ServiceVendor/List', Record<never, never>, Record<never, never>>,
     'ServiceVendor-Form': RouteRecordInfo<'ServiceVendor-Form', 'serviceVendor-form/:action/:id?', Record<never, never>, Record<never, never>>,
     'user-access-role-components-modal-form': RouteRecordInfo<'user-access-role-components-modal-form', '/UserAccess/Role/Components/ModalForm', Record<never, never>, Record<never, never>>,
