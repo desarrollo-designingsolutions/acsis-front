@@ -4,6 +4,7 @@ import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
 import ModalFormHospitalization from "@/pages/Service/Components/ModalFormHospitalization.vue";
 import ModalFormMedicalConsultation from "@/pages/Service/Components/ModalFormMedicalConsultation.vue";
 import ModalFormMedicine from "@/pages/Service/Components/ModalFormMedicine.vue";
+import ModalFormNewlyBorn from "@/pages/Service/Components/ModalFormNewlyBorn.vue";
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
 import ModalFormProcedure from "@/pages/Service/Components/ModalFormProcedure.vue";
 import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
@@ -119,6 +120,7 @@ const refModalFormMedicalConsultation = ref()
 const refModalFormUrgency = ref()
 const refModalFormProcedure = ref()
 const refModalFormMedicine = ref()
+const refModalFormNewlyBorn = ref()
 const refModalFormHospitalization = ref()
 
 // Mapeo entre los tipos de servicio y sus referencias a modales
@@ -127,6 +129,7 @@ const serviceModalMap = {
   "SERVICE_TYPE_002": refModalFormProcedure,
   "SERVICE_TYPE_003": refModalFormUrgency,
   "SERVICE_TYPE_004": refModalFormHospitalization,
+  "SERVICE_TYPE_005": refModalFormNewlyBorn,
   "SERVICE_TYPE_006": refModalFormMedicine,
   "SERVICE_TYPE_007": refModalFormOtherService,
 }
@@ -231,6 +234,9 @@ onMounted(() => {
 
     <ModalFormMedicine ref="refModalFormMedicine" @execute="handleForceSearch">
     </ModalFormMedicine>
+
+    <ModalFormNewlyBorn ref="refModalFormNewlyBorn" @execute="handleForceSearch">
+    </ModalFormNewlyBorn>
 
     <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
 
