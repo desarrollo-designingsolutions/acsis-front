@@ -188,6 +188,9 @@ onMounted(() => {
               <VList>
                 <VListItem v-for="(item, index) in typeServiceEnumValues" :key="index"
                   @click="openModalFormServiceCreate(item.type)">
+                  <template #prepend>
+                    <VIcon start :icon="item.icon" />
+                  </template>
                   {{ item.name }}
                 </VListItem>
               </VList>
