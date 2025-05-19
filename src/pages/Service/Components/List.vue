@@ -2,9 +2,10 @@
 import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
 import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
 import ModalFormMedicalConsultation from "@/pages/Service/Components/ModalFormMedicalConsultation.vue";
+import ModalFormMedicine from "@/pages/Service/Components/ModalFormMedicine.vue";
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
-import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
 import ModalFormProcedure from "@/pages/Service/Components/ModalFormProcedure.vue";
+import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
@@ -116,6 +117,7 @@ const refModalFormOtherService = ref()
 const refModalFormMedicalConsultation = ref()
 const refModalFormUrgency = ref()
 const refModalFormProcedure = ref()
+const refModalFormMedicine = ref()
 
 const openModalFormServiceCreate = (type: string) => {
   if (type == "SERVICE_TYPE_001") {
@@ -126,6 +128,9 @@ const openModalFormServiceCreate = (type: string) => {
   }
   if (type == "SERVICE_TYPE_003") {
     refModalFormUrgency.value.openModal({ invoice_id: invoice_id })
+  }
+  if (type == "SERVICE_TYPE_006") {
+    refModalFormMedicine.value.openModal({ invoice_id: invoice_id })
   }
   if (type == "SERVICE_TYPE_007") {
     refModalFormOtherService.value.openModal({ invoice_id: invoice_id })
@@ -142,6 +147,9 @@ const openModalFormServiceEdit = async (data: any) => {
   if (data.type == "SERVICE_TYPE_003") {
     refModalFormUrgency.value.openModal({ serviceId: data.id, invoice_id: invoice_id })
   }
+  if (data.type == "SERVICE_TYPE_006") {
+    refModalFormMedicine.value.openModal({ serviceId: data.id, invoice_id: invoice_id })
+  }
   if (data.type == "SERVICE_TYPE_007") {
     refModalFormOtherService.value.openModal({ serviceId: data.id, invoice_id: invoice_id })
   }
@@ -156,6 +164,9 @@ const openModalFormServiceView = async (data: any) => {
   }
   if (data.type == "SERVICE_TYPE_003") {
     refModalFormUrgency.value.openModal({ serviceId: data.id, invoice_id: invoice_id }, true)
+  }
+  if (data.type == "SERVICE_TYPE_006") {
+    refModalFormMedicine.value.openModal({ serviceId: data.id, invoice_id: invoice_id }, true)
   }
   if (data.type == "SERVICE_TYPE_007") {
     refModalFormOtherService.value.openModal({ serviceId: data.id, invoice_id: invoice_id }, true)
@@ -233,6 +244,9 @@ onMounted(() => {
 
     <ModalFormProcedure ref="refModalFormProcedure" @execute="handleForceSearch">
     </ModalFormProcedure>
+
+    <ModalFormMedicine ref="refModalFormMedicine" @execute="handleForceSearch">
+    </ModalFormMedicine>
 
     <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
 
