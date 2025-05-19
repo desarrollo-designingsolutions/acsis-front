@@ -40,6 +40,7 @@ const optionsTable = {
   headers: [
     { key: 'codigo_servicio', title: 'Código' },
     { key: 'nombre_servicio', title: 'Descripcion' },
+    { key: 'type', title: 'Tipo' },
     { key: 'quantity', title: 'Cantidad' },
     { key: "unit_value", title: 'Valor Unitario' },
     { key: "total_value", title: 'Valor Total' },
@@ -205,6 +206,12 @@ onMounted(() => {
 
         <TableFull v-model:selected="servicesIds" ref="refTableFull" :options="optionsTable"
           @update:loading="tableLoading = $event" @edit="openModalFormServiceEdit" @view="openModalFormServiceView">
+
+          <template #item.type="{ item }">
+            <div>
+              <VChip>{{ item.type_description }}</VChip>
+            </div>
+          </template>
 
           <template #item.actions2="{ item }">
 

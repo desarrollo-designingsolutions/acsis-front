@@ -12,7 +12,7 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio")
+const titleModal = ref<string>("Servicio: Otros Servicios")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
@@ -138,6 +138,12 @@ const positiveValidator = (value: number | string) => {
   return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
 };
 
+const lessThanVrService = (value: number | string) => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  const vl = Number(form.value.cantidadOS) * dataCalculate.real_vrUnitOS;
+  return isNaN(num) || num > vl ? 'El valor debe ser menor o igual a ' + vl : true;
+};
+
 const dataReal = (data: any, field: string) => {
   dataCalculate[field] = data;
 };
@@ -226,8 +232,9 @@ const changeCodTecnologiaSalud = (event) => {
                   @realValue="dataReal($event, 'real_vrUnitOS')" />
               </VCol>
               <VCol cols="12" md="6">
-                <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                <FormatCurrency clearable label="valorPagoModerador" :rules="[lessThanVrService, positiveValidator]"
+                  v-model="form.valorPagoModerador" :disabled="disabledFiledsView"
+                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"

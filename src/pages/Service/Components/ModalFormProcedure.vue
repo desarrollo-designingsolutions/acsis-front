@@ -12,7 +12,7 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio")
+const titleModal = ref<string>("Servicio: Procedimientos")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
@@ -149,7 +149,13 @@ const submitForm = async () => {
 // Validators
 const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
+  return isNaN(num) || num < 0 ? 'El valor debe ser positivo' : true;
+};
+
+const lessThanVrService = (value: number | string) => {
+  const vrService = dataCalculate.real_vrServicio;
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  return isNaN(num) || vrService < num ? 'El valor debe ser menor o igual a ' + vrService : true;
 };
 
 const dataReal = (data: any, field: string) => {
@@ -256,7 +262,6 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado" v-model="form.codDiagnosticoRelacionado_id"
-                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoRelacionado_id"
                   @input="errorsBack.codDiagnosticoRelacionado_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -271,9 +276,9 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :requiredField="true" :rules="[requiredValidator, positiveValidator]"
-                  :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
-                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :rules="[positiveValidator, lessThanVrService]" :error-messages="errorsBack.valorPagoModerador"
+                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
+                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
@@ -284,9 +289,8 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
-                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
+                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
               </VCol>
 

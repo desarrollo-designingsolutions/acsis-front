@@ -12,7 +12,7 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio")
+const titleModal = ref<string>("Servicio: Consultas")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
@@ -156,7 +156,7 @@ const submitForm = async () => {
 // Validators
 const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
+  return isNaN(num) || num < 0 ? 'El valor debe ser positivo' : true;
 };
 
 const dataReal = (data: any, field: string) => {
@@ -247,21 +247,21 @@ defineExpose({
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado1"
-                  v-model="form.codDiagnosticoRelacionado1_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado1_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado1_id"
                   @input="errorsBack.codDiagnosticoRelacionado1_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado2"
-                  v-model="form.codDiagnosticoRelacionado2_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado2_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado2_id"
                   @input="errorsBack.codDiagnosticoRelacionado2_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado3"
-                  v-model="form.codDiagnosticoRelacionado3_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado3_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado3_id"
                   @input="errorsBack.codDiagnosticoRelacionado3_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -277,9 +277,9 @@ defineExpose({
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :requiredField="true" :rules="[requiredValidator, positiveValidator]"
-                  :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
-                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :rules="[positiveValidator]" :error-messages="errorsBack.valorPagoModerador"
+                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
+                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"

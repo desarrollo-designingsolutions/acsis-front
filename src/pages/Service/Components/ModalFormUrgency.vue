@@ -12,13 +12,14 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio")
+const titleModal = ref<string>("Servicio: Urgencias")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 
 const cie10_arrayInfo = ref([])
 const ripsCausaExternaVersion2_arrayInfo = ref([])
+const cupsRips_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 
@@ -27,6 +28,7 @@ const form = ref({
   invoice_id: null as string | null,
 
   fechaInicioAtencion: null as string | null,
+  codigo_urgencia_id: null as string | null,
   causaMotivoAtencion_id: null as string | null,
   codDiagnosticoPrincipal_id: null as string | null,
   codDiagnosticoPrincipalE_id: null as string | null,
@@ -73,6 +75,7 @@ const fetchDataForm = async () => {
 
       cie10_arrayInfo.value = data.cie10_arrayInfo
       ripsCausaExternaVersion2_arrayInfo.value = data.ripsCausaExternaVersion2_arrayInfo
+      cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -142,10 +145,19 @@ defineExpose({
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
+                <AppSelectRemote clearable label="Código Urgencia" v-model="form.codigo_urgencia_id"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codigo_urgencia_id"
+                  @input="errorsBack.codigo_urgencia_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
                   @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
+
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="causaMotivoAtencion" v-model="form.causaMotivoAtencion_id"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.causaMotivoAtencion_id"
@@ -163,28 +175,27 @@ defineExpose({
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoPrincipalE" v-model="form.codDiagnosticoPrincipalE_id"
-                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoPrincipalE_id"
                   @input="errorsBack.codDiagnosticoPrincipalE_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionadoE1"
-                  v-model="form.codDiagnosticoRelacionadoE1_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionadoE1_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionadoE1_id"
                   @input="errorsBack.codDiagnosticoRelacionadoE1_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionadoE2"
-                  v-model="form.codDiagnosticoRelacionadoE2_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionadoE2_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionadoE2_id"
                   @input="errorsBack.codDiagnosticoRelacionadoE2_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionadoE3"
-                  v-model="form.codDiagnosticoRelacionadoE3_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionadoE3_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionadoE3_id"
                   @input="errorsBack.codDiagnosticoRelacionadoE3_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -199,7 +210,6 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoCausaMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
-                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoCausaMuerte_id"
                   @input="errorsBack.codDiagnosticoCausaMuerte_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
