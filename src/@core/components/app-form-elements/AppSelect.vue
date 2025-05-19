@@ -22,9 +22,7 @@ const tooltip = computed(
 
 <template>
   <div class="app-select flex-grow-1" :class="$attrs.class">
-    <!-- <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2" style="line-height: 15px;" :text="label" /> -->
-
-    <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2">
+    <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2 text-high-emphasis">
       {{ label }}
       <span v-if="requiredField">&nbsp; <b class="text-warning">*</b></span>
       <VTooltip v-if="tooltip" :location="tooltip.location ?? 'top'">
