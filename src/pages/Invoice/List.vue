@@ -190,13 +190,28 @@ const downloadFileData = async (file: any) => {
 };
 
 //descarga de ZIP
-const downloadZip = async () => {
-  const { data, response } = await useAxios("/invoice/downloadZip").get()
+const downloadZip = async (id: string, invoice_number: string) => {
+  try {
+    const response = await useAxios(`/invoice/downloadZip/${id}`).get({
+      responseType: 'blob' // Importante para manejar archivos binarios
+    });
 
-  if (response.status == 200 && data) {
+    // Crear URL temporal para el blob
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `factura_${invoice_number}.zip`);
+    document.body.appendChild(link);
+    link.click();
 
+    // Limpiar recursos
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error('Error al descargar ZIP:', error);
   }
-}
+};
 
 </script>
 
@@ -278,7 +293,8 @@ const downloadZip = async () => {
               </template>
               Descargar XML
             </VListItem>
-            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadZip(item.path_xml)">
+            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'"
+              @click="downloadZip(item.id, item.invoice_number)">
               <template #prepend>
                 <VIcon icon="tabler-zip"></VIcon>
               </template>

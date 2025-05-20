@@ -109,6 +109,9 @@ const submitForm = async () => {
     const { data, response } = await useAxios(url).post(payload);
 
     if (response.status === 200 && data.code == 200) {
+      if (!form.value.id) {
+        emit("created")
+      }
       handleDialogVisible();
       emit('execute');
     }
