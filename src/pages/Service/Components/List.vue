@@ -6,6 +6,7 @@ import ModalFormMedicalConsultation from "@/pages/Service/Components/ModalFormMe
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
 import ModalFormProcedure from "@/pages/Service/Components/ModalFormProcedure.vue";
 import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
+import DataUrgeHosBorn from "@/pages/Service/Components/DataUrgeHosBorn.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
@@ -156,10 +157,14 @@ const openModalFormServiceView = (data: any) => {
 onMounted(() => {
   fetchDataBtn()
 })
+
+
+
 </script>
 
 <template>
   <div>
+    <DataUrgeHosBorn class="mb-3" :invoice_id="invoice_id" />
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
         <span>
