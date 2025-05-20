@@ -189,6 +189,15 @@ const downloadFileData = async (file: any) => {
   descargarArchivo(filePath);
 };
 
+//descarga de ZIP
+const downloadZip = async () => {
+  const { data, response } = await useAxios("/invoice/downloadZip").get()
+
+  if (response.status == 200 && data) {
+
+  }
+}
+
 </script>
 
 <template>
@@ -268,6 +277,12 @@ const downloadFileData = async (file: any) => {
                 <VIcon icon="tabler-download"></VIcon>
               </template>
               Descargar XML
+            </VListItem>
+            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadZip(item.path_xml)">
+              <template #prepend>
+                <VIcon icon="tabler-zip"></VIcon>
+              </template>
+              Descargar Carpeta
             </VListItem>
             <VListItem v-if="item.status_xml != 'INVOICE_STATUS_XML_003'" @click="openModalUploadFileXml(item)">
               <template #prepend>
