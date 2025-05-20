@@ -13,7 +13,7 @@ definePage({
   },
 });
 
-const loading = reactive({ excel: false, btnCreate: false })
+const loading = reactive({ excel: false, btnCreate: false, json: false, zip: false })
 const route = useRoute()
 
 const authenticationStore = useAuthenticationStore();
@@ -132,7 +132,7 @@ onMounted(() => {
 
 const downloadJson = async (id: string, invoice_number: string) => {
   try {
-
+    loadingItems[id] = true;
     // Hacer la solicitud GET al endpoint
     const response = await useAxios(`/invoice/downloadJson/${id}`).get({
       responseType: 'blob', // Indicar que esperamos un archivo binario
@@ -155,6 +155,8 @@ const downloadJson = async (id: string, invoice_number: string) => {
 
   } catch (error) {
     console.error('Error al descargar el archivo:', error);
+  } finally {
+    loadingItems[id] = false;
   }
 };
 
@@ -192,6 +194,8 @@ const downloadFileData = async (file: any) => {
 //descarga de ZIP
 const downloadZip = async (id: string, invoice_number: string) => {
   try {
+
+    loadingItems[id] = true;
     const response = await useAxios(`/invoice/downloadZip/${id}`).get({
       responseType: 'blob' // Importante para manejar archivos binarios
     });
@@ -210,8 +214,17 @@ const downloadZip = async (id: string, invoice_number: string) => {
 
   } catch (error) {
     console.error('Error al descargar ZIP:', error);
+  } finally {
+    loadingItems[id] = false;
   }
 };
+
+// Computed que verifica si al menos uno de los valores es true
+const isLoading = computed(() => {
+  return Object.values(loading).some(value => value);
+});
+
+const loadingItems = reactive({});
 
 </script>
 
@@ -279,35 +292,61 @@ const downloadZip = async (id: string, invoice_number: string) => {
             </div>
           </template>
 
-
-          <template #item.actions2="{ item }">
-            <VListItem @click="downloadJson(item.id, item.invoice_number)">
-              <template #prepend>
-                <VIcon icon="tabler-json"></VIcon>
+          <template #item.actions="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn color="primary" v-bind="props" :loading="loadingItems[item.id]" :disabled="loadingItems[item.id]"
+                  append-icon="tabler-chevron-down">
+                  Acciones
+                </VBtn>
               </template>
-              Descargar Json
-            </VListItem>
-            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadFileData(item.path_xml)">
-              <template #prepend>
-                <VIcon icon="tabler-download"></VIcon>
-              </template>
-              Descargar XML
-            </VListItem>
-            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'"
-              @click="downloadZip(item.id, item.invoice_number)">
-              <template #prepend>
-                <VIcon icon="tabler-zip"></VIcon>
-              </template>
-              Descargar Carpeta
-            </VListItem>
-            <VListItem v-if="item.status_xml != 'INVOICE_STATUS_XML_003'" @click="openModalUploadFileXml(item)">
-              <template #prepend>
-                <VIcon icon="tabler-upload"></VIcon>
-              </template>
-              Subir XML
-            </VListItem>
+              <VList>
+                <VListItem @click="goViewView(item)">
+                  <template #prepend>
+                    <VIcon icon="tabler-eye" />
+                  </template>
+                  <span>Ver</span>
+                </VListItem>
+                <VListItem @click="goViewEdit(item)">
+                  <template #prepend>
+                    <VIcon icon="tabler-pencil" />
+                  </template>
+                  <span>Editar</span>
+                </VListItem>
+                <VListItem @click="refTableFull.openDeleteModal(item.id)">
+                  <template #prepend>
+                    <VIcon icon="tabler-trash" />
+                  </template>
+                  <span>Eliminar</span>
+                </VListItem>
+                <VListItem @click="downloadJson(item.id, item.invoice_number)">
+                  <template #prepend>
+                    <VIcon icon="tabler-json"></VIcon>
+                  </template>
+                  Descargar Json
+                </VListItem>
+                <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadFileData(item.path_xml)">
+                  <template #prepend>
+                    <VIcon icon="tabler-download"></VIcon>
+                  </template>
+                  Descargar XML
+                </VListItem>
+                <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'"
+                  @click="downloadZip(item.id, item.invoice_number)">
+                  <template #prepend>
+                    <VIcon icon="tabler-zip"></VIcon>
+                  </template>
+                  Descargar Carpeta
+                </VListItem>
+                <VListItem v-if="item.status_xml != 'INVOICE_STATUS_XML_003'" @click="openModalUploadFileXml(item)">
+                  <template #prepend>
+                    <VIcon icon="tabler-upload"></VIcon>
+                  </template>
+                  Subir XML
+                </VListItem>
+              </VList>
+            </VMenu>
           </template>
-
         </TableFull>
 
 
