@@ -4,13 +4,14 @@ import IErrorsBack from "@/interfaces/Axios/IErrorsBack";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 import type { VForm } from "vuetify/components/VForm";
 
+
 const { toast } = useToast()
 const authenticationStore = useAuthenticationStore();
 const { company } = storeToRefs(authenticationStore)
 
 const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
-const emit = defineEmits(["execute"])
+const emit = defineEmits(["execute", "created"])
 
 const titleModal = ref<string>("Servicio: Urgencias")
 const isDialogVisible = ref<boolean>(false)
@@ -112,8 +113,13 @@ const submitForm = async () => {
     const { data, response } = await useAxios(url).post(payload);
 
     if (response.status === 200 && data.code == 200) {
+      if (!form.value.id) {
+        emit("created")
+      }
       handleDialogVisible();
       emit('execute');
+
+
     }
 
     if (data.code === 422) {
