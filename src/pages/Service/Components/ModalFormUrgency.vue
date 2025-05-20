@@ -20,6 +20,7 @@ const isLoading = ref<boolean>(false)
 const cie10_arrayInfo = ref([])
 const ripsCausaExternaVersion2_arrayInfo = ref([])
 const cupsRips_arrayInfo = ref([])
+const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 
@@ -28,7 +29,6 @@ const form = ref({
   invoice_id: null as string | null,
 
   fechaInicioAtencion: null as string | null,
-  codigo_urgencia_id: null as string | null,
   causaMotivoAtencion_id: null as string | null,
   codDiagnosticoPrincipal_id: null as string | null,
   codDiagnosticoPrincipalE_id: null as string | null,
@@ -38,6 +38,9 @@ const form = ref({
   condicionDestinoUsuarioEgreso: null as string | null,
   codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
+  tipoDocumentoIdentificacion_id: null as string | null,
+  numDocumentoIdentificacion: null as string | null,
+  numFEVPagoModerador: null as string | null,
 })
 
 const handleClearForm = () => {
@@ -76,6 +79,7 @@ const fetchDataForm = async () => {
       cie10_arrayInfo.value = data.cie10_arrayInfo
       ripsCausaExternaVersion2_arrayInfo.value = data.ripsCausaExternaVersion2_arrayInfo
       cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
+      tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -144,13 +148,6 @@ defineExpose({
         <VCardText class="pt-6">
           <VForm ref="refForm" @submit.prevent>
             <VRow>
-              <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="Código Urgencia" v-model="form.codigo_urgencia_id"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codigo_urgencia_id"
-                  @input="errorsBack.codigo_urgencia_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
-                  :firstFetch="false" />
-              </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
@@ -219,6 +216,28 @@ defineExpose({
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
                   @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppSelectRemote clearable label="Tipo documento persona realiza/ordena servicio"
+                  v-model="form.tipoDocumentoIdentificacion_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
+                  @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="Número documento persona realiza/ordena servicio"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numFEVPagoModerador"
+                  @input="errorsBack.numFEVPagoModerador = ''" :disabled="disabledFiledsView" />
               </VCol>
             </VRow>
           </VForm>

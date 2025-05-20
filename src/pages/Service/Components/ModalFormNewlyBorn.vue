@@ -20,6 +20,7 @@ const isLoading = ref<boolean>(false)
 const cie10_arrayInfo = ref([])
 const condicionyDestinoUsuarioEgreso_arrayInfo = ref([])
 const sexos_arrayInfo = ref([])
+const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 
@@ -37,6 +38,9 @@ const form = ref({
   condicionDestinoUsuarioEgreso_id: null as string | null,
   codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
+  tipoDocumentoIdentificacion_id: null as string | null,
+  numDocumentoIdentificacion: null as string | null,
+  numFEVPagoModerador: null as string | null,
 })
 
 const handleClearForm = () => {
@@ -72,6 +76,7 @@ const fetchDataForm = async () => {
       cie10_arrayInfo.value = data.cie10_arrayInfo
       condicionyDestinoUsuarioEgreso_arrayInfo.value = data.condicionyDestinoUsuarioEgreso_arrayInfo
       sexos_arrayInfo.value = data.sexos_arrayInfo
+      tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -205,6 +210,29 @@ defineExpose({
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
                   @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
+              </VCol>
+
+
+              <VCol cols="12" md="6">
+                <AppSelectRemote clearable label="Tipo documento del recien nacido"
+                  v-model="form.tipoDocumentoIdentificacion_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
+                  :params="{ codigo_in: ['CN', 'RC', 'MS'] }" @input="errorsBack.tipoDocumentoIdentificacion_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis"
+                  :itemsData="tipoIdPisis_arrayInfo" :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="Número documento del recien nacido"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numFEVPagoModerador"
+                  @input="errorsBack.numFEVPagoModerador = ''" :disabled="disabledFiledsView" />
               </VCol>
 
             </VRow>

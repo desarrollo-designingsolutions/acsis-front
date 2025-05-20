@@ -68,6 +68,7 @@ const disableUrlUpdate = ref(true);
 // Nuevo método para manejar la búsqueda forzada desde el filtro
 const handleForceSearch = (params) => {
   if (refTableFull.value) {
+    fetchDataBtn();
     // Si disableUrlUpdate está activo, pasamos los parámetros manualmente
     if (disableUrlUpdate.value && params) {
       refTableFull.value.fetchTableData(null, false, true, params);
@@ -106,7 +107,11 @@ const typeServiceEnumValues = ref<Array<{
 const fetchDataBtn = async () => {
   loading.btnCreate = true
 
-  const { data, response } = await useAxios("/service/loadBtnCreate").get()
+  const { data, response } = await useAxios("/service/loadBtnCreate").get({
+    params: {
+      invoice_id: props.invoice_id
+    }
+  });
 
   if (response.status == 200 && data) {
     typeServiceEnumValues.value = data.typeServiceEnumValues;
