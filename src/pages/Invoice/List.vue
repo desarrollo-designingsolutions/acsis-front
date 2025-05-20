@@ -269,6 +269,12 @@ const downloadFileData = async (file: any) => {
               </template>
               Descargar XML
             </VListItem>
+            <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadFileData(item.path_xml)">
+              <template #prepend>
+                <VIcon icon="tabler-zip"></VIcon>
+              </template>
+              Descargar Carpeta
+            </VListItem>
             <VListItem v-if="item.status_xml != 'INVOICE_STATUS_XML_003'" @click="openModalUploadFileXml(item)">
               <template #prepend>
                 <VIcon icon="tabler-upload"></VIcon>

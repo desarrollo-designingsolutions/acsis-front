@@ -104,17 +104,20 @@ const openModalFormServiceCreate = (type: string) => {
 
 const openModalFormServiceEdit = (data: CountData) => {
   if (data.serviceId) {
+    openServiceModal(data.type, { serviceId: data.serviceId, invoice_id: props.invoice_id });
+  }
+};
+const openModalFormServiceView = (data: CountData) => {
+  if (data.serviceId) {
     openServiceModal(data.type, { serviceId: data.serviceId, invoice_id: props.invoice_id }, true);
   }
 };
 
 const confirmDelete = async (data: CountData) => {
   if (data.serviceId) {
-    refModalQuestion.value.openModal({
-      id: data.serviceId,
-      title: `Eliminar ${data.title}`,
-      message: `¿Estás seguro de eliminar el servicio de ${data.title}? Esta acción no se puede deshacer.`
-    });
+    refModalQuestion.value.openModal(data.serviceId);
+    refModalQuestion.value.componentData.title = `Eliminar ${data.title}`
+    refModalQuestion.value.componentData.subTitle = `¿Estás seguro de eliminar el servicio de ${data.title}? Esta acción no se puede deshacer.`
   }
 };
 
@@ -198,6 +201,11 @@ onUnmounted(() => {
                 </VBtn>
 
                 <template v-else>
+                  <VBtn color="warning" variant="outlined" prepend-icon="tabler-eye"
+                    @click.stop="openModalFormServiceView(data)" class="action-btn"
+                    :aria-label="`Visualizar servicio de ${data.title}`">
+                    Visualizar
+                  </VBtn>
                   <VBtn color="warning" variant="outlined" prepend-icon="tabler-pencil"
                     @click.stop="openModalFormServiceEdit(data)" class="action-btn"
                     :aria-label="`Editar servicio de ${data.title}`">
