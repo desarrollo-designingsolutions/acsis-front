@@ -17,6 +17,8 @@ definePage({
 
 const authenticationStore = useAuthenticationStore();
 
+const ipsNoReps_arrayInfo = ref([])
+
 const { toast } = useToast()
 const errorsBack = ref<IErrorsBack>({});
 const disabledFiledsView = ref<boolean>(false);
@@ -33,6 +35,7 @@ const form = ref({
   phone: null as string | null,
   address: null as string | null,
   email: null as string | null,
+  ips_no_rep_id: null as string | null,
 })
 
 const clearForm = () => {
@@ -54,6 +57,7 @@ const fetchDataForm = async () => {
 
   if (response.status == 200 && data) {
     type_vendors.value = data.type_vendors
+    ipsNoReps_arrayInfo.value = data.ipsNoReps_arrayInfo
 
     //formulario 
     if (data.form) {
@@ -196,6 +200,14 @@ const phoneRules = [
                     v-model="form.email" label="Correo de contacto" :error-messages="errorsBack.email"
                     @input="errorsBack.email = ''" />
                 </VCol>
+
+                <VCol sm="4">
+                  <AppSelectRemote clearable label="Código habilitación" v-model="form.ips_no_rep_id"
+                    :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.ips_no_rep_id"
+                    @input="errorsBack.ips_no_rep_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteIpsNoReps"
+                    array-info="ipsNoReps" :itemsData="ipsNoReps_arrayInfo" :firstFetch="false" />
+                </VCol>
+
               </VRow>
             </VForm>
           </VWindowItem>

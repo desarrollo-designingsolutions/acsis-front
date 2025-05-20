@@ -26,7 +26,7 @@ const loading = reactive({
   form: false,
 })
 
-const tipoIdPisiss_arrayInfo = ref([])
+const tipoIdPisis_arrayInfo = ref([])
 const ripsTipoUsuarioVersion2s_arrayInfo = ref([])
 const sexos_arrayInfo = ref([])
 const municipios_arrayInfo = ref([])
@@ -67,7 +67,7 @@ const fetchDataForm = async () => {
   const { response, data } = await useAxios(url).get();
 
   if (response.status == 200 && data) {
-    tipoIdPisiss_arrayInfo.value = data.tipoIdPisiss_arrayInfo
+    tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
     ripsTipoUsuarioVersion2s_arrayInfo.value = data.ripsTipoUsuarioVersion2s_arrayInfo
     sexos_arrayInfo.value = data.sexos_arrayInfo
     municipios_arrayInfo.value = data.municipios_arrayInfo
@@ -139,10 +139,9 @@ const company = authenticationStore.company.id;
         <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
           <VRow>
             <VCol cols="12" sm="4">
-              <AppSelectRemote label="Tipo de Documento" v-model="form.tipo_id_pisi_id"
-                url="/selectInfiniteTipoDocumento" arrayInfo="tipoIdPisiss" :requiredField="true"
-                :rules="[requiredValidator]" clearable :params="company" :itemsData="tipoIdPisiss_arrayInfo"
-                :firstFetch="false">
+              <AppSelectRemote label="Tipo de Documento" v-model="form.tipo_id_pisi_id" url="/selectInfiniteTipoIdPisis"
+                arrayInfo="tipoIdPisis" :requiredField="true" :rules="[requiredValidator]" clearable :params="company"
+                :itemsData="tipoIdPisis_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 

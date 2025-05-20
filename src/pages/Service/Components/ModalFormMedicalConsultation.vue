@@ -12,7 +12,7 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio")
+const titleModal = ref<string>("Servicio: Consultas")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
@@ -26,6 +26,7 @@ const cie10_arrayInfo = ref([])
 const ripsTipoDiagnosticoPrincipalVersion2_arrayInfo = ref([])
 const conceptoRecaudo_arrayInfo = ref([])
 const ripsCausaExternaVersion2_arrayInfo = ref([])
+const tipoIdPisis_arrayInfo = ref([])
 
 
 const service_id = ref<null | string>(null)
@@ -50,6 +51,9 @@ const form = ref({
   valorPagoModerador: null as string | null,
   vrServicio: null as string | null,
   conceptoRecaudo_id: null as string | null,
+  tipoDocumentoIdentificacion_id: null as string | null,
+  numDocumentoIdentificacion: null as string | null,
+  numFEVPagoModerador: null as string | null,
 })
 
 const dataCalculate = reactive({
@@ -76,8 +80,8 @@ const openModal = async ({ serviceId = null, invoice_id }: any | null, disabled:
   form.value.invoice_id = invoice_id;
   service_id.value = serviceId;
 
-  console.log("");
-
+  form.value.valorPagoModerador = '0,00';
+  form.value.vrServicio = '0,00';
 
   await fetchDataForm();
 };
@@ -99,6 +103,7 @@ const fetchDataForm = async () => {
       ripsTipoDiagnosticoPrincipalVersion2_arrayInfo.value = data.ripsTipoDiagnosticoPrincipalVersion2_arrayInfo
       conceptoRecaudo_arrayInfo.value = data.conceptoRecaudo_arrayInfo
       ripsCausaExternaVersion2_arrayInfo.value = data.ripsCausaExternaVersion2_arrayInfo
+      tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
 
 
       if (data.form) {
@@ -156,7 +161,7 @@ const submitForm = async () => {
 // Validators
 const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
+  return isNaN(num) || num < 0 ? 'El valor debe ser positivo' : true;
 };
 
 const dataReal = (data: any, field: string) => {
@@ -167,6 +172,27 @@ const dataReal = (data: any, field: string) => {
 defineExpose({
   openModal
 });
+
+const ruleConceptoRecaudo = computed(() => {
+  if (dataCalculate.real_valorPagoModerador > 0) {
+    return [
+      value => requiredValidator(value),
+    ]
+  }
+  return [];
+})
+
+watch(
+  [() => dataCalculate.real_valorPagoModerador],
+  ([newValorPagoModerador]) => {
+    const valuePagoModerador = newValorPagoModerador || 0;
+    if (valuePagoModerador <= 0) {
+      form.value.numFEVPagoModerador = null;
+      form.value.conceptoRecaudo_id = null;
+    }
+  },
+  { immediate: true }
+);
 
 </script>
 
@@ -247,21 +273,21 @@ defineExpose({
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado1"
-                  v-model="form.codDiagnosticoRelacionado1_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado1_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado1_id"
                   @input="errorsBack.codDiagnosticoRelacionado1_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado2"
-                  v-model="form.codDiagnosticoRelacionado2_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado2_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado2_id"
                   @input="errorsBack.codDiagnosticoRelacionado2_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado3"
-                  v-model="form.codDiagnosticoRelacionado3_id" :requiredField="true" :rules="[requiredValidator]"
+                  v-model="form.codDiagnosticoRelacionado3_id"
                   :error-messages="errorsBack.codDiagnosticoRelacionado3_id"
                   @input="errorsBack.codDiagnosticoRelacionado3_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -277,9 +303,9 @@ defineExpose({
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :requiredField="true" :rules="[requiredValidator, positiveValidator]"
-                  :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
-                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :rules="[positiveValidator]" :error-messages="errorsBack.valorPagoModerador"
+                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
+                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
@@ -290,10 +316,34 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
-                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
+                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
+                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
+                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppSelectRemote clearable label="Tipo documento persona realiza/ordena servicio"
+                  v-model="form.tipoDocumentoIdentificacion_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
+                  @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="Número documento persona realiza/ordena servicio"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
+                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
+                  :error-messages="errorsBack.numFEVPagoModerador" @input="errorsBack.numFEVPagoModerador = ''"
+                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0" />
               </VCol>
 
             </VRow>

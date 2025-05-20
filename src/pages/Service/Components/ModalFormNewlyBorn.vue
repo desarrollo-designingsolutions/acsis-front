@@ -12,14 +12,14 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio: Urgencias")
+const titleModal = ref<string>("Servicio: Recien Nacidos")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
 
 const cie10_arrayInfo = ref([])
-const ripsCausaExternaVersion2_arrayInfo = ref([])
-const cupsRips_arrayInfo = ref([])
+const condicionyDestinoUsuarioEgreso_arrayInfo = ref([])
+const sexos_arrayInfo = ref([])
 const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
@@ -28,14 +28,14 @@ const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
 
-  fechaInicioAtencion: null as string | null,
-  causaMotivoAtencion_id: null as string | null,
+  fechaNacimiento: null as string | null,
+  edadGestacional: null as string | null,
+  numConsultasCPrenatal: null as string | null,
+  codSexoBiologico_id: null as string | null,
+  peso: null as string | null,
   codDiagnosticoPrincipal_id: null as string | null,
-  codDiagnosticoPrincipalE_id: null as string | null,
-  codDiagnosticoRelacionadoE1_id: null as string | null,
-  codDiagnosticoRelacionadoE2_id: null as string | null,
-  codDiagnosticoRelacionadoE3_id: null as string | null,
-  condicionDestinoUsuarioEgreso: null as string | null,
+  condicionDestino: null as string | null,
+  condicionDestinoUsuarioEgreso_id: null as string | null,
   codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
   tipoDocumentoIdentificacion_id: null as string | null,
@@ -62,23 +62,20 @@ const openModal = async ({ serviceId = null, invoice_id }: any | null, disabled:
   form.value.invoice_id = invoice_id;
   service_id.value = serviceId;
 
-  console.log("");
-
-
   await fetchDataForm();
 };
 
 const fetchDataForm = async () => {
   try {
     isLoading.value = true;
-    const url = service_id.value ? `/service/urgency/${service_id.value}/edit` : `/service/urgency/create`;
+    const url = service_id.value ? `/service/newlyBorn/${service_id.value}/edit` : `/service/newlyBorn/create`;
     const { data, response } = await useAxios(url).get();
 
     if (response.status === 200 && data) {
 
       cie10_arrayInfo.value = data.cie10_arrayInfo
-      ripsCausaExternaVersion2_arrayInfo.value = data.ripsCausaExternaVersion2_arrayInfo
-      cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
+      condicionyDestinoUsuarioEgreso_arrayInfo.value = data.condicionyDestinoUsuarioEgreso_arrayInfo
+      sexos_arrayInfo.value = data.sexos_arrayInfo
       tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
 
       if (data.form) {
@@ -101,7 +98,7 @@ const submitForm = async () => {
     }
 
     isLoading.value = true;
-    const url = form.value.id ? `/service/urgency/update/${form.value.id}` : `/service/urgency/store`;
+    const url = form.value.id ? `/service/newlyBorn/update/${form.value.id}` : `/service/newlyBorn/store`;
 
     const payload = {
       ...form.value,
@@ -126,7 +123,6 @@ const submitForm = async () => {
   }
 };
 
-
 defineExpose({
   openModal
 });
@@ -148,19 +144,35 @@ defineExpose({
         <VCardText class="pt-6">
           <VForm ref="refForm" @submit.prevent>
             <VRow>
-
               <VCol cols="12" md="6">
-                <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
+                <AppTextField clearable label="fechaNacimiento" v-model="form.fechaNacimiento" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.fechaNacimiento"
+                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="causaMotivoAtencion" v-model="form.causaMotivoAtencion_id"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.causaMotivoAtencion_id"
-                  @input="errorsBack.causaMotivoAtencion_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteRipsCausaExternaVersion2" array-info="ripsCausaExternaVersion2"
-                  :itemsData="ripsCausaExternaVersion2_arrayInfo" :firstFetch="false" />
+                <AppTextField clearable label="edadGestacional" v-model="form.edadGestacional" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.edadGestacional"
+                  @input="errorsBack.edadGestacional = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="numConsultasCPrenatal" v-model="form.numConsultasCPrenatal"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numConsultasCPrenatal"
+                  @input="errorsBack.numConsultasCPrenatal = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppSelectRemote clearable label="codSexoBiologico" v-model="form.codSexoBiologico_id"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codSexoBiologico_id"
+                  @input="errorsBack.codSexoBiologico_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteSexo"
+                  array-info="sexos" :itemsData="sexos_arrayInfo" :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="peso" v-model="form.peso" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.peso" @input="errorsBack.peso = ''"
+                  :disabled="disabledFiledsView" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -170,43 +182,25 @@ defineExpose({
                   @input="errorsBack.codDiagnosticoPrincipal_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoPrincipalE" v-model="form.codDiagnosticoPrincipalE_id"
-                  :error-messages="errorsBack.codDiagnosticoPrincipalE_id"
-                  @input="errorsBack.codDiagnosticoPrincipalE_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
-              </VCol>
-              <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoRelacionadoE1"
-                  v-model="form.codDiagnosticoRelacionadoE1_id"
-                  :error-messages="errorsBack.codDiagnosticoRelacionadoE1_id"
-                  @input="errorsBack.codDiagnosticoRelacionadoE1_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
-              </VCol>
-              <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoRelacionadoE2"
-                  v-model="form.codDiagnosticoRelacionadoE2_id"
-                  :error-messages="errorsBack.codDiagnosticoRelacionadoE2_id"
-                  @input="errorsBack.codDiagnosticoRelacionadoE2_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
-              </VCol>
-              <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoRelacionadoE3"
-                  v-model="form.codDiagnosticoRelacionadoE3_id"
-                  :error-messages="errorsBack.codDiagnosticoRelacionadoE3_id"
-                  @input="errorsBack.codDiagnosticoRelacionadoE3_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
+                <AppTextField clearable label="condicionDestino" v-model="form.condicionDestino" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.condicionDestino"
+                  @input="errorsBack.condicionDestino = ''" :disabled="disabledFiledsView" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="condicionDestinoUsuarioEgreso"
-                  v-model="form.condicionDestinoUsuarioEgreso" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.condicionDestinoUsuarioEgreso"
-                  @input="errorsBack.condicionDestinoUsuarioEgreso = ''" :disabled="disabledFiledsView" />
+                <AppSelectRemote clearable label="condicionDestinoUsuarioEgreso"
+                  v-model="form.condicionDestinoUsuarioEgreso_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.condicionDestinoUsuarioEgreso_id"
+                  @input="errorsBack.condicionDestinoUsuarioEgreso_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCondicionyDestinoUsuarioEgreso" array-info="condicionyDestinoUsuarioEgreso"
+                  :itemsData="condicionyDestinoUsuarioEgreso_arrayInfo" :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoCausaMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
+                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoCausaMuerte_id"
                   @input="errorsBack.codDiagnosticoCausaMuerte_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -218,17 +212,18 @@ defineExpose({
                   @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
 
+
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="Tipo documento persona realiza/ordena servicio"
+                <AppSelectRemote clearable label="Tipo documento del recien nacido"
                   v-model="form.tipoDocumentoIdentificacion_id" :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
-                  @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
-                  :firstFetch="false" />
+                  :params="{ codigo_in: ['CN', 'RC', 'MS'] }" @input="errorsBack.tipoDocumentoIdentificacion_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis"
+                  :itemsData="tipoIdPisis_arrayInfo" :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="Número documento persona realiza/ordena servicio"
+                <AppTextField clearable label="Número documento del recien nacido"
                   v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
@@ -239,6 +234,7 @@ defineExpose({
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numFEVPagoModerador"
                   @input="errorsBack.numFEVPagoModerador = ''" :disabled="disabledFiledsView" />
               </VCol>
+
             </VRow>
           </VForm>
         </VCardText>

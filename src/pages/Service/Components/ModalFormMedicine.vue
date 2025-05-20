@@ -12,13 +12,15 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Servicio: Otros Servicios")
+const titleModal = ref<string>("Servicio: Medicamentos")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const tipoOtrosServicios_arrayInfo = ref([])
+
+const cie10_arrayInfo = ref([])
+const tipoMedicamentoPosVersion2_arrayInfo = ref([])
+const umm_arrayInfo = ref([])
 const conceptoRecaudo_arrayInfo = ref([])
-const cupsRips_arrayInfo = ref([])
 const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
@@ -26,14 +28,22 @@ const service_id = ref<null | string>(null)
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
+
   numAutorizacion: null as string | null,
   idMIPRES: null as string | null,
-  fechaSuministroTecnologia: null as string | null,
-  tipoOS_id: null as string | null,
+  fechaDispensAdmon: null as string | null,
+  codDiagnosticoPrincipal_id: null as string | null,
+  codDiagnosticoRelacionado_id: null as string | null,
+  tipoMedicamento_id: null as string | null,
   codTecnologiaSalud: null as string | null,
   nomTecnologiaSalud: null as string | null,
-  cantidadOS: null as string | null,
-  vrUnitOS: null as string | null,
+  concentracionMedicamento: null as string | null,
+  unidadMedida_id: null as string | null,
+  formaFarmaceutica: null as string | null,
+  unidadMinDispensa: null as string | null,
+  cantidadMedicamento: null as string | null,
+  diasTratamiento: null as string | null,
+  vrUnitMedicamento: null as string | null,
   valorPagoModerador: null as string | null,
   vrServicio: null as string | null,
   conceptoRecaudo_id: null as string | null,
@@ -43,7 +53,7 @@ const form = ref({
 })
 
 const dataCalculate = reactive({
-  real_vrUnitOS: 0 as number,
+  real_vrUnitMedicamento: 0 as number,
   real_valorPagoModerador: 0 as number,
   real_vrServicio: 0 as number,
 })
@@ -67,7 +77,7 @@ const openModal = async ({ serviceId = null, invoice_id }: any | null, disabled:
   form.value.invoice_id = invoice_id;
   service_id.value = serviceId;
 
-  form.value.vrUnitOS = '0,00';
+  form.value.vrUnitMedicamento = '0,00';
   form.value.valorPagoModerador = '0,00';
 
   await fetchDataForm();
@@ -76,21 +86,23 @@ const openModal = async ({ serviceId = null, invoice_id }: any | null, disabled:
 const fetchDataForm = async () => {
   try {
     isLoading.value = true;
-    const url = service_id.value ? `/service/otherService/${service_id.value}/edit` : `/service/otherService/create`;
+    const url = service_id.value ? `/service/medicine/${service_id.value}/edit` : `/service/medicine/create`;
     const { data, response } = await useAxios(url).get();
 
     if (response.status === 200 && data) {
 
-      tipoOtrosServicios_arrayInfo.value = data.tipoOtrosServicios_arrayInfo
+      cie10_arrayInfo.value = data.cie10_arrayInfo
+      tipoMedicamentoPosVersion2_arrayInfo.value = data.tipoMedicamentoPosVersion2_arrayInfo
+      umm_arrayInfo.value = data.umm_arrayInfo
       conceptoRecaudo_arrayInfo.value = data.conceptoRecaudo_arrayInfo
-      cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
       tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
+
 
       if (data.form) {
         form.value = cloneObject(data.form);
 
-        form.value.vrUnitOS = currencyFormat(formatToCurrencyFormat(data.form.vrUnitOS));
-        dataCalculate.real_vrUnitOS = cloneObject(data.form.vrUnitOS);
+        form.value.vrUnitMedicamento = currencyFormat(formatToCurrencyFormat(data.form.vrUnitMedicamento));
+        dataCalculate.real_vrUnitMedicamento = cloneObject(data.form.vrUnitMedicamento);
         form.value.valorPagoModerador = currencyFormat(formatToCurrencyFormat(data.form.valorPagoModerador));
         dataCalculate.real_valorPagoModerador = cloneObject(data.form.valorPagoModerador);
         form.value.vrServicio = currencyFormat(formatToCurrencyFormat(data.form.vrServicio));
@@ -113,13 +125,13 @@ const submitForm = async () => {
     }
 
     isLoading.value = true;
-    const url = form.value.id ? `/service/otherService/update/${form.value.id}` : `/service/otherService/store`;
+    const url = form.value.id ? `/service/medicine/update/${form.value.id}` : `/service/medicine/store`;
 
     const payload = {
       ...form.value,
       service_id: service_id.value,
       company_id: authenticationStore.company.id,
-      vrUnitOS: dataCalculate.real_vrUnitOS,
+      vrUnitMedicamento: dataCalculate.real_vrUnitMedicamento,
       valorPagoModerador: dataCalculate.real_valorPagoModerador,
       vrServicio: dataCalculate.real_vrServicio,
     };
@@ -144,12 +156,12 @@ const submitForm = async () => {
 // Validators
 const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
+  return isNaN(num) || num < 0 ? 'El valor debe ser positivo' : true;
 };
 
 const lessThanVrService = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
-  const vl = Number(form.value.cantidadOS) * dataCalculate.real_vrUnitOS;
+  const vl = Number(form.value.cantidadMedicamento) * dataCalculate.real_vrUnitMedicamento;
   return isNaN(num) || num > vl ? 'El valor debe ser menor o igual a ' + vl : true;
 };
 
@@ -162,12 +174,11 @@ defineExpose({
   openModal
 });
 
-
 watch(
-  [() => form.value.cantidadOS, () => dataCalculate.real_vrUnitOS, () => dataCalculate.real_valorPagoModerador],
-  ([newCantidadOS, newVrUnitOS, newValorPagoModerador]) => {
-    const quantity = parseInt(newCantidadOS || '0', 10);
-    const unitValue = newVrUnitOS || 0;
+  [() => form.value.cantidadMedicamento, () => dataCalculate.real_vrUnitMedicamento, () => dataCalculate.real_valorPagoModerador],
+  ([cantidadMedicamento, newVrUnitMedicamento, newValorPagoModerador]) => {
+    const quantity = parseInt(cantidadMedicamento || '0', 10);
+    const unitValue = newVrUnitMedicamento || 0;
     const valuePagoModerador = newValorPagoModerador || 0;
     if (valuePagoModerador <= 0) {
       form.value.numFEVPagoModerador = null;
@@ -180,12 +191,6 @@ watch(
   { immediate: true }
 );
 
-const changeCodTecnologiaSalud = (event) => {
-  if (event) {
-    form.value.nomTecnologiaSalud = event.nombre
-  }
-}
-
 const ruleConceptoRecaudo = computed(() => {
   if (dataCalculate.real_valorPagoModerador > 0) {
     return [
@@ -194,6 +199,7 @@ const ruleConceptoRecaudo = computed(() => {
   }
   return [];
 })
+
 </script>
 
 <template>
@@ -212,56 +218,116 @@ const ruleConceptoRecaudo = computed(() => {
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
                   :disabled="disabledFiledsView" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :disabled="disabledFiledsView" />
+                <AppTextField clearable label="fechaDispensAdmon" v-model="form.fechaDispensAdmon" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.fechaDispensAdmon"
+                  @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppTextField clearable label="fechaSuministroTecnologia" v-model="form.fechaSuministroTecnologia"
+                <AppSelectRemote clearable label="codDiagnosticoPrincipal" v-model="form.codDiagnosticoPrincipal_id"
                   :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.fechaSuministroTecnologia"
-                  @input="errorsBack.fechaSuministroTecnologia = ''" :disabled="disabledFiledsView" type="date" />
+                  :error-messages="errorsBack.codDiagnosticoPrincipal_id"
+                  @input="errorsBack.codDiagnosticoPrincipal_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="tipoOS" v-model="form.tipoOS_id"
-                  :error-messages="errorsBack.tipoOS_id" @input="errorsBack.tipoOS_id = ''"
-                  :disabled="disabledFiledsView" url="/selectInfiniteTipoOtrosServicios" array-info="tipoOtrosServicios"
-                  :itemsData="tipoOtrosServicios_arrayInfo" :firstFetch="false" />
+                <AppSelectRemote clearable label="codDiagnosticoRelacionado" v-model="form.codDiagnosticoRelacionado_id"
+                  :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.codDiagnosticoRelacionado_id"
+                  @input="errorsBack.codDiagnosticoRelacionado_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
+                <AppSelectRemote clearable label="tipoMedicamento" v-model="form.tipoMedicamento_id"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.tipoMedicamento_id"
+                  @input="errorsBack.tipoMedicamento_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteTipoMedicamentoPosVersion2" array-info="tipoMedicamentoPosVersion2"
+                  :itemsData="tipoMedicamentoPosVersion2_arrayInfo" :firstFetch="false" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
-                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
-                  :firstFetch="false" @update:model-value="changeCodTecnologiaSalud" />
+                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppTextField clearable label="nomTecnologiaSalud" disabled v-model="form.nomTecnologiaSalud"
+                <AppTextField clearable label="nomTecnologiaSalud" v-model="form.nomTecnologiaSalud"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.nomTecnologiaSalud"
-                  @input="errorsBack.nomTecnologiaSalud = ''" />
+                  @input="errorsBack.nomTecnologiaSalud = ''" :disabled="disabledFiledsView" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <AppTextField clearable label="cantidadOS" v-model="form.cantidadOS" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.cantidadOS"
-                  @input="errorsBack.cantidadOS = ''" :disabled="disabledFiledsView" />
+                <AppTextField clearable label="concentracionMedicamento" v-model="form.concentracionMedicamento"
+                  :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.concentracionMedicamento"
+                  @input="errorsBack.concentracionMedicamento = ''" :disabled="disabledFiledsView" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <FormatCurrency clearable label="vrUnitOS" v-model="form.vrUnitOS" :requiredField="true"
-                  :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrUnitOS"
-                  @input="errorsBack.vrUnitOS = ''" :disabled="disabledFiledsView"
-                  @realValue="dataReal($event, 'real_vrUnitOS')" />
+                <AppSelectRemote clearable label="unidadMedida" v-model="form.unidadMedida_id" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.unidadMedida_id"
+                  @input="errorsBack.unidadMedida_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteUmm"
+                  array-info="umm" :itemsData="umm_arrayInfo" :firstFetch="false" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <FormatCurrency clearable label="valorPagoModerador" :rules="[lessThanVrService]"
-                  v-model="form.valorPagoModerador" :disabled="disabledFiledsView"
+                <AppTextField clearable label="formaFarmaceutica" v-model="form.formaFarmaceutica" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.formaFarmaceutica"
+                  @input="errorsBack.formaFarmaceutica = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="unidadMinDispensa" v-model="form.unidadMinDispensa" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.unidadMinDispensa"
+                  @input="errorsBack.unidadMinDispensa = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="cantidadMedicamento" v-model="form.cantidadMedicamento"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.cantidadMedicamento"
+                  @input="errorsBack.cantidadMedicamento = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <AppTextField clearable label="diasTratamiento" v-model="form.diasTratamiento" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.diasTratamiento"
+                  @input="errorsBack.diasTratamiento = ''" :disabled="disabledFiledsView" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <FormatCurrency clearable label="vrUnitMedicamento" v-model="form.vrUnitMedicamento"
+                  :requiredField="true" :rules="[requiredValidator, positiveValidator]"
+                  :error-messages="errorsBack.vrUnitMedicamento" @input="errorsBack.vrUnitMedicamento = ''"
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_vrUnitMedicamento')" />
+              </VCol>
+
+              <VCol cols="12" md="6">
+                <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
+                  :rules="[lessThanVrService, positiveValidator]" :error-messages="errorsBack.valorPagoModerador"
+                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
                   @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
+
               <VCol cols="12" md="6">
-                <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
+                <FormatCurrency clearable disabled label="vrServicio" v-model="form.vrServicio" :requiredField="true"
                   :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" disabled @realValue="dataReal($event, 'real_vrServicio')" />
+                  @input="errorsBack.vrServicio = ''" :disabled="disabledFiledsView"
+                  @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
 
               <VCol cols="12" md="6">

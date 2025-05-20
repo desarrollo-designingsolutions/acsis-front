@@ -3,6 +3,8 @@ import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
 import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
 import ModalFormHospitalization from "@/pages/Service/Components/ModalFormHospitalization.vue";
 import ModalFormMedicalConsultation from "@/pages/Service/Components/ModalFormMedicalConsultation.vue";
+import ModalFormMedicine from "@/pages/Service/Components/ModalFormMedicine.vue";
+import ModalFormNewlyBorn from "@/pages/Service/Components/ModalFormNewlyBorn.vue";
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
 import ModalFormProcedure from "@/pages/Service/Components/ModalFormProcedure.vue";
 import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
@@ -39,6 +41,7 @@ const optionsTable = {
   headers: [
     { key: 'codigo_servicio', title: 'Código' },
     { key: 'nombre_servicio', title: 'Descripcion' },
+    { key: 'type', title: 'Tipo' },
     { key: 'quantity', title: 'Cantidad' },
     { key: "unit_value", title: 'Valor Unitario' },
     { key: "total_value", title: 'Valor Total' },
@@ -66,6 +69,7 @@ const disableUrlUpdate = ref(true);
 // Nuevo método para manejar la búsqueda forzada desde el filtro
 const handleForceSearch = (params) => {
   if (refTableFull.value) {
+    fetchDataBtn();
     // Si disableUrlUpdate está activo, pasamos los parámetros manualmente
     if (disableUrlUpdate.value && params) {
       refTableFull.value.fetchTableData(null, false, true, params);
@@ -104,7 +108,11 @@ const typeServiceEnumValues = ref<Array<{
 const fetchDataBtn = async () => {
   loading.btnCreate = true
 
-  const { data, response } = await useAxios("/service/loadBtnCreate").get()
+  const { data, response } = await useAxios("/service/loadBtnCreate").get({
+    params: {
+      invoice_id: props.invoice_id
+    }
+  });
 
   if (response.status == 200 && data) {
     typeServiceEnumValues.value = data.typeServiceEnumValues;
@@ -118,6 +126,8 @@ const refModalFormOtherService = ref()
 const refModalFormMedicalConsultation = ref()
 const refModalFormUrgency = ref()
 const refModalFormProcedure = ref()
+const refModalFormMedicine = ref()
+const refModalFormNewlyBorn = ref()
 const refModalFormHospitalization = ref()
 
 // Mapeo entre los tipos de servicio y sus referencias a modales
@@ -126,6 +136,8 @@ const serviceModalMap = {
   "SERVICE_TYPE_002": refModalFormProcedure,
   "SERVICE_TYPE_003": refModalFormUrgency,
   "SERVICE_TYPE_004": refModalFormHospitalization,
+  "SERVICE_TYPE_005": refModalFormNewlyBorn,
+  "SERVICE_TYPE_006": refModalFormMedicine,
   "SERVICE_TYPE_007": refModalFormOtherService,
 }
 
@@ -186,6 +198,9 @@ onMounted(() => {
               <VList>
                 <VListItem v-for="(item, index) in typeServiceEnumValues" :key="index"
                   @click="openModalFormServiceCreate(item.type)">
+                  <template #prepend>
+                    <VIcon start :icon="item.icon" />
+                  </template>
                   {{ item.name }}
                 </VListItem>
               </VList>
@@ -204,6 +219,12 @@ onMounted(() => {
 
         <TableFull v-model:selected="servicesIds" ref="refTableFull" :options="optionsTable"
           @update:loading="tableLoading = $event" @edit="openModalFormServiceEdit" @view="openModalFormServiceView">
+
+          <template #item.type="{ item }">
+            <div>
+              <VChip>{{ item.type_description }}</VChip>
+            </div>
+          </template>
 
           <template #item.actions2="{ item }">
 
@@ -230,6 +251,12 @@ onMounted(() => {
 
     <ModalFormProcedure ref="refModalFormProcedure" @execute="handleForceSearch">
     </ModalFormProcedure>
+
+    <ModalFormMedicine ref="refModalFormMedicine" @execute="handleForceSearch">
+    </ModalFormMedicine>
+
+    <ModalFormNewlyBorn ref="refModalFormNewlyBorn" @execute="handleForceSearch">
+    </ModalFormNewlyBorn>
 
     <ModalListGlosa ref="refModalListGlosa"></ModalListGlosa>
 
