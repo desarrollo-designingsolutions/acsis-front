@@ -36,7 +36,7 @@ const form = ref({
   invoice_id: null as string | null,
 
   fechaInicioAtencion: null as string | null,
-  numAutoriacion: null as string | null,
+  numAutorizacion: null as string | null,
   codConsulta_id: null as string | null,
   modalidadGrupoServicioTecSal_id: null as string | null,
   grupoServicios_id: null as string | null,
@@ -217,9 +217,9 @@ watch(
                   @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutoriacion" v-model="form.numAutoriacion" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutoriacion"
-                  @input="errorsBack.numAutoriacion = ''" :disabled="disabledFiledsView" />
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
               </VCol>
 
               <VCol cols="12" md="6">
