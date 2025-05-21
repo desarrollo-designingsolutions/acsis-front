@@ -72,6 +72,8 @@ const clearForm = () => {
   }
 }
 
+const selectPatientKey = ref(0);
+
 const fetchDataForm = async () => {
 
   form.value.id = route.params.id || null
@@ -99,6 +101,11 @@ const fetchDataForm = async () => {
     if (data.form) {
       form.value = cloneObject(data.form)
 
+      if (form.value.patient_id) {
+        // Forzar la recarga del componente del paciente
+        selectPatientKey.value += 1;
+      }
+
       if (form.value.type == 'INVOICE_TYPE_002') {
         soat.value = cloneObject(data?.infoDataExtra)
       }
@@ -107,8 +114,7 @@ const fetchDataForm = async () => {
       totalValueTotal.value = currencyFormat(formatToCurrencyFormat(form.value.total));
       totalValueRemainingBalance.value = currencyFormat(formatToCurrencyFormat(form.value.remaining_balance));
 
-      totalValueGlosa.value = form.value.value_glosa;
-      form.value.value_glosa = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
+      totalValueGlosa.value = currencyFormat(formatToCurrencyFormat(form.value.value_glosa));
       dataCalculate.real_value_glosa = cloneObject(totalValueGlosa.value);
 
       listenForInvoiceUpdates();
@@ -246,6 +252,8 @@ const listenForInvoiceUpdates = () => {
       .channel(`invoice.${form.value.id}`)
       .listen('InvoiceRowUpdatedNow', (event: any) => {
 
+        console.log(event);
+
         totalValueGlosa.value = currencyFormat(formatToCurrencyFormat(event.value_glosa));
         totalValueTotal.value = currencyFormat(formatToCurrencyFormat(event.total));
         totalValuePaid.value = currencyFormat(formatToCurrencyFormat(event.value_paid));
@@ -301,8 +309,8 @@ onUnmounted(() => {
                     </VCol>
 
                     <VCol cols="12" sm="4">
-                      <SelectPatientForm :disabled="disabledFiledsView" :requiredField="true" label="Paciente"
-                        v-model="form.patient_id" :itemsData="patients_arrayInfo" :firstFetch="false"
+                      <SelectPatientForm :key="selectPatientKey" :disabled="disabledFiledsView" :requiredField="true"
+                        label="Paciente" v-model="form.patient_id" :itemsData="patients_arrayInfo" :firstFetch="false"
                         :error-messages="errorsBack.patient_id" @update:modelValue="errorsBack.patient_id = ''" />
                     </VCol>
 
@@ -354,8 +362,7 @@ onUnmounted(() => {
 
 
                     <VCol cols="12" sm="3">
-                      <FormatCurrency disabled label="Valor Glosado" v-model="totalValueGlosa"
-                        @realValue="dataReal($event, 'real_value_glosa')" clearable />
+                      <FormatCurrency disabled label="Valor Glosado" v-model="totalValueGlosa" />
                     </VCol>
 
                     <VCol cols="12" sm="3">

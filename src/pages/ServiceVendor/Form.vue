@@ -17,7 +17,7 @@ definePage({
 
 const authenticationStore = useAuthenticationStore();
 
-const ipsNoReps_arrayInfo = ref([])
+const ipsCodHabilitacion_arrayInfo = ref([])
 
 const { toast } = useToast()
 const errorsBack = ref<IErrorsBack>({});
@@ -35,7 +35,7 @@ const form = ref({
   phone: null as string | null,
   address: null as string | null,
   email: null as string | null,
-  ips_no_rep_id: null as string | null,
+  ips_cod_habilitacion_id: null as string | null,
 })
 
 const clearForm = () => {
@@ -57,7 +57,7 @@ const fetchDataForm = async () => {
 
   if (response.status == 200 && data) {
     type_vendors.value = data.type_vendors
-    ipsNoReps_arrayInfo.value = data.ipsNoReps_arrayInfo
+    ipsCodHabilitacion_arrayInfo.value = data.ipsCodHabilitacion_arrayInfo
 
     //formulario 
     if (data.form) {
@@ -202,10 +202,12 @@ const phoneRules = [
                 </VCol>
 
                 <VCol sm="4">
-                  <AppSelectRemote clearable label="Código habilitación" v-model="form.ips_no_rep_id"
-                    :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.ips_no_rep_id"
-                    @input="errorsBack.ips_no_rep_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteIpsNoReps"
-                    array-info="ipsNoReps" :itemsData="ipsNoReps_arrayInfo" :firstFetch="false" />
+                  <AppSelectRemote clearable label="Código habilitación" v-model="form.ips_cod_habilitacion_id"
+                    :requiredField="true" :rules="[requiredValidator]"
+                    :error-messages="errorsBack.ips_cod_habilitacion_id"
+                    @input="errorsBack.ips_cod_habilitacion_id = ''" :disabled="disabledFiledsView"
+                    url="/selectInfiniteIpsCodHabilitacion" array-info="ipsCodHabilitacion"
+                    :itemsData="ipsCodHabilitacion_arrayInfo" :firstFetch="false" />
                 </VCol>
 
               </VRow>
