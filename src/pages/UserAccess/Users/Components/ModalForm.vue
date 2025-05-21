@@ -185,8 +185,7 @@ defineExpose({
               </VCol> -->
               <VCol cols="12">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Prestadores" v-model="form.service_vendor_ids"
-                  url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" :requiredField="true"
-                  :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
+                  url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" clearable :params="paramsSelectInfinite"
                   :itemsData="serviceVendors_arrayInfo" :firstFetch="false" multiple>
                 </AppSelectRemote>
               </VCol>
