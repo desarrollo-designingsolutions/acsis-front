@@ -109,7 +109,7 @@ const clearFile = () => {
           <VBtn :loading="isLoading" color="secondary" variant="tonal" @click="handleDialogVisible()">
             Cancelar
           </VBtn>
-          <VBtn :disabled="isLoading" :loading="isLoading" @click="submitForm()" color="primary">
+          <VBtn v-if="form.fileJson" :disabled="isLoading" :loading="isLoading" @click="submitForm()" color="primary">
             Continuar
           </VBtn>
         </VCardText>

@@ -98,7 +98,7 @@ const validateJson = (jsonData: any) => {
       Localize.es(validate.errors);
 
       const errors = validate.errors?.map(error => ({
-        path: error.instancePath || 'raíz',
+        path: error.instancePath || '/',
         message: formatErrorMessage(error),
         params: error.params,
         schemaPath: error.schemaPath
@@ -153,6 +153,20 @@ const formatErrorMessage = (error: any) => {
   if (error.keyword === 'maxLength') {
     return `El texto es demasiado largo. Máximo ${error.params.limit} caracteres requeridos`;
   }
+
+  if (error.keyword === 'pattern') {
+    // Caso específico para el patrón ^(.{0}|.{4,25})$
+    if (error.params.pattern === '^(.{0}|.{4,25})$') {
+      return 'El campo debe estar vacío o tener entre 4 y 25 caracteres';
+    }
+    // Caso específico para el patrón ^(.{0}|.{2})$
+    if (error.params.pattern === '^(.{0}|.{2})$') {
+      return 'El campo debe estar vacío o tener exactamente 2 caracteres';
+    }
+    // Mensaje genérico para otros patrones
+    return `El valor no cumple con el formato requerido (patrón: ${error.params.pattern})`;
+  }
+
   // Mensaje genérico (traducido por ajv-i18n)
   return error.message || 'Error de validación';
 };
@@ -241,7 +255,7 @@ const copyJsonToClipboard = async () => {
               <VCardText>
                 <div class="d-flex align-center mb-2">
                   <v-chip size="small" color="error" variant="outlined" class="mr-2">
-                    {{ error.path || 'Raíz' }}
+                    {{ error.path || '/' }}
                   </v-chip>
                 </div>
                 <div class="text-body-1">{{ error.message }}</div>
