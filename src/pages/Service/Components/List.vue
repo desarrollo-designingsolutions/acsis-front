@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ModalFormMasiveGlosa from "@/pages/Glosa/Components/ModalFormMasive.vue";
 import ModalListGlosa from "@/pages/Glosa/Components/ModalList.vue";
+import DataUrgeHosBorn from "@/pages/Service/Components/DataUrgeHosBorn.vue";
 import ModalFormHospitalization from "@/pages/Service/Components/ModalFormHospitalization.vue";
 import ModalFormMedicalConsultation from "@/pages/Service/Components/ModalFormMedicalConsultation.vue";
 import ModalFormMedicine from "@/pages/Service/Components/ModalFormMedicine.vue";
@@ -8,8 +9,6 @@ import ModalFormNewlyBorn from "@/pages/Service/Components/ModalFormNewlyBorn.vu
 import ModalFormOtherService from "@/pages/Service/Components/ModalFormOtherService.vue";
 import ModalFormProcedure from "@/pages/Service/Components/ModalFormProcedure.vue";
 import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
-import DataUrgeHosBorn from "@/pages/Service/Components/DataUrgeHosBorn.vue";
-import DataUrgeHosBorn2 from "@/pages/Service/Components/DataUrgeHosBorn2.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const { toast } = useToast();
@@ -178,7 +177,6 @@ onMounted(() => {
 <template>
   <div>
     <DataUrgeHosBorn class="mb-3" :invoice_id="invoice_id" />
-    <DataUrgeHosBorn2 class="mb-3" :invoice_id="invoice_id" />
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
         <span>

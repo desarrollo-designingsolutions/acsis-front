@@ -44,7 +44,11 @@ const handleCreate = async () => {
   handleIsDialogVisible(true);
   componentData.titleForm = "Crear"
 
-  const { data, isFetching } = await useAxios(`role/create`).get();
+  const { data, isFetching } = await useAxios(`role/create`).get({
+      params: {
+        user_id: authenticationStore.user.id,
+      }
+    });
 
 
   formComponent.value.company_id = company.value.id
@@ -63,7 +67,11 @@ const handleEdit = async ({ id }: any) => {
 
 
 
-  const { response, data, isFetching } = await useAxios(`role/${id}/edit`).get();
+  const { response, data, isFetching } = await useAxios(`role/${id}/edit`).get({
+      params: {
+        user_id: authenticationStore.user.id,
+      }
+    });
 
 
   if (response.status == 200 && data) {

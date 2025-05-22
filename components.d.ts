@@ -76,6 +76,7 @@ declare module 'vue' {
     ScrollToTop: typeof import('./src/@core/components/ScrollToTop.vue')['default']
     SelectInfinite: typeof import('./src/components/CustomComponents/SelectInfinites/SelectInfinite.vue')['default']
     SelectPatientForm: typeof import('./src/components/CustomComponents/SelectInfinites/SelectPatientForm.vue')['default']
+    SelectServiceVendorForm: typeof import('./src/components/CustomComponents/SelectInfinites/SelectServiceVendorForm.vue')['default']
     ShareProjectDialog: typeof import('./src/components/dialogs/ShareProjectDialog.vue')['default']
     Shortcuts: typeof import('./src/@core/components/Shortcuts.vue')['default']
     TableFull: typeof import('./src/components/CustomComponents/Table/TableFull.vue')['default']

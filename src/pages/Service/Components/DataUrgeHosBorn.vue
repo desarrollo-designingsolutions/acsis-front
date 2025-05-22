@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import ModalFormHospitalization from "@/pages/Service/Components/ModalFormHospitalization.vue";
+import ModalFormNewlyBorn from "@/pages/Service/Components/ModalFormNewlyBorn.vue";
+import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 import { onMounted, ref } from 'vue';
-import ModalFormHospitalization from "@/pages/Service/Components/ModalFormHospitalization.vue";
-import ModalFormUrgency from "@/pages/Service/Components/ModalFormUrgency.vue";
-import ModalFormNewlyBorn from "@/pages/Service/Components/ModalFormNewlyBorn.vue";
 
 const props = defineProps<{
   invoice_id: string;
@@ -163,38 +163,44 @@ onUnmounted(() => {
           <VSkeletonLoader v-if="isLoading" type="card" class="h-100" />
 
           <template v-else>
-            <!-- Card Header -->
+            <!-- Card Header (ahora más compacto) -->
             <div class="service-card-header">
               <div class="header-content">
+                <VAvatar :color="data.color" size="40" class="service-icon" :aria-hidden="true">
+                  <VIcon :icon="data.icon" size="20" />
+                </VAvatar>
+
                 <div class="header-text">
                   <h3 class="service-title">{{ data.title }}</h3>
                   <div class="service-subtitle">
-                    {{ data.secondary_data || 'Información del servicio' }}
+                    {{ data.value }} {{ data.secondary_data ? `• ${data.secondary_data}` : '' }}
                   </div>
-                </div>
-                <VAvatar :color="data.color" size="48" class="service-icon" :aria-hidden="true">
-                  <VIcon :icon="data.icon" size="24" />
-                </VAvatar>
-              </div>
-            </div>
-
-            <!-- Card Content -->
-            <VCardText class="service-card-content">
-              <div class="content-row">
-                <div class="quantity-section">
-                  <div class="quantity-label">Cantidad</div>
-                  <h2 class="quantity-value">{{ data.value }}</h2>
                 </div>
 
                 <VChip size="small" :color="data.hasServices ? 'success' : 'grey'" variant="outlined"
                   class="status-chip">
-                  {{ data.hasServices ? 'Activo' : 'No configurado' }}
+                  {{ data.hasServices ? '✓' : '✗' }}
                 </VChip>
               </div>
+            </div>
 
-              <!-- Action Buttons -->
-              <div class="action-buttons">
-                <VBtn v-if="!data.hasServices" :color="data.color" variant="elevated" prepend-icon="tabler-plus" block
+            <!-- Card Content (se expande al hover) -->
+            <VCardText class="service-card-content" :class="{ 'expanded': data.isHover }">
+              <div class="content-details" v-if="data.isHover">
+                <div class="detail-row">
+                  <span class="detail-label">Cantidad:</span>
+                  <span class="detail-value">{{ data.value }}</span>
+                </div>
+
+                <div class="detail-row" v-if="data.secondary_data">
+                  <span class="detail-label">Detalles:</span>
+                  <span class="detail-value">{{ data.secondary_data }}</span>
+                </div>
+              </div>
+
+              <!-- Action Buttons (solo visibles al expandirse) -->
+              <div class="action-buttons" :class="{ 'visible': data.isHover }">
+                <VBtn v-if="!data.hasServices" :color="data.color" variant="elevated" prepend-icon="mdi-plus" block
                   @click.stop="openModalFormServiceCreate(data.type)" class="action-btn"
                   :aria-label="`Crear servicio de ${data.title}`">
                   Crear
@@ -211,7 +217,7 @@ onUnmounted(() => {
                     :aria-label="`Editar servicio de ${data.title}`">
                     Editar
                   </VBtn>
-                  <VBtn color="error" variant="outlined" prepend-icon="tabler-trash" @click.stop="confirmDelete(data)"
+                  <VBtn color="error" variant="outlined" prepend-icon="mdi-delete" @click.stop="confirmDelete(data)"
                     class="action-btn" :aria-label="`Eliminar servicio de ${data.title}`">
                     Eliminar
                   </VBtn>
@@ -234,129 +240,133 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .service-dashboard {
   --card-hover-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --card-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.15);
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 10%);
+  --card-shadow-hover: 0 8px 16px rgba(0, 0, 0, 15%);
   --card-border-radius: 12px;
-  --card-padding: 1.5rem;
+  --card-padding: 1rem;
   --color-opacity: 0.08;
-
-  animation: fadeIn 0.5s ease-out;
-}
-
-.service-grid {
-  margin: -0.5rem;
-}
-
-.service-col {
-  padding: 0.5rem;
+  --card-min-height: 80px;
+  --card-expanded-height: 180px;
 }
 
 .service-card {
   position: relative;
-  overflow: hidden;
-  transition: var(--card-hover-transition);
-  border-radius: var(--card-border-radius);
-  height: 100%;
   display: flex;
+  overflow: hidden;
   flex-direction: column;
+  border-radius: var(--card-border-radius);
   background-color: rgb(var(--v-theme-surface));
+  cursor: pointer;
+  min-block-size: var(--card-min-height);
+  transition: var(--card-hover-transition);
 
   &:hover {
-    transform: translateY(-4px);
     box-shadow: var(--card-shadow-hover) !important;
+    transform: translateY(-4px);
+
+    .service-card-content {
+      padding: var(--card-padding);
+      max-block-size: var(--card-expanded-height);
+      opacity: 1;
+    }
   }
 }
 
 .service-card-header {
-  padding: var(--card-padding);
   background-color: rgba(var(--v-theme-on-surface), var(--color-opacity));
-  border-left: 4px solid rgb(var(--card-color));
-  transition: background-color 0.3s ease;
-
-  .service-card:hover & {
-    background-color: rgba(var(--card-color), calc(var(--color-opacity) * 2));
-  }
+  border-inline-start: 4px solid rgb(var(--card-color));
+  padding-block: 0.75rem;
+  padding-inline: var(--card-padding);
+  transition: all 0.3s ease;
 }
 
 .header-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+.service-icon {
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
 }
 
 .header-text {
   flex: 1;
+  min-inline-size: 0;
+
+  /* Permite que el texto se trunque */
 }
 
 .service-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+  overflow: hidden;
   color: rgb(var(--v-theme-on-surface));
-  line-height: 1.3;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-block-end: 0.1rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .service-subtitle {
-  font-size: 0.875rem;
+  overflow: hidden;
   color: rgba(var(--v-theme-on-surface), 0.7);
-  line-height: 1.4;
-}
-
-.service-icon {
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-
-  .service-card:hover & {
-    transform: scale(1.1);
-  }
-}
-
-.service-card-content {
-  padding: var(--card-padding);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.content-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.quantity-section {
-  .quantity-label {
-    font-size: 0.875rem;
-    color: rgba(var(--v-theme-on-surface), 0.7);
-    margin-bottom: 0.25rem;
-  }
-
-  .quantity-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: rgb(var(--v-theme-on-surface));
-    line-height: 1.2;
-  }
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .status-chip {
+  flex-shrink: 0;
   font-weight: 500;
-  letter-spacing: 0.5px;
+  margin-inline-start: auto;
+}
+
+.service-card-content {
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-block-size: 0;
+  opacity: 0;
+  padding-block: 0;
+  padding-inline: var(--card-padding);
+  transition: all 0.3s ease;
+}
+
+.content-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-block: 0.5rem;
+  padding-inline: 0;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.detail-label {
+  color: rgba(var(--v-theme-on-surface), 0.8);
+  font-weight: 500;
+  min-inline-size: 80px;
+}
+
+.detail-value {
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .action-buttons {
-  margin-top: auto;
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  margin-block-start: auto;
   opacity: 0;
-  transform: translateY(10px);
-  transition: var(--card-hover-transition);
+  transition: opacity 0.2s ease 0.1s;
 
   .service-card:hover & {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -364,23 +374,20 @@ onUnmounted(() => {
   flex: 1;
 }
 
-/* For touch devices, always show actions */
+/* For touch devices */
 @media (hover: none) {
-  .action-buttons {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  .service-card {
+    min-block-size: auto;
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
+    .service-card-content {
+      padding: var(--card-padding) !important;
+      max-block-size: none !important;
+      opacity: 1 !important;
+    }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+    .action-buttons {
+      opacity: 1 !important;
+    }
   }
 }
 
@@ -388,31 +395,26 @@ onUnmounted(() => {
 @media (max-width: 960px) {
   .service-col {
     flex: 0 0 50%;
-    max-width: 50%;
+    max-inline-size: 50%;
   }
 }
 
 @media (max-width: 600px) {
   .service-col {
     flex: 0 0 100%;
-    max-width: 100%;
+    max-inline-size: 100%;
   }
 
   .service-card-header {
-    padding: 1rem;
+    padding: 0.5rem;
   }
 
   .service-title {
-    font-size: 1.1rem;
-  }
-
-  .quantity-value {
-    font-size: 1.75rem;
+    font-size: 0.9rem;
   }
 
   .action-buttons {
     flex-direction: column;
-    gap: 0.5rem;
   }
 }
 </style>

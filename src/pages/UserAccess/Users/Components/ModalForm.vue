@@ -16,6 +16,8 @@ const disabledFiledsView = ref<boolean>(false)
 
 const isLoading = ref<boolean>(false)
 
+const serviceVendors_arrayInfo = ref([])
+
 const form = ref({
   id: null as null | string,
   name: null as null | string,
@@ -25,6 +27,7 @@ const form = ref({
   confirmedPassword: null as null | string,
   role_id: null as null | string,
   company_id: null as null | string,
+  service_vendor_ids: null as null | string,
 })
 
 const handleClearForm = () => {
@@ -67,6 +70,8 @@ const fetchDataForm = async () => {
   if (response.status == 200 && data && data.code === 200) {
     roles.value = data.roles
     companies.value = data.companies
+
+    serviceVendors_arrayInfo.value = data.serviceVendors_arrayInfo
 
     if (data.form) {
       form.value = data.form
@@ -116,6 +121,9 @@ const rulesFieldConfirmedPassword = computed(() => {
   ]
 })
 
+const paramsSelectInfinite = {
+  company_id: authenticationStore.company.id,
+}
 
 
 
@@ -175,6 +183,12 @@ defineExpose({
                   v-model="form.company_id" :error-messages="errorsBack.company_id" clearable
                   :disabled="disabledFiledsView" />
               </VCol> -->
+              <VCol cols="12">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Prestadores" v-model="form.service_vendor_ids"
+                  url="/selectInfiniteServiceVendor" arrayInfo="serviceVendors" clearable :params="paramsSelectInfinite"
+                  :itemsData="serviceVendors_arrayInfo" :firstFetch="false" multiple>
+                </AppSelectRemote>
+              </VCol>
             </VRow>
 
           </VForm>

@@ -34,14 +34,18 @@ const dateRange = ref<DateRange>({
   startDate: "2025-01-01",
   endDate: "2025-12-31"
 });
+const service_vendor_id = ref()
+
+const serviceVendors_arrayInfo = ref([])
 
 // Methods
 const updateCountData = (data: any): void => {
   const dataMapping = [
     'invoiceCountData',
-    'approvedVsGlosaData',
-    'inReviewVsPendingData',
+    // 'approvedVsGlosaData',
+    'countPendingPaymentDataStatusPending',
     'pendingPaymentsData',
+    'inReviewVsPendingData',
     'averageResponseTimeData',
     'recoveredGlosasData'
   ];
@@ -61,6 +65,7 @@ const fetchData = async (): Promise<void> => {
         company_id: authenticationStore.company.id,
         start_date: dateRange.value.startDate,
         end_date: dateRange.value.endDate,
+        service_vendor_id: service_vendor_id.value?.value,
       }
     });
 
@@ -85,15 +90,20 @@ onMounted(fetchData);
     <!-- Date Filter Form -->
     <VCol cols="12" class="mb-4">
       <VRow>
-        <VCol cols="12" md="4">
+        <VCol cols="12" md="3">
           <AppTextField v-model="dateRange.startDate" label="Fecha de inicio" type="date" variant="outlined"
             :max="dateRange.endDate" clearable />
         </VCol>
-        <VCol cols="12" md="4">
+        <VCol cols="12" md="3">
           <AppTextField v-model="dateRange.endDate" label="Fecha de fin" type="date" variant="outlined"
             :min="dateRange.startDate" clearable />
         </VCol>
-        <VCol cols="12" md="4" class="d-flex align-center">
+
+        <VCol cols="12" md="3">
+          <SelectServiceVendorForm label="Prestador" v-model="service_vendor_id"
+            :itemsData="serviceVendors_arrayInfo" />
+        </VCol>
+        <VCol cols="12" md="3" class="d-flex align-center mt-6">
           <VBtn color="primary" @click="fetchData" :loading="isLoading" :disabled="isLoading">
             Buscar
           </VBtn>
