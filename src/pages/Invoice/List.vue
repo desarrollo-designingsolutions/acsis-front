@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import ModalUploadFileJson from "@/pages/Invoice/Components/ModalUploadFileJson.vue";
 import ModalUploadFileXml from "@/pages/Invoice/Components/ModalUploadFileXml.vue";
-
 import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
@@ -41,6 +41,8 @@ const optionsFilter = ref({
     ],
   },
 })
+
+
 
 //TABLE
 const refTableFull = ref()
@@ -226,6 +228,14 @@ const isLoading = computed(() => {
 
 const loadingItems = reactive({});
 
+
+
+//ModalUploadFileJson
+const refModalUploadFileJson = ref()
+
+const openModalUploadFileJson = () => {
+  refModalUploadFileJson.value.openModal()
+}
 </script>
 
 <template>
@@ -257,7 +267,7 @@ const loadingItems = reactive({});
               </VList>
             </VMenu>
           </VBtn>
-          <VBtn color="primary">
+          <VBtn color="primary" @click="openModalUploadFileJson()">
             Cargar Json
           </VBtn>
         </div>
@@ -352,8 +362,10 @@ const loadingItems = reactive({});
 
       </VCardText>
     </VCard>
+    <VDivider />
 
     <ModalUploadFileXml ref="refModalUploadFileXml" />
+    <ModalUploadFileJson ref="refModalUploadFileJson" />
 
   </div>
 </template>

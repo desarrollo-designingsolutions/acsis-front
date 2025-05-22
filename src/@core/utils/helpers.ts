@@ -1,3 +1,5 @@
+import * as XLSX from 'xlsx';
+
 // 👉 IsEmpty
 export const isEmpty = (value: unknown): boolean => {
   if (value === null || value === undefined || value === '')
@@ -131,4 +133,21 @@ export const formatoMoneda = (numero: any) => {
 
     return numeroFormateado;
   }
+};
+
+
+
+export const exportArrayToExcel = (dataArray: Array<any> = [], nameExcel: string = 'Array') => {
+
+  const worksheet = XLSX.utils.json_to_sheet(dataArray);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, nameExcel);
+  const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+
+  const data = new Blob([excelBuffer], { type: 'application/octet-stream' });
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(data);
+  link.download = `${nameExcel}.xlsx`;
+  link.click();
 };
