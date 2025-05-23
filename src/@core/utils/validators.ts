@@ -91,7 +91,7 @@ export const lengthValidator = (value: unknown, length: number) => {
   if (isEmpty(value))
     return true
 
-  return String(value).length === length || `"La longitud del campo debe ser ${length} caracteres."`
+  return String(value).length === length || `La longitud del campo debe ser ${length} caracteres.`
 }
 
 // 👉 Alpha-dash Validator
@@ -112,3 +112,23 @@ export const positiveNumberValidator = (value: string) => {
     return false
   }
 }
+
+export const lengthBetweenValidator = (value: unknown, min: number, max: number) => {
+  // Convertimos el valor a string y obtenemos su longitud
+  const length = String(value).length;
+
+  // Validamos si la longitud está entre min y max
+  return (length >= min && length <= max) || `Introduzca un texto con longitud entre ${min} y ${max} caracteres`;
+};
+
+export const customLengthValidator = (value: unknown, allowedLengths: number[]) => {
+  if (isEmpty(value)) {
+    return allowedLengths.includes(0) || `La longitud del campo debe ser una de: ${allowedLengths.join(', ')} caracteres.`;
+  }
+
+  const length = String(value).length;
+  return (
+    allowedLengths.includes(length) ||
+    `La longitud del campo debe ser una de: ${allowedLengths.join(', ')} caracteres.`
+  );
+};

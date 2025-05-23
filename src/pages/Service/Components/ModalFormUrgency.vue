@@ -137,6 +137,12 @@ defineExpose({
   openModal
 });
 
+// Validations
+const condicionDestinoUsuarioEgresoRules = [
+  value => lengthValidator(value, 2),
+  value => requiredValidator(value),
+];
+
 </script>
 
 <template>
@@ -158,7 +164,7 @@ defineExpose({
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -206,9 +212,10 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="condicionDestinoUsuarioEgreso"
-                  v-model="form.condicionDestinoUsuarioEgreso" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.condicionDestinoUsuarioEgreso"
-                  @input="errorsBack.condicionDestinoUsuarioEgreso = ''" :disabled="disabledFiledsView" />
+                  v-model="form.condicionDestinoUsuarioEgreso" :requiredField="true"
+                  :rules="condicionDestinoUsuarioEgresoRules" :error-messages="errorsBack.condicionDestinoUsuarioEgreso"
+                  @input="errorsBack.condicionDestinoUsuarioEgreso = ''" :disabled="disabledFiledsView" counter
+                  maxlength="2" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -221,7 +228,7 @@ defineExpose({
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">

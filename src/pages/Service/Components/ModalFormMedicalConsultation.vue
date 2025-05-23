@@ -194,6 +194,18 @@ watch(
   { immediate: true }
 );
 
+// Validations
+const numAutorizacionRules = [
+  value => lengthBetweenValidator(value, 0, 30),
+  value => requiredValidator(value),
+];
+
+const numDocumentoIdentificacionRules = [
+  value => lengthBetweenValidator(value, 4, 20),
+  value => requiredValidator(value),
+];
+
+
 </script>
 
 <template>
@@ -214,12 +226,13 @@ watch(
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
-                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
+                  :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="16"
+                  minlength="16" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -334,9 +347,10 @@ watch(
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento persona realiza/ordena servicio"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.numDocumentoIdentificacion"
-                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
+                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
+                  maxlength="20" minlength="4" />
               </VCol>
 
               <VCol cols="12" md="6">

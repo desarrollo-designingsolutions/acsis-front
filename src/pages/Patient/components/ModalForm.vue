@@ -120,6 +120,12 @@ const openModal = async (id: any = null, disabled: boolean = false) => {
 defineExpose({
   openModal,
 });
+
+// Validations
+const documentRules = [
+  value => lengthBetweenValidator(value, 4, 20),
+  value => requiredValidator(value),
+];
 </script>
 
 
@@ -146,8 +152,8 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" :rules="[requiredValidator]" clearable v-model="form.document"
-                  label="Documento" :error-messages="errorsBack.document" />
+                <AppTextField :requiredField="true" :rules="documentRules" clearable v-model="form.document"
+                  label="Documento" :error-messages="errorsBack.document" counter maxlength="20" minlength="4" />
               </VCol>
 
               <VCol cols="12" sm="4">
@@ -195,7 +201,7 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" sm="4">
-                <AppSelect v-model="form.incapacity" label="Incapacidad" :items="['Si', 'No']" />
+                <AppSelect v-model="form.incapacity" label="Incapacidad" :items="['SÍ', 'NO']" />
               </VCol>
 
               <VCol cols="12" sm="4">

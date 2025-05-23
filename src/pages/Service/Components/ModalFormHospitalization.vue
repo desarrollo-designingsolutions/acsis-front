@@ -41,7 +41,7 @@ const form = ref({
   codDiagnosticoRelacionadoE3_id: null as string | null,
   codComplicacion_id: null as string | null,
   condicionDestinoUsuarioEgreso_id: null as string | null,
-  codDiagnosticoMuerte_id: null as string | null,
+  codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
   tipoDocumentoIdentificacion_id: null as string | null,
   numDocumentoIdentificacion: null as string | null,
@@ -137,6 +137,17 @@ defineExpose({
   openModal
 });
 
+// Validations
+const numAutorizacionRules = [
+  value => lengthBetweenValidator(value, 0, 30),
+  value => requiredValidator(value),
+];
+
+const numDocumentoIdentificacionRules = [
+  value => lengthBetweenValidator(value, 4, 20),
+  value => requiredValidator(value),
+];
+
 </script>
 
 <template>
@@ -167,13 +178,13 @@ defineExpose({
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
-                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
+                  :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -240,16 +251,16 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoMuerte" v-model="form.codDiagnosticoMuerte_id"
-                  :error-messages="errorsBack.codDiagnosticoMuerte_id" @input="errorsBack.codDiagnosticoMuerte_id = ''"
-                  :disabled="disabledFiledsView" url="/selectInfiniteCie10" array-info="cie10"
-                  :itemsData="cie10_arrayInfo" :firstFetch="false" />
+                <AppSelectRemote clearable label="codDiagnosticoMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
+                  :error-messages="errorsBack.codDiagnosticoCausaMuerte_id"
+                  @input="errorsBack.codDiagnosticoCausaMuerte_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">

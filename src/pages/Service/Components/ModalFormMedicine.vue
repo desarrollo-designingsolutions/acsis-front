@@ -200,6 +200,57 @@ const ruleConceptoRecaudo = computed(() => {
   return [];
 })
 
+// Validations
+const idMIPRESRules = [
+  value => lengthBetweenValidator(value, 0, 15),
+  value => requiredValidator(value),
+];
+
+const numAutorizacionRules = [
+  value => lengthBetweenValidator(value, 0, 30),
+  value => requiredValidator(value),
+];
+
+const numDocumentoIdentificacionRules = [
+  value => lengthBetweenValidator(value, 4, 20),
+  value => requiredValidator(value),
+];
+
+const codTecnologiaSaludRules = [
+  value => lengthBetweenValidator(value, 1, 20),
+  value => requiredValidator(value),
+];
+
+const nomTecnologiaSaludRules = [
+  value => lengthBetweenValidator(value, 0, 30),
+  value => requiredValidator(value),
+];
+
+const concentracionMedicamentoRules = [
+  value => lengthBetweenValidator(value, 0, 3),
+  value => requiredValidator(value),
+];
+
+const formaFarmaceuticaRules = [
+  value => customLengthValidator(value, [0, 6, 8]),
+  value => requiredValidator(value),
+];
+
+const unidadMinDispensaRules = [
+  value => lengthBetweenValidator(value, 1, 2),
+  value => requiredValidator(value),
+];
+
+const cantidadMedicamentoRules = [
+  value => lengthBetweenValidator(value, 1, 10),
+  value => requiredValidator(value),
+];
+
+const diasTratamientoRules = [
+  value => lengthBetweenValidator(value, 1, 3),
+  value => requiredValidator(value),
+];
+
 </script>
 
 <template>
@@ -219,20 +270,20 @@ const ruleConceptoRecaudo = computed(() => {
             <VRow>
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.numAutorizacion"
-                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" />
+                  :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
-                  :disabled="disabledFiledsView" />
+                  :rules="idMIPRESRules" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
+                  :disabled="disabledFiledsView" counter maxlength="15" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaDispensAdmon" v-model="form.fechaDispensAdmon" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaDispensAdmon"
-                  @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -261,21 +312,23 @@ const ruleConceptoRecaudo = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.codTecnologiaSalud"
-                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView" />
+                  :requiredField="true" :rules="codTecnologiaSaludRules" :error-messages="errorsBack.codTecnologiaSalud"
+                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView" counter maxlength="20"
+                  minlength="1" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="nomTecnologiaSalud" v-model="form.nomTecnologiaSalud"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.nomTecnologiaSalud"
-                  @input="errorsBack.nomTecnologiaSalud = ''" :disabled="disabledFiledsView" />
+                  :requiredField="true" :rules="nomTecnologiaSaludRules" :error-messages="errorsBack.nomTecnologiaSalud"
+                  @input="errorsBack.nomTecnologiaSalud = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="concentracionMedicamento" v-model="form.concentracionMedicamento"
-                  :requiredField="true" :rules="[requiredValidator]"
+                  :requiredField="true" :rules="concentracionMedicamentoRules"
                   :error-messages="errorsBack.concentracionMedicamento"
-                  @input="errorsBack.concentracionMedicamento = ''" :disabled="disabledFiledsView" />
+                  @input="errorsBack.concentracionMedicamento = ''" :disabled="disabledFiledsView" counter
+                  maxlength="3" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -287,26 +340,29 @@ const ruleConceptoRecaudo = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="formaFarmaceutica" v-model="form.formaFarmaceutica" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.formaFarmaceutica"
-                  @input="errorsBack.formaFarmaceutica = ''" :disabled="disabledFiledsView" />
+                  :rules="formaFarmaceuticaRules" :error-messages="errorsBack.formaFarmaceutica"
+                  @input="errorsBack.formaFarmaceutica = ''" :disabled="disabledFiledsView" counter maxlength="8" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="unidadMinDispensa" v-model="form.unidadMinDispensa" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.unidadMinDispensa"
-                  @input="errorsBack.unidadMinDispensa = ''" :disabled="disabledFiledsView" />
+                  :rules="unidadMinDispensaRules" :error-messages="errorsBack.unidadMinDispensa"
+                  @input="errorsBack.unidadMinDispensa = ''" :disabled="disabledFiledsView" counter maxlength="2"
+                  minlength="1" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="cantidadMedicamento" v-model="form.cantidadMedicamento"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.cantidadMedicamento"
-                  @input="errorsBack.cantidadMedicamento = ''" :disabled="disabledFiledsView" />
+                  :requiredField="true" :rules="cantidadMedicamentoRules"
+                  :error-messages="errorsBack.cantidadMedicamento" @input="errorsBack.cantidadMedicamento = ''"
+                  :disabled="disabledFiledsView" counter maxlength="10" minlength="1" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="diasTratamiento" v-model="form.diasTratamiento" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.diasTratamiento"
-                  @input="errorsBack.diasTratamiento = ''" :disabled="disabledFiledsView" />
+                  :rules="diasTratamientoRules" :error-messages="errorsBack.diasTratamiento"
+                  @input="errorsBack.diasTratamiento = ''" :disabled="disabledFiledsView" counter maxlength="3"
+                  minlength="1" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -350,9 +406,10 @@ const ruleConceptoRecaudo = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento persona realiza/ordena servicio"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.numDocumentoIdentificacion"
-                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
+                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
+                  maxlength="20" minlength="4" />
               </VCol>
 
               <VCol cols="12" md="6">

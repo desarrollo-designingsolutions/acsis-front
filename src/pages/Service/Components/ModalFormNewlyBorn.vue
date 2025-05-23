@@ -130,6 +130,27 @@ defineExpose({
   openModal
 });
 
+// Validations
+const numDocumentoIdentificacionRules = [
+  value => lengthBetweenValidator(value, 4, 20),
+  value => requiredValidator(value),
+];
+
+const edadGestacionalRules = [
+  value => lengthValidator(value, 2),
+  value => requiredValidator(value),
+];
+
+const numConsultasCPrenatalRules = [
+  value => lengthValidator(value, 2),
+  value => requiredValidator(value),
+];
+
+const pesoRules = [
+  value => lengthBetweenValidator(value, 3, 4),
+  value => requiredValidator(value),
+];
+
 </script>
 
 <template>
@@ -150,19 +171,20 @@ defineExpose({
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaNacimiento" v-model="form.fechaNacimiento" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaNacimiento"
-                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="edadGestacional" v-model="form.edadGestacional" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.edadGestacional"
-                  @input="errorsBack.edadGestacional = ''" :disabled="disabledFiledsView" />
+                  :rules="edadGestacionalRules" :error-messages="errorsBack.edadGestacional"
+                  @input="errorsBack.edadGestacional = ''" :disabled="disabledFiledsView" counter maxlength="2" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numConsultasCPrenatal" v-model="form.numConsultasCPrenatal"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numConsultasCPrenatal"
-                  @input="errorsBack.numConsultasCPrenatal = ''" :disabled="disabledFiledsView" />
+                  :requiredField="true" :rules="numConsultasCPrenatalRules"
+                  :error-messages="errorsBack.numConsultasCPrenatal" @input="errorsBack.numConsultasCPrenatal = ''"
+                  :disabled="disabledFiledsView" counter maxlength="2" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -173,9 +195,9 @@ defineExpose({
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="peso" v-model="form.peso" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.peso" @input="errorsBack.peso = ''"
-                  :disabled="disabledFiledsView" />
+                <AppTextField clearable label="peso" v-model="form.peso" :requiredField="true" :rules="pesoRules"
+                  :error-messages="errorsBack.peso" @input="errorsBack.peso = ''" :disabled="disabledFiledsView" counter
+                  maxlength="4" minlength="3" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -212,7 +234,7 @@ defineExpose({
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" />
               </VCol>
 
 
@@ -227,9 +249,10 @@ defineExpose({
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento del recien nacido"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.numDocumentoIdentificacion"
-                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" />
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
+                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
+                  maxlength="20" minlength="4" />
               </VCol>
 
               <VCol cols="12" md="6">

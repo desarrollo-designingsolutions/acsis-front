@@ -272,6 +272,11 @@ onUnmounted(() => {
   stopListening();
 });
 
+// Validations
+const note_numberRules = [
+  value => lengthValidator(value, 20),
+];
+
 </script>
 
 
@@ -324,7 +329,8 @@ onUnmounted(() => {
 
                     <VCol cols="12" sm="4">
                       <AppTextField v-model="form.note_number" label="Número de Nota"
-                        :error-messages="errorsBack.note_number" @input="errorsBack.note_number = ''" clearable />
+                        :error-messages="errorsBack.note_number" :rules="note_numberRules"
+                        @input="errorsBack.note_number = ''" clearable counter maxlength="20" minlength="20" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
