@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Ajv from 'ajv';
 import Localize from 'ajv-i18n';
+import moment from 'moment';
 import { computed, ref } from 'vue';
 import schema from './validJSONSchema.json';
 
@@ -14,31 +15,15 @@ const isLoading = ref(false)
 const ajv = new Ajv({
   allErrors: true,
   strict: false,
-  allowUnionTypes: true, // Necesario en algunas versiones
+  allowUnionTypes: true,
   formats: {
     'date-time-custom': {
-      validate: (dateTimeString: any) => {
-        const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
-        if (!regex.test(dateTimeString)) return false
-
-        try {
-          const [datePart, timePart] = dateTimeString.split(' ')
-          const [year, month, day] = datePart.split('-').map(Number)
-          const [hours, minutes] = timePart.split(':').map(Number)
-
-          if (month < 1 || month > 12) return false
-          if (day < 1 || day > 31) return false
-          if (hours < 0 || hours > 23) return false
-          if (minutes < 0 || minutes > 59) return false
-
-          return true
-        } catch {
-          return false
-        }
+      validate: (dateTimeString: string) => {
+        return moment(dateTimeString, 'YYYY-MM-DD HH:mm', true).isValid();
       }
     }
   }
-})
+});
 
 const formattedJson = computed(() => {
   return jsonContent.value ? JSON.stringify(jsonContent.value, null, 2) : ''
@@ -155,20 +140,47 @@ const formatErrorMessage = (error: any) => {
   }
 
   if (error.keyword === 'pattern') {
-    // Caso específico para el patrón ^(.{0}|.{4,25})$
-    if (error.params.pattern === '^(.{0}|.{4,25})$') {
-      return 'El campo debe estar vacío o tener entre 4 y 25 caracteres';
-    }
-    // Caso específico para el patrón ^(.{0}|.{2})$
-    if (error.params.pattern === '^(.{0}|.{2})$') {
-      return 'El campo debe estar vacío o tener exactamente 2 caracteres';
-    }
-    // Mensaje genérico para otros patrones
-    return `El valor no cumple con el formato requerido (patrón: ${error.params.pattern})`;
+    return getPatternErrorMessage(error.params.pattern);
   }
 
   // Mensaje genérico (traducido por ajv-i18n)
   return error.message || 'Error de validación';
+};
+
+const getPatternErrorMessage = (pattern: string): string => {
+  // Expresión regular mejorada para capturar más variantes de patrones
+  const patternRegex = /^\^\((?:\|?\.\{(\d+)(?:,(\d+))?\}|\.\{0\}\|\.\{(\d+)(?:,(\d+))?\})\)\$$/;
+
+  const match = pattern.match(patternRegex);
+
+  if (match) {
+    // Para patrones como ^(|.{4,25})$ o ^(.{4,25})$
+    if (match[1] !== undefined && match[2] !== undefined) {
+      const min = match[1];
+      const max = match[2];
+      return `El campo debe contener entre ${min} y ${max} caracteres`;
+    }
+
+    // Para patrones como ^(.{0}|.{4,25})$
+    if (match[3] !== undefined) {
+      const min = match[3];
+      const max = match[4] || min; // Si no hay máximo, usar el mínimo
+
+      if (min === max) {
+        return `El campo debe estar vacío o tener exactamente ${min} ${min === '1' ? 'caracter' : 'caracteres'}`;
+      }
+      return `El campo debe estar vacío o tener entre ${min} y ${max} caracteres`;
+    }
+
+    // Para patrones como ^(|.{5})$ (longitud exacta)
+    if (match[1] !== undefined && match[2] === undefined) {
+      const length = match[1];
+      return `El campo debe contener exactamente ${length} ${length === '1' ? 'caracter' : 'caracteres'}`;
+    }
+  }
+
+  // Caso para patrones no reconocidos
+  return `El valor no cumple con el formato requerido (patrón: ${pattern})`;
 };
 
 const formatParams = (params: any) => {
