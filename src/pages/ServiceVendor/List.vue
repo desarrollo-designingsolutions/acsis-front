@@ -36,6 +36,9 @@ const optionsFilter = ref({
 const refTableFull = ref()
 const optionsTable = {
   url: "/serviceVendor/paginate",
+  paramsGlobal: {
+    company_id: authenticationStore.company.id,
+  },
   headers: [
     { key: 'name', title: 'Razon social' },
     { key: 'nit', title: 'Nit' },
