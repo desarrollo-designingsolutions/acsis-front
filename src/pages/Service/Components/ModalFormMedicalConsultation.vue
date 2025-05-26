@@ -197,7 +197,6 @@ watch(
 // Validations
 const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
-  value => requiredValidator(value),
 ];
 
 const numDocumentoIdentificacionRules = [
@@ -329,9 +328,8 @@ const numDocumentoIdentificacionRules = [
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
-                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
-                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
+                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
               </VCol>

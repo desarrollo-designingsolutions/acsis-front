@@ -34,13 +34,11 @@ const form = ref({
   codSexoBiologico_id: null as string | null,
   peso: null as string | null,
   codDiagnosticoPrincipal_id: null as string | null,
-  condicionDestino: null as string | null,
   condicionDestinoUsuarioEgreso_id: null as string | null,
   codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
   tipoDocumentoIdentificacion_id: null as string | null,
   numDocumentoIdentificacion: null as string | null,
-  numFEVPagoModerador: null as string | null,
 })
 
 const handleClearForm = () => {
@@ -209,12 +207,6 @@ const pesoRules = [
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="condicionDestino" v-model="form.condicionDestino" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.condicionDestino"
-                  @input="errorsBack.condicionDestino = ''" :disabled="disabledFiledsView" />
-              </VCol>
-
-              <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="condicionDestinoUsuarioEgreso"
                   v-model="form.condicionDestinoUsuarioEgreso_id" :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.condicionDestinoUsuarioEgreso_id"
@@ -253,12 +245,6 @@ const pesoRules = [
                   :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
                   maxlength="20" minlength="4" />
-              </VCol>
-
-              <VCol cols="12" md="6">
-                <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.numFEVPagoModerador"
-                  @input="errorsBack.numFEVPagoModerador = ''" :disabled="disabledFiledsView" />
               </VCol>
 
             </VRow>

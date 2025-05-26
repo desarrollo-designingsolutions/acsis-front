@@ -21,7 +21,12 @@ const ajv = new Ajv({
       validate: (dateTimeString: string) => {
         return moment(dateTimeString, 'YYYY-MM-DD HH:mm', true).isValid();
       }
-    }
+    },
+    'date-time-custom-user': {
+      validate: (dateTimeString: string) => {
+        return moment(dateTimeString, 'YYYY-MM-DD', true).isValid();
+      }
+    },
   }
 });
 
@@ -301,17 +306,17 @@ const copyJsonToClipboard = async () => {
 
 <style scoped>
 .json-content {
-  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-family: Menlo, Monaco, Consolas, monospace;
   font-size: 0.875rem;
   line-height: 1.5;
+  max-block-size: 500px;
+  overflow-y: auto;
   white-space: pre-wrap;
   word-break: break-all;
-  max-height: 500px;
-  overflow-y: auto;
 }
 
 .validation-content {
-  max-height: 500px;
+  max-block-size: 500px;
   overflow-y: auto;
 }
 </style>

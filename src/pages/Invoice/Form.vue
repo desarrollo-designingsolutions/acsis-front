@@ -226,8 +226,7 @@ const openModalListInvoicePayment = () => {
 }
 
 const checkInvoiceNumber = async () => {
-
-  if (form.value.invoice_number != null) {
+  if (form.value.invoice_number) {
     const url = '/invoice/validateInvoiceNumber'
 
     const { response, data } = await useAxios(url).post({
@@ -277,6 +276,15 @@ const note_numberRules = [
   value => lengthValidator(value, 20),
 ];
 
+const invoice_numberRules = [
+  value => {
+    if (!form.value.tipo_nota_id && !form.value.note_number) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+
 </script>
 
 
@@ -288,7 +296,7 @@ const note_numberRules = [
           Formulario Factura
         </span>
       </VCardTitle>
-
+      {{ form.tipo_nota_id }}
       <VCardText>
         <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
 
@@ -347,7 +355,7 @@ const note_numberRules = [
                     </VCol>
 
                     <VCol cols="12" sm="3">
-                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="[requiredValidator]"
+                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="invoice_numberRules"
                         v-model="form.invoice_number" label="Número de Factura"
                         :error-messages="errorsBack.invoice_number" @input="errorsBack.invoice_number = ''" clearable />
                     </VCol>
