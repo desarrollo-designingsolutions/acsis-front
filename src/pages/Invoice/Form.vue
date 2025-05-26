@@ -296,7 +296,6 @@ const invoice_numberRules = [
           Formulario Factura
         </span>
       </VCardTitle>
-      {{ form.tipo_nota_id }}
       <VCardText>
         <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
 
