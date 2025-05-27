@@ -21,6 +21,7 @@ const isDialogVisible = ref<boolean>(false);
 const loading = reactive({
   excel: false,
   getData: false,
+  submit: false,
 });
 
 // Inicializar objData con un valor por defecto
@@ -67,13 +68,39 @@ const cancel = () => {
   handleDialogVisible();
 };
 
+const fetchForm = async () => {
+      loading.submit = true;
+    const { response, data } = await useAxios(`/invoice/uploadJson`).post();
+    
+    if (response.status == 200 && data) {
+      
+    }
+    loading.submit = false;
+}
+const submitForm = async () => {
+  if (objData.value.errors.length == 0) {
+    fetchForm();
+  } else {
+    refModalQuestion.value.componentData.title = 'Esta seguro qeu desea continuar.';
+    refModalQuestion.value.componentData.isDialogVisible = true;
+  }
+};
+
+// Computed que verifica si al menos uno de los valores es true
+const isLoading = computed(() => {
+  return Object.values(loading).some(value => value);
+});
+
+// ModalQuestion
+const refModalQuestion = ref();
+
 </script>
 
 <template>
   <div>
     <VDialog v-model="isDialogVisible" :overlay="false" transition="dialog-transition" persistent>
       <DialogCloseBtn @click="handleDialogVisible" />
-      <VCard :loading="loading.getData" :disabled="loading.getData" class="w-100">
+      <VCard :loading="isLoading" :disabled="isLoading" class="w-100">
         <div>
           <VToolbar color="primary">
             <VToolbarTitle>{{ titleModal }}</VToolbarTitle>
@@ -100,11 +127,17 @@ const cancel = () => {
         </VCardText>
 
         <VCardText class="d-flex justify-end gap-3 flex-wrap">
-          <VBtn :loading="loading.getData" color="secondary" variant="tonal" @click="cancel">
+          <VBtn :loading="isLoading" color="secondary" variant="tonal" @click="cancel">
             Cerrar
+          </VBtn>
+          <VBtn :disabled="isLoading" :loading="isLoading" @click="submitForm()" color="primary">
+            Continuar
           </VBtn>
         </VCardText>
       </VCard>
     </VDialog>
+
+    <ModalQuestion ref="refModalQuestion" />
+
   </div>
 </template>
