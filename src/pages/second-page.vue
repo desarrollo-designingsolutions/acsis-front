@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ValidJSONSchema from "@/pages/Invoice/Components/ValidJSONSchema.vue";
+import ListTables from "@/pages/Redis/Components/ListTables.vue";
 
 </script>
 
 <template>
   <div>
-    <ValidJSONSchema />
-
+    <!-- <ValidJSONSchema /> -->
+    <ListTables></ListTables>
   </div>
 </template>

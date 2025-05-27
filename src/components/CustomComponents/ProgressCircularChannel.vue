@@ -25,7 +25,7 @@ const echoChannel = () => {
     .listen('ProgressCircular', (event: any) => {
       progressValue.value = event.progress
 
-      if (event.progress === 100) {
+      if (event.progress == 100) {
         setTimeout(() => {
           progressValue.value = 0
         }, 1000);

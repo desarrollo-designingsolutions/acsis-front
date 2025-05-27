@@ -50,6 +50,7 @@ declare module 'vue-router/auto-routes' {
     'Patient-Form': RouteRecordInfo<'Patient-Form', 'patient-Form/:action/:id?', Record<never, never>, Record<never, never>>,
     'redis-components-cache-hit-rate-chart': RouteRecordInfo<'redis-components-cache-hit-rate-chart', '/Redis/Components/CacheHitRateChart', Record<never, never>, Record<never, never>>,
     'redis-components-list-cache-keys': RouteRecordInfo<'redis-components-list-cache-keys', '/Redis/Components/ListCacheKeys', Record<never, never>, Record<never, never>>,
+    'redis-components-list-tables': RouteRecordInfo<'redis-components-list-tables', '/Redis/Components/ListTables', Record<never, never>, Record<never, never>>,
     'redis-components-request-volume-chart': RouteRecordInfo<'redis-components-request-volume-chart', '/Redis/Components/RequestVolumeChart', Record<never, never>, Record<never, never>>,
     'redis-components-response-time-chart': RouteRecordInfo<'redis-components-response-time-chart', '/Redis/Components/ResponseTimeChart', Record<never, never>, Record<never, never>>,
     'Redis-Index': RouteRecordInfo<'Redis-Index', '/Redis/Index', Record<never, never>, Record<never, never>>,
