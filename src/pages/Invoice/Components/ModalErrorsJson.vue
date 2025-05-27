@@ -81,7 +81,7 @@ const submitForm = async () => {
   if (objData.value.errors.length == 0) {
     fetchForm();
   } else {
-    refModalQuestion.value.componentData.title = 'Esta seguro qeu desea continuar.';
+    refModalQuestion.value.componentData.title = 'Esta seguro que desea continuar.';
     refModalQuestion.value.componentData.isDialogVisible = true;
   }
 };
