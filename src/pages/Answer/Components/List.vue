@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import ModalListAnswer from "@/pages/Answer/Components/ModalList.vue";
-import ModalForm from "@/pages/Glosa/Components/ModalForm.vue";
+import ModalForm from "@/pages/Answer/Components/ModalForm.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const authenticationStore = useAuthenticationStore();
 
 const props = defineProps({
-  service_id: {
+  glosa_id: {
     type: String,
   },
   total_value: {
@@ -22,20 +21,21 @@ const props = defineProps({
 const refTableFull = ref()
 
 const optionsTable = ref({
-  url: "/glosa/paginate",
+  url: "/glosaAnswer/paginate",
   headers: [
-    { key: 'code_glosa_description', title: 'Código de glosa', width: 400 },
-    { key: 'glosa_value', title: 'Valor', width: 200 },
-    { key: 'date', title: 'Fecha', width: 200 },
+    { key: 'value_approved', title: 'Valor aprobado', width: 400 },
+    { key: 'value_accepted', title: 'Valor aceptado', width: 200 },
+    { key: 'date_answer', title: 'Fecha', width: 200 },
     { key: 'observation', title: 'Observación', width: 200 },
+    { key: 'status', title: 'Estado', width: 200 },
     { key: 'actions', title: 'Acciones', width: 50, sortable: false },
   ],
   paramsGlobal: {
-    service_id: props.service_id
+    glosa_id: props.glosa_id
   },
   actions: {
     delete: {
-      url: '/glosa/delete',
+      url: '/glosaAnswer/delete',
       show: props.showBtnsView // Asignar el valor de props.showBtnsView
     },
     edit: {
@@ -54,15 +54,15 @@ const optionsFilter = ref({
 const refModalForm = ref()
 
 const openModalFormCreate = () => {
-  refModalForm.value.openModal({ service_id: props.service_id, total_value: props.total_value })
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, total_value: props.total_value })
 }
 
 const openModalFormEdit = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value })
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value })
 }
 
 const openModalFormView = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value }, true)
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value }, true)
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -83,16 +83,6 @@ const handleForceSearch = (params) => {
   }
 };
 
-//ModalListAnswer
-const refModalListAnswer = ref()
-
-const openModalListAnswer = (data: any) => {
-  console.log(data)
-  refModalListAnswer.value.openModal({
-    ...data,
-  })
-}
-
 </script>
 
 <template>
@@ -101,12 +91,12 @@ const openModalListAnswer = (data: any) => {
     <VCard>
       <VCardTitle class="d-flex justify-space-between">
         <span>
-          Glosas
+          Respuestas
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
           <VBtn v-if="showBtnsView" @click="openModalFormCreate()">
-            Crear Glosa
+            Crear Respuesta
           </VBtn>
         </div>
       </VCardTitle>
@@ -121,22 +111,10 @@ const openModalListAnswer = (data: any) => {
         <TableFull ref="refTableFull" :options="optionsTable" @edit="openModalFormEdit" @view="openModalFormView"
           @update:loading="tableLoading = $event" :disable-url-update="disableUrlUpdate">
 
-          <template #item.actions2="{ item }">
-
-            <VListItem @click="openModalListAnswer(item)">
-              <template #prepend>
-                <VIcon size="22" icon="tabler-square-rounded-arrow-right" />
-              </template>
-              <span>Listado Respuestas</span>
-            </VListItem>
-          </template>
-
         </TableFull>
 
       </VCardText>
     </VCard>
     <ModalForm ref="refModalForm" @execute="handleForceSearch"></ModalForm>
-
-    <ModalListAnswer ref="refModalListAnswer"></ModalListAnswer>
   </div>
 </template>

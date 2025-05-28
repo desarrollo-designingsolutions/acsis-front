@@ -184,12 +184,12 @@ onMounted(() => {
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
-          <VBtn class="me-2 mb-2" @click="openModalFormMasiveGlosa">
+          <!-- <VBtn class="me-2 mb-2" @click="openModalFormMasiveGlosa">
             <template #prepend>
               <VIcon start icon="tabler-folder" />
             </template>
-            Glosa Masiva
-          </VBtn>
+Glosa Masiva
+</VBtn> -->
 
           <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.btnCreate"
             :disabled="loading.btnCreate">

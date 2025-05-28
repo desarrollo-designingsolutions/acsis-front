@@ -13,29 +13,31 @@ const errorsBack = ref<IErrorsBack>({});
 const refForm = ref<VForm>();
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Glosa")
+const titleModal = ref<string>("Respuesta")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const codeGlosa_arrayInfo = ref([])
+const statusAnswerEnumValues = ref([])
 
 const form = ref({
   id: null as string | null,
   company_id: null as string | null,
   user_id: null as string | null,
-  service_id: null as string | null,
-  code_glosa_id: null as string | null,
-  glosa_value: null as number | string | null,
+  glosa_id: null as string | null,
   observation: null as string | null,
   file: null as string | File | null,
-  date: null as string | null,
+  date_answer: null as string | null,
+  value_approved: null as string | null,
+  value_accepted: null as string | null,
+  status_id: null as string | null,
 })
 
-const totalValueService = ref<string>('')
-const totalValueGlosa = ref<number | string | null>(0)
+const totalValueApproved = ref<number | string | null>(0)
+const totalValueAccepted = ref<number | string | null>(0)
 
 const dataCalculate = reactive({
-  real_glosa_value: 0 as number,
+  real_value_approved: 0 as number,
+  real_value_accepted: 0 as number,
 })
 
 const handleClearForm = () => {
@@ -51,14 +53,13 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async ({ id, service_id, total_value }: any, disabled: boolean = false) => {
+const openModal = async ({ id, glosa_id }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
 
   disabledFiledsView.value = disabled;
   form.value.id = id;
-  form.value.service_id = service_id;
-  totalValueService.value = total_value;
+  form.value.glosa_id = glosa_id;
 
   await fetchDataForm();
 };
@@ -66,17 +67,20 @@ const openModal = async ({ id, service_id, total_value }: any, disabled: boolean
 const fetchDataForm = async () => {
   try {
     isLoading.value = true;
-    const url = form.value.id ? `/glosa/${form.value.id}/edit` : `/glosa/create`;
+    const url = form.value.id ? `/glosaAnswer/${form.value.id}/edit` : `/glosaAnswer/create`;
     const { data, response } = await useAxios(url).get();
 
     if (response.status === 200 && data) {
-      codeGlosa_arrayInfo.value = data.codeGlosa_arrayInfo
+      statusAnswerEnumValues.value = data.statusAnswerEnumValues
 
       if (data.form) {
         form.value = cloneObject(data.form);
-        totalValueGlosa.value = form.value.glosa_value;
-        form.value.glosa_value = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
-        dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
+        totalValueApproved.value = form.value.value_approved;
+        totalValueAccepted.value = form.value.value_accepted;
+        form.value.value_approved = currencyFormat(formatToCurrencyFormat(totalValueApproved.value));
+        dataCalculate.real_value_approved = cloneObject(totalValueApproved.value);
+        form.value.value_accepted = currencyFormat(formatToCurrencyFormat(totalValueAccepted.value));
+        dataCalculate.real_value_accepted = cloneObject(totalValueAccepted.value);
       }
     }
   } catch (error) {
@@ -95,18 +99,19 @@ const submitForm = async () => {
     }
 
     isLoading.value = true;
-    const url = form.value.id ? `/glosa/update/${form.value.id}` : `/glosa/store`;
+    const url = form.value.id ? `/glosaAnswer/update/${form.value.id}` : `/glosaAnswer/store`;
 
     const formData = new FormData();
     formData.append("id", String(form.value.id));
     formData.append("company_id", String(authenticationStore.company.id));
     formData.append("user_id", String(authenticationStore.user.id));
-    formData.append("service_id", String(form.value.service_id));
-    formData.append("code_glosa_id", String(form.value.code_glosa_id.value));
-    formData.append("glosa_value", String(dataCalculate.real_glosa_value));
+    formData.append("glosa_id", String(form.value.glosa_id));
     formData.append("observation", String(form.value.observation));
     formData.append("file", inputFile.value.imageFile || form.value.file);
-    formData.append("date", String(form.value.date));
+    formData.append("date_answer", String(form.value.date_answer));
+    formData.append("value_approved", String(dataCalculate.real_value_approved));
+    formData.append("value_accepted", String(dataCalculate.real_value_accepted));
+    formData.append("status", String(form.value.status_id));
 
     const { data, response } = await useAxios(url).post(formData);
 
@@ -119,29 +124,10 @@ const submitForm = async () => {
       errorsBack.value = data.errors ?? {};
     }
   } catch (error) {
-    toast('Error al guardar la glosa', '', 'warning');
+    toast('Error al guardar la answer', '', 'warning');
   } finally {
     isLoading.value = false;
   }
-};
-
-// Validators
-const positiveValidator = (value: number | string) => {
-  const num = typeof value === 'string' ? parseFloat(value) : value;
-  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
-};
-
-const mayorTotalValueServiceValidator = () => {
-
-  return dataCalculate.real_glosa_value > parseFloat(totalValueService.value)
-    ? 'El valor debe ser menor o igual al valor total del servicio'
-    : true;
-};
-
-// Utility functions
-const parseEuropeanNumber = (value: string): number => {
-  if (!value) return 0;
-  return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 };
 
 const dataReal = (data: any, field: string) => {
@@ -179,6 +165,12 @@ const openModalQuestion = (response: IImageSelected) => {
 defineExpose({
   openModal
 });
+
+// Validators
+const positiveValidator = (value: number | string) => {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
+};
 </script>
 
 <template>
@@ -195,28 +187,28 @@ defineExpose({
 
         <VCardText class="pt-6">
           <VForm ref="refForm" @submit.prevent>
-            <div class="glosa-form pa-4">
+            <div class="answer-form pa-4">
               <VRow>
-                <VCol cols="12" md="6">
-                  <AppSelectRemote label="Código Glosa" :requiredField="true" :rules="[requiredValidator]"
-                    :disabled="disabledFiledsView" v-model="form.code_glosa_id" url="/selectInfiniteCodeGlosa"
-                    array-info="codeGlosa" :error-messages="errorsBack.code_glosa_id"
-                    @input="errorsBack.code_glosa_id = ''" clearable :itemsData="codeGlosa_arrayInfo"
-                    :firstFetch="false" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <FormatCurrency label="Valor glosa" :requiredField="true" :disabled="disabledFiledsView"
-                    :rules="[requiredValidator, positiveValidator, mayorTotalValueServiceValidator]"
-                    v-model="form.glosa_value" @realValue="dataReal($event, 'real_glosa_value')"
-                    :error-messages="errorsBack.glosa_value" @input="errorsBack.glosa_value = ''" clearable />
-                </VCol>
-
                 <VCol cols="12">
                   <AppTextarea label="Observación" :requiredField="true" :rules="[requiredValidator]"
                     :disabled="disabledFiledsView" v-model="form.observation" :error-messages="errorsBack.observation"
                     @input="errorsBack.observation = ''" clearable rows="3" />
                 </VCol>
+
+                <VCol cols="12" md="6">
+                  <FormatCurrency label="Valor Aprobado" :requiredField="true" :disabled="disabledFiledsView"
+                    :rules="[requiredValidator, positiveValidator]" v-model="form.value_approved"
+                    @realValue="dataReal($event, 'real_value_approved')" :error-messages="errorsBack.value_approved"
+                    @input="errorsBack.value_approved = ''" clearable />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <FormatCurrency label="Valor Aceptado" :requiredField="true" :disabled="disabledFiledsView"
+                    :rules="[requiredValidator, positiveValidator]" v-model="form.value_accepted"
+                    @realValue="dataReal($event, 'real_value_accepted')" :error-messages="errorsBack.value_accepted"
+                    @input="errorsBack.value_accepted = ''" clearable />
+                </VCol>
+
 
                 <VCol cols="12" md="6">
                   <AppFileInput :disabled="disabledFiledsView" label="Archivo adjunto"
@@ -226,8 +218,14 @@ defineExpose({
 
                 <VCol cols="12" md="6">
                   <AppTextField :disabled="disabledFiledsView" clearable type="date" :requiredField="true"
-                    :error-messages="errorsBack.date" :rules="[requiredValidator]" v-model="form.date"
-                    label="Fecha De Notificacion De Glosa" @input="errorsBack.date = ''" />
+                    :error-messages="errorsBack.date_answer" :rules="[requiredValidator]" v-model="form.date_answer"
+                    label="Fecha De Respuesta" @input="errorsBack.date_answer = ''" />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppSelect :requiredField="true" :items="statusAnswerEnumValues" label="Estado"
+                    :rules="[requiredValidator]" v-model="form.status_id" :error-messages="errorsBack.status_id"
+                    clearable :disabled="disabledFiledsView" />
                 </VCol>
               </VRow>
             </div>
@@ -259,7 +257,7 @@ defineExpose({
   border-radius: 8px;
 }
 
-.glosa-form {
+.answer-form {
   border-radius: 8px;
   background-color: rgba(var(--v-theme-surface-variant), 0.05);
 }

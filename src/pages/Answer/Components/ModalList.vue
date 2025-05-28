@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import ListGlosa from "@/pages/Glosa/Components/List.vue";
+import ListAnswers from "@/pages/Answer/Components/List.vue";
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
 const authenticationStore = useAuthenticationStore();
 
 const emit = defineEmits(["execute"])
 
-const titleModal = ref<string>("Listado de Glosas")
+const titleModal = ref<string>("Listado de Respuestas")
 const isDialogVisible = ref<boolean>(false)
 const btnsView = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
@@ -16,7 +16,7 @@ const isLoading = ref<boolean>(false)
 
 const form = ref({
   id: null as string | null,
-  total_value_origin: null as string | null,
+  glosa_value: null as string | null,
 })
 
 const handleClearForm = () => {
@@ -31,17 +31,15 @@ const handleDialogVisible = () => {
   handleClearForm()
 };
 
-const openModal = async ({ id, nombre_servicio, codigo_servicio, total_value_origin, showBtnsView }: any, disabled: boolean = false) => {
+const openModal = async ({ id, code_glosa_description, code_glosa_code, glosa_value, showBtnsView }: any, disabled: boolean = false) => {
   disabledFiledsView.value = disabled
   btnsView.value = showBtnsView
 
   handleDialogVisible();
 
   form.value.id = id;
-  form.value.total_value_origin = total_value_origin;
-  titleModal.value = `Listado de Glosas: ${codigo_servicio} - ${nombre_servicio}`
-
-
+  form.value.glosa_value = glosa_value;
+  titleModal.value = `Listado de Respuestas: ${code_glosa_code} - ${code_glosa_description}`
 };
 
 defineExpose({
@@ -64,8 +62,8 @@ defineExpose({
         </VToolbar>
 
         <VCardText class="px-0">
-          <ListGlosa v-if="showList" :service_id="form.id" :total_value="form.total_value_origin"
-            :showBtnsView="btnsView"></ListGlosa>
+          <ListAnswers v-if="showList" :glosa_id="form.id" :total_value="form.glosa_value" :showBtnsView="btnsView">
+          </ListAnswers>
         </VCardText>
       </VCard>
     </VDialog>
