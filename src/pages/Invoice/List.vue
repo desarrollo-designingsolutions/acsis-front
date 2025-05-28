@@ -13,7 +13,7 @@ definePage({
   },
 });
 
-const loading = reactive({ excel: false, btnCreate: false, json: false, zip: false })
+const loading = reactive({ excel: false, json: false, zip: false })
 const route = useRoute()
 
 const authenticationStore = useAuthenticationStore();
@@ -78,15 +78,15 @@ const optionsTable = {
 }
 
 const goViewEdit = (data: any) => {
-  router.push({ name: "Invoice-Form", params: { action: "edit", type: data.type, id: data.id } })
+  router.push({ name: "Invoice-Form", params: { action: "edit", id: data.id } })
 }
 
-const goViewCreate = (type: any) => {
-  router.push({ name: "Invoice-Form", params: { action: "create", type: type.invoice_type_id } })
+const goViewCreate = () => {
+  router.push({ name: "Invoice-Form", params: { action: "create" } })
 }
 
 const goViewView = (data: any) => {
-  router.push({ name: "Invoice-Form", params: { action: "view", type: data.type, id: data.id } })
+  router.push({ name: "Invoice-Form", params: { action: "view", id: data.id } })
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -115,21 +115,7 @@ const downloadExcel = async () => {
   }
 }
 
-const invoiceTypeBtn = ref([]);
-
-const fetchDataBtn = async () => {
-  loading.btnCreate = true
-
-  const { data, response } = await useAxios("/invoice/loadBtnCreate").get()
-
-  if (response.status == 200 && data) {
-    invoiceTypeBtn.value = data.TypeInvoiceEnumValues;
-  }
-  loading.btnCreate = false
-}
-
 onMounted(() => {
-  fetchDataBtn();
 })
 
 const downloadJson = async (id: string, invoice_number: string) => {
@@ -255,17 +241,8 @@ const openModalUploadFileJson = () => {
             </VTooltip>
           </VBtn>
 
-          <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.btnCreate"
-            :disabled="loading.btnCreate">
+          <VBtn color="primary" @click="goViewCreate()">
             Registrar Factura
-            <VMenu activator="parent">
-              <VList>
-                <VListItem v-for="(item, index) in invoiceTypeBtn" :key="index"
-                  @click="goViewCreate({ invoice_type_id: item.id })">
-                  {{ item.name }}
-                </VListItem>
-              </VList>
-            </VMenu>
           </VBtn>
           <VBtn color="primary" @click="openModalUploadFileJson()">
             Cargar Json

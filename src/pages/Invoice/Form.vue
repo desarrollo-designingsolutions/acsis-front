@@ -10,7 +10,7 @@ import type { VForm } from 'vuetify/components/VForm';
 const authenticationStore = useAuthenticationStore();
 
 definePage({
-  path: "invoice-Form/:action/:type?/:id?",
+  path: "invoice-Form/:action/:id?",
   name: "Invoice-Form",
   meta: {
     redirectIfLoggedIn: true,
@@ -24,6 +24,7 @@ const errorsBack = ref<IErrorsBack>({});
 const disabledFiledsView = ref<boolean>(false);
 const route = useRoute()
 const formValidation = ref<VForm>()
+const formValidationPolicy = ref<VForm>()
 const loading = reactive({
   form: false,
 })
@@ -32,6 +33,7 @@ const entities_arrayInfo = ref([])
 const tipoNotas_arrayInfo = ref([])
 const patients_arrayInfo = ref([])
 const statusInvoiceEnum_arrayInfo = ref([])
+const insuranceStatus_arrayInfo = ref([])
 
 const form = ref({
   id: null as string | null,
@@ -53,18 +55,20 @@ const form = ref({
   status: null as string | null,
 })
 
-const soat = ref({
+const policy = ref({
   id: null as string | null,
   policy_number: null as string | null,
   accident_date: null as string | null,
   start_date: null as string | null,
   end_date: null as string | null,
+  insurance_statuse_id: null as string | null,
 })
 
 const totalValueGlosa = ref<string>('')
 const totalValuePaid = ref<string>('')
 const totalValueTotal = ref<string>('')
 const totalValueRemainingBalance = ref<string>('')
+const typeInvoiceEnumValues = ref()
 
 const clearForm = () => {
   for (const key in form.value) {
@@ -96,6 +100,9 @@ const fetchDataForm = async () => {
     tipoNotas_arrayInfo.value = data.tipoNotas_arrayInfo
     patients_arrayInfo.value = data.patients_arrayInfo
     statusInvoiceEnum_arrayInfo.value = data.statusInvoiceEnum_arrayInfo
+    typeInvoiceEnumValues.value = data.typeInvoiceEnumValues
+    insuranceStatus_arrayInfo.value = data.insuranceStatus_arrayInfo
+    form.value.type = 'INVOICE_TYPE_001'
 
     //formulario 
     if (data.form) {
@@ -107,7 +114,7 @@ const fetchDataForm = async () => {
       }
 
       if (form.value.type == 'INVOICE_TYPE_002') {
-        soat.value = cloneObject(data?.infoDataExtra)
+        policy.value = cloneObject(data?.infoDataExtra)
       }
 
       totalValuePaid.value = currencyFormat(formatToCurrencyFormat(form.value.value_paid));
@@ -131,19 +138,22 @@ const submitForm = async () => {
     return false
   }
 
+  if (form.value.type == 'INVOICE_TYPE_002' && validationsTypeForm.INVOICE_TYPE_002 == true) {
+    toast('Faltan Campos Por Diligenciar En El Formulario De Policy', '', 'danger')
+    return false;
+  }
+
   if (validation?.valid) {
 
     const url = form.value.id ? `/invoice/update/${form.value.id}` : `/invoice/store`
 
     form.value.company_id = authenticationStore.company.id;
 
-    form.value.type = route.params.type;
-
     let document: any = [];
 
     switch (form.value.type) {
       case 'INVOICE_TYPE_002':
-        document = { soat: soat.value };
+        document = { policy: policy.value };
         break;
 
       default:
@@ -161,11 +171,20 @@ const submitForm = async () => {
 
       form.value.id = data.form.id
 
-      if (form.value.type == 'INVOICE_TYPE_002') {
-        soat.value.id = data.infoDataExtra.id
+      policy.value = {
+        id: null,
+        policy_number: null,
+        accident_date: null,
+        start_date: null,
+        end_date: null,
+        insurance_statuse_id: null,
       }
 
-      router.replace({ name: "Invoice-Form", params: { type: data.form.type, id: data.form.id } });
+      if (form.value.type == 'INVOICE_TYPE_002') {
+        policy.value = data.infoDataExtra
+      }
+
+      router.replace({ name: "Invoice-Form", params: { id: data.form.id } });
 
       listenForInvoiceUpdates()
     }
@@ -285,6 +304,26 @@ const invoice_numberRules = [
   }
 ];
 
+const isDialogVisible = reactive({ INVOICE_TYPE_002: false })
+const validationsTypeForm = reactive({ INVOICE_TYPE_002: false })
+
+const openModalFormType = (type: any) => {
+  isDialogVisible[type] = !isDialogVisible[type];
+}
+
+const acceptFormPolicy = async () => {
+  const validation = await formValidationPolicy.value?.validate()
+
+  if (validation?.valid) {
+    validationsTypeForm.INVOICE_TYPE_002 = false
+
+    openModalFormType('INVOICE_TYPE_002');
+  }
+  else {
+    validationsTypeForm.INVOICE_TYPE_002 = true
+    toast('Faltan Campos Por Diligenciar', '', 'danger')
+  }
+}
 </script>
 
 
@@ -389,43 +428,28 @@ const invoice_numberRules = [
                       <FormatCurrency disabled label="Valor restante" v-model="totalValueRemainingBalance" />
                     </VCol>
 
+                    <VCol cols="12">
+                      <VRadioGroup v-model="form.type" inline>
+                        <VRadio v-for="(item, index) in typeInvoiceEnumValues" :key="index" :label="item.title"
+                          :value="item.type" @click="openModalFormType(item.type)" />
+                      </VRadioGroup>
+                    </VCol>
+
                   </VRow>
                 </VCardText>
               </AppCardActions>
             </VCol>
           </VRow>
 
-          <VRow v-if="route.params.type == 'INVOICE_TYPE_002'">
+          <VRow v-if="form.type == 'INVOICE_TYPE_002'">
             <VCol cols="12">
-              <AppCardActions title="Información SOAT" action-collapsed>
-                <VCardText>
-                  <VRow>
-                    <VCol cols="12" sm="4">
-                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="soat.policy_number"
-                        label="Número de Póliza" :error-messages="errorsBack.policy_number"
-                        @input="errorsBack.policy_number = ''" clearable />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha Siniestro"
-                        v-model="soat.accident_date" :error-messages="errorsBack.accident_date"
-                        :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha Inicio SOAT"
-                        v-model="soat.start_date" :error-messages="errorsBack.start_date" :rules="[requiredValidator]"
-                        :config="{ dateFormat: 'Y-m-d' }" />
-                    </VCol>
-
-                    <VCol cols="12" sm="4">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha Final SOAT"
-                        v-model="soat.end_date" :error-messages="errorsBack.end_date" :rules="[requiredValidator]"
-                        :config="{ dateFormat: 'Y-m-d' }" />
-                    </VCol>
-                  </VRow>
-                </VCardText>
-              </AppCardActions>
+              <VBtn @click="openModalFormType('INVOICE_TYPE_002')">
+                <template #append>
+                  <VIcon :icon="validationsTypeForm.INVOICE_TYPE_002 ? 'tabler-x' : 'tabler-check'"
+                    :color="validationsTypeForm.INVOICE_TYPE_002 ? 'danger' : 'success'"></VIcon>
+                </template>
+                Abrir Formulario Poliza
+              </VBtn>
             </VCol>
           </VRow>
 
@@ -468,6 +492,70 @@ const invoice_numberRules = [
     <ModalShowFiles ref="refModalShowFiles"></ModalShowFiles>
 
     <ModalListInvoicePayment ref="refModalListInvoicePayment"></ModalListInvoicePayment>
+
+    <VDialog v-model="isDialogVisible.INVOICE_TYPE_002" width="500">
+      <!-- Dialog close btn -->
+      <DialogCloseBtn @click="isDialogVisible.INVOICE_TYPE_002 = !isDialogVisible.INVOICE_TYPE_002" />
+
+      <!-- Dialog Content -->
+      <VCard>
+        <div>
+          <VToolbar color="primary">
+            <VToolbarTitle>Información Póliza</VToolbarTitle>
+          </VToolbar>
+        </div>
+        <VCardText>
+          <VForm ref="formValidationPolicy" :disabled="disabledFiledsView">
+
+            <VRow>
+              <VCol cols="12">
+                <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="policy.policy_number"
+                  label="Número de póliza" :error-messages="errorsBack.policy_number"
+                  @input="errorsBack.policy_number = ''" clearable />
+              </VCol>
+
+              <VCol cols="12">
+
+                <AppTextField clearable label="Fecha siniestro" v-model="policy.accident_date" :requiredField="true"
+                  :rules="[requiredValidator]" :error-messages="errorsBack.accident_date"
+                  @input="errorsBack.accident_date = ''" :disabled="disabledFiledsView" type="date" />
+
+              </VCol>
+
+              <VCol cols="12">
+                <AppTextField clearable :requiredField="true" label="Fecha inicio de vigencia de la póliza"
+                  v-model="policy.start_date" :error-messages="errorsBack.start_date" :rules="[requiredValidator]"
+                  :disabled="disabledFiledsView" type="date" />
+              </VCol>
+
+              <VCol cols="12">
+                <AppTextField clearable :requiredField="true" label="Fecha final de vigencia de la póliza"
+                  v-model="policy.end_date" :error-messages="errorsBack.end_date" :rules="[requiredValidator]"
+                  :disabled="disabledFiledsView" type="date" />
+              </VCol>
+
+              <VCol cols="12">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Estado de aseguramiento"
+                  v-model="policy.insurance_statuse_id" url="/selectInfiniteInsuranceStatus" arrayInfo="insuranceStatus"
+                  :requiredField="true" :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
+                  :itemsData="insuranceStatus_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+            </VRow>
+          </VForm>
+
+        </VCardText>
+
+        <VCardText class="d-flex justify-end gap-3 flex-wrap">
+          <VBtn :loading="isLoading" color="secondary" variant="tonal" @click="openModalFormType('INVOICE_TYPE_002')">
+            Cerrar
+          </VBtn>
+          <VBtn :disabled="isLoading" :loading="isLoading" @click="acceptFormPolicy()" color="primary">
+            Continuar
+          </VBtn>
+        </VCardText>
+      </VCard>
+    </VDialog>
 
   </div>
 </template>
