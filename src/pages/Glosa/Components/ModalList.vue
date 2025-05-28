@@ -35,12 +35,12 @@ const openModal = async ({ id, nombre_servicio, codigo_servicio, total_value_ori
   disabledFiledsView.value = disabled
   btnsView.value = showBtnsView
 
-  handleDialogVisible(); 
+  handleDialogVisible();
 
   form.value.id = id;
   form.value.total_value_origin = total_value_origin;
   titleModal.value = `Listado de Glosas: ${codigo_servicio} - ${nombre_servicio}`
- 
+
 
 };
 
@@ -58,7 +58,7 @@ defineExpose({
         <!-- Toolbar -->
 
         <VToolbar color="primary" class="rounded-t">
-          <VToolbarTitle class="text-h6 font-weight-medium">
+          <VToolbarTitle class="text-h6 ">
             {{ titleModal }}
           </VToolbarTitle>
         </VToolbar>
