@@ -1,5 +1,9 @@
 <script setup lang="ts">
 
+import { router } from "@/plugins/1.router";
+import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+const authenticationStore = useAuthenticationStore();
+
 // Interfaz para tipar los datos
 interface ValidationError {
   level: string;
@@ -12,6 +16,7 @@ interface ModalData {
   isValid: boolean;
   message: string | null;
   errors: ValidationError[];
+  validatedData: object;
 }
 
 const emit = defineEmits(["continue", "cancel"]);
@@ -25,12 +30,12 @@ const loading = reactive({
 });
 
 // Inicializar objData con un valor por defecto
-const objData = ref<ModalData>({ isValid: false, message: "", errors: [] });
+const objData = ref<ModalData>({ isValid: false, message: "", errors: [], validatedData: {} });
 
 const handleDialogVisible = () => {
   isDialogVisible.value = !isDialogVisible.value;
   if (!isDialogVisible.value) {
-    objData.value = { isValid: false, message: "", errors: [] }; // Limpiar datos al cerrar
+    objData.value = { isValid: false, message: "", errors: [], validatedData: {} }; // Limpiar datos al cerrar
   }
 };
 
@@ -69,13 +74,16 @@ const cancel = () => {
 };
 
 const fetchForm = async () => {
-      loading.submit = true;
-    const { response, data } = await useAxios(`/invoice/uploadJson`).post();
-    
-    if (response.status == 200 && data) {
-      
-    }
-    loading.submit = false;
+  loading.submit = true;
+  const { response, data } = await useAxios(`/invoice/jsonToForm`).post({
+    json: objData.value.validatedData,
+    company_id: authenticationStore.company.id,
+  });
+
+  if (response.status == 200 && data) {
+    router.push({ name: "Invoice-Form", params: { action: "edit", type: data.invoice.type, id: data.invoice.id } })
+  }
+  loading.submit = false;
 }
 const submitForm = async () => {
   if (objData.value.errors.length == 0) {
@@ -137,7 +145,7 @@ const refModalQuestion = ref();
       </VCard>
     </VDialog>
 
-    <ModalQuestion ref="refModalQuestion" />
+    <ModalQuestion ref="refModalQuestion" @success="fetchForm" />
 
   </div>
 </template>
