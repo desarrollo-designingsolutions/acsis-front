@@ -17,7 +17,7 @@ const titleModal = ref<string>("Respuesta")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const statusAnswerEnumValues = ref([])
+const statusGlosaAnswerEnumValues = ref([])
 
 const form = ref({
   id: null as string | null,
@@ -71,7 +71,7 @@ const fetchDataForm = async () => {
     const { data, response } = await useAxios(url).get();
 
     if (response.status === 200 && data) {
-      statusAnswerEnumValues.value = data.statusAnswerEnumValues
+      statusGlosaAnswerEnumValues.value = data.statusGlosaAnswerEnumValues
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -223,7 +223,7 @@ const positiveValidator = (value: number | string) => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect :requiredField="true" :items="statusAnswerEnumValues" label="Estado"
+                  <AppSelect :requiredField="true" :items="statusGlosaAnswerEnumValues" label="Estado"
                     :rules="[requiredValidator]" v-model="form.status_id" :error-messages="errorsBack.status_id"
                     clearable :disabled="disabledFiledsView" />
                 </VCol>

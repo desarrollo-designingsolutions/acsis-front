@@ -111,6 +111,12 @@ const handleForceSearch = (params) => {
         <TableFull ref="refTableFull" :options="optionsTable" @edit="openModalFormEdit" @view="openModalFormView"
           @update:loading="tableLoading = $event" :disable-url-update="disableUrlUpdate">
 
+          <template #item.status="{ item }">
+            <div>
+              <VChip>{{ item.status_description }}</VChip>
+            </div>
+          </template>
+
         </TableFull>
 
       </VCardText>
