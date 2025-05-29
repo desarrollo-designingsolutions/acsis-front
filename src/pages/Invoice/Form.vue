@@ -24,7 +24,7 @@ const errorsBack = ref<IErrorsBack>({});
 const disabledFiledsView = ref<boolean>(false);
 const route = useRoute()
 const formValidation = ref<VForm>()
-const formValidationPolicy = ref<VForm>()
+const formValidationSoat = ref<VForm>()
 const loading = reactive({
   form: false,
 })
@@ -55,7 +55,7 @@ const form = ref({
   status: null as string | null,
 })
 
-const policy = ref({
+const soat = ref({
   id: null as string | null,
   policy_number: null as string | null,
   accident_date: null as string | null,
@@ -114,7 +114,7 @@ const fetchDataForm = async () => {
       }
 
       if (form.value.type == 'INVOICE_TYPE_002') {
-        policy.value = cloneObject(data?.infoDataExtra)
+        soat.value = cloneObject(data?.infoDataExtra)
       }
 
       totalValuePaid.value = currencyFormat(formatToCurrencyFormat(form.value.value_paid));
@@ -139,7 +139,7 @@ const submitForm = async () => {
   }
 
   if (form.value.type == 'INVOICE_TYPE_002' && validationsTypeForm.INVOICE_TYPE_002 == true) {
-    toast('Faltan Campos Por Diligenciar En El Formulario De Policy', '', 'danger')
+    toast('Faltan Campos Por Diligenciar En El Formulario De Soat', '', 'danger')
     return false;
   }
 
@@ -153,7 +153,7 @@ const submitForm = async () => {
 
     switch (form.value.type) {
       case 'INVOICE_TYPE_002':
-        document = { policy: policy.value };
+        document = { soat: soat.value };
         break;
 
       default:
@@ -171,7 +171,7 @@ const submitForm = async () => {
 
       form.value.id = data.form.id
 
-      policy.value = {
+      soat.value = {
         id: null,
         policy_number: null,
         accident_date: null,
@@ -181,7 +181,7 @@ const submitForm = async () => {
       }
 
       if (form.value.type == 'INVOICE_TYPE_002') {
-        policy.value = data.infoDataExtra
+        soat.value = data.infoDataExtra
       }
 
       router.replace({ name: "Invoice-Form", params: { id: data.form.id } });
@@ -311,8 +311,8 @@ const openModalFormType = (type: any) => {
   isDialogVisible[type] = !isDialogVisible[type];
 }
 
-const acceptFormPolicy = async () => {
-  const validation = await formValidationPolicy.value?.validate()
+const acceptFormSoat = async () => {
+  const validation = await formValidationSoat.value?.validate()
 
   if (validation?.valid) {
     validationsTypeForm.INVOICE_TYPE_002 = false
@@ -324,6 +324,10 @@ const acceptFormPolicy = async () => {
     toast('Faltan Campos Por Diligenciar', '', 'danger')
   }
 }
+
+const titleTypeInvoice = computed(() => {
+  return typeInvoiceEnumValues.value?.find((item: any) => item.type === form.value.type)?.title || '';
+});
 </script>
 
 
@@ -333,6 +337,9 @@ const acceptFormPolicy = async () => {
       <VCardTitle class="d-flex justify-space-between">
         <span>
           Formulario Factura
+        </span>
+        <span class="pa-2 px-4 font-weight " style=" border-radius: 6px;">
+          {{ titleTypeInvoice }}
         </span>
       </VCardTitle>
       <VCardText>
@@ -448,7 +455,7 @@ const acceptFormPolicy = async () => {
                   <VIcon :icon="validationsTypeForm.INVOICE_TYPE_002 ? 'tabler-x' : 'tabler-check'"
                     :color="validationsTypeForm.INVOICE_TYPE_002 ? 'danger' : 'success'"></VIcon>
                 </template>
-                Abrir Formulario Poliza
+                Abrir Formulario Soat
               </VBtn>
             </VCol>
           </VRow>
@@ -501,22 +508,22 @@ const acceptFormPolicy = async () => {
       <VCard>
         <div>
           <VToolbar color="primary">
-            <VToolbarTitle>Información Póliza</VToolbarTitle>
+            <VToolbarTitle>Información Soat</VToolbarTitle>
           </VToolbar>
         </div>
         <VCardText>
-          <VForm ref="formValidationPolicy" :disabled="disabledFiledsView">
+          <VForm ref="formValidationSoat" :disabled="disabledFiledsView">
 
             <VRow>
               <VCol cols="12">
-                <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="policy.policy_number"
+                <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="soat.policy_number"
                   label="Número de póliza" :error-messages="errorsBack.policy_number"
                   @input="errorsBack.policy_number = ''" clearable />
               </VCol>
 
               <VCol cols="12">
 
-                <AppTextField clearable label="Fecha siniestro" v-model="policy.accident_date" :requiredField="true"
+                <AppTextField clearable label="Fecha siniestro" v-model="soat.accident_date" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.accident_date"
                   @input="errorsBack.accident_date = ''" :disabled="disabledFiledsView" type="date" />
 
@@ -524,19 +531,19 @@ const acceptFormPolicy = async () => {
 
               <VCol cols="12">
                 <AppTextField clearable :requiredField="true" label="Fecha inicio de vigencia de la póliza"
-                  v-model="policy.start_date" :error-messages="errorsBack.start_date" :rules="[requiredValidator]"
+                  v-model="soat.start_date" :error-messages="errorsBack.start_date" :rules="[requiredValidator]"
                   :disabled="disabledFiledsView" type="date" />
               </VCol>
 
               <VCol cols="12">
                 <AppTextField clearable :requiredField="true" label="Fecha final de vigencia de la póliza"
-                  v-model="policy.end_date" :error-messages="errorsBack.end_date" :rules="[requiredValidator]"
+                  v-model="soat.end_date" :error-messages="errorsBack.end_date" :rules="[requiredValidator]"
                   :disabled="disabledFiledsView" type="date" />
               </VCol>
 
               <VCol cols="12">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Estado de aseguramiento"
-                  v-model="policy.insurance_statuse_id" url="/selectInfiniteInsuranceStatus" arrayInfo="insuranceStatus"
+                  v-model="soat.insurance_statuse_id" url="/selectInfiniteInsuranceStatus" arrayInfo="insuranceStatus"
                   :requiredField="true" :rules="[requiredValidator]" clearable :params="paramsSelectInfinite"
                   :itemsData="insuranceStatus_arrayInfo" :firstFetch="false">
                 </AppSelectRemote>
@@ -550,7 +557,7 @@ const acceptFormPolicy = async () => {
           <VBtn :loading="isLoading" color="secondary" variant="tonal" @click="openModalFormType('INVOICE_TYPE_002')">
             Cerrar
           </VBtn>
-          <VBtn :disabled="isLoading" :loading="isLoading" @click="acceptFormPolicy()" color="primary">
+          <VBtn :disabled="isLoading" :loading="isLoading" @click="acceptFormSoat()" color="primary">
             Continuar
           </VBtn>
         </VCardText>
