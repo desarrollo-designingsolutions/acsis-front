@@ -17,7 +17,10 @@ definePage({
 
 const authenticationStore = useAuthenticationStore();
 
-const ipsCodHabilitacion_arrayInfo = ref([])
+const ipsables = ref<Array<{
+  label: string;
+  value: string;
+}>>([])
 
 const { toast } = useToast()
 const errorsBack = ref<IErrorsBack>({});
@@ -35,7 +38,9 @@ const form = ref({
   phone: null as string | null,
   address: null as string | null,
   email: null as string | null,
-  ips_cod_habilitacion_id: null as string | null,
+  ipsable_id: null as string | null,
+  ipsable_type: null as string | null,
+  type_vendor_id: null as string | null,
 })
 
 const clearForm = () => {
@@ -57,10 +62,14 @@ const fetchDataForm = async () => {
 
   if (response.status == 200 && data) {
     type_vendors.value = data.type_vendors
-    ipsCodHabilitacion_arrayInfo.value = data.ipsCodHabilitacion_arrayInfo
+    ipsables.value = data.ipsables
+
+    form.value.ipsable_type = ipsables.value.at(0)?.value ?? null;
 
     //formulario 
     if (data.form) {
+      console.log("data.form", data.form);
+
       form.value = cloneObject(data.form)
       tabs.value[1].show = true;
     }
@@ -137,7 +146,7 @@ const tabs = ref([
 ])
 
 const nitRules = [
-  value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
+  value => lengthBetweenValidator(value, 4, 12),
   value => requiredValidator(value),
 ];
 const phoneRules = [
@@ -146,6 +155,37 @@ const phoneRules = [
   value => (!value || value.length <= 10) || "El número no debe tener mas de 10 caracteres",
   value => positiveNumberValidator(value),
 ];
+
+
+interface IpsableSelect {
+  label: string;
+  url: string;
+  arrayInfo: string;
+  itemsData: any[];
+}
+
+const ipsables_select = computed<IpsableSelect>(() => {
+
+  if (form.value.ipsable_type) {
+    return ipsables.value.find(item => item.value === form.value.ipsable_type) || {
+      label: "",
+      url: "",
+      arrayInfo: "",
+      itemsData: [],
+    };
+  }
+
+  return {
+    label: "",
+    url: "",
+    arrayInfo: "",
+    itemsData: [],
+  };
+});
+
+const clearIpsable_type = () => {
+  form.value.ipsable_id = null
+}
 </script>
 
 
@@ -180,7 +220,8 @@ const phoneRules = [
                 </VCol>
                 <VCol sm="4">
                   <AppTextField :requiredField="true" :rules="nitRules" v-model="form.nit" label="Nit"
-                    :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable />
+                    :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable counter maxlength="12"
+                    minlength="4" />
                 </VCol>
                 <VCol sm="4">
                   <AppSelect :requiredField="true" :items="type_vendors" :rules="[requiredValidator]"
@@ -202,12 +243,18 @@ const phoneRules = [
                 </VCol>
 
                 <VCol sm="4">
-                  <AppSelectRemote clearable label="Código habilitación" v-model="form.ips_cod_habilitacion_id"
-                    :requiredField="true" :rules="[requiredValidator]"
-                    :error-messages="errorsBack.ips_cod_habilitacion_id"
-                    @input="errorsBack.ips_cod_habilitacion_id = ''" :disabled="disabledFiledsView"
-                    url="/selectInfiniteIpsCodHabilitacion" array-info="ipsCodHabilitacion"
-                    :itemsData="ipsCodHabilitacion_arrayInfo" :firstFetch="false" />
+                  <VRadioGroup v-model="form.ipsable_type" inline>
+                    <VRadio v-for="(item, index) in ipsables" :key="index" :label="item.label" :value="item.value"
+                      @click="clearIpsable_type" />
+                  </VRadioGroup>
+                </VCol>
+
+                <VCol sm="4">
+                  <AppSelectRemote clearable :label="ipsables_select.label" v-model="form.ipsable_id"
+                    :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.ipsable_id"
+                    @input="errorsBack.ipsable_id = ''" :disabled="disabledFiledsView" :url="ipsables_select.url"
+                    :array-info="ipsables_select.arrayInfo" :itemsData="ipsables_select.itemsData"
+                    :firstFetch="false" />
                 </VCol>
 
               </VRow>

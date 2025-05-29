@@ -293,7 +293,38 @@ onUnmounted(() => {
 // Validations
 const note_numberRules = [
   value => lengthValidator(value, 20),
+  value => {
+    if (form.value.tipo_nota_id) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
 ];
+const tipoNotaRules = [
+  value => {
+    if (form.value.note_number) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+const radication_dateRules = [
+  value => {
+    if (form.value.radication_number) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+const radication_numberRules = [
+  value => {
+    if (form.value.radication_date) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+
 
 const invoice_numberRules = [
   value => {
@@ -328,6 +359,8 @@ const acceptFormSoat = async () => {
 const titleTypeInvoice = computed(() => {
   return typeInvoiceEnumValues.value?.find((item: any) => item.type === form.value.type)?.title || '';
 });
+
+
 </script>
 
 
@@ -376,7 +409,8 @@ const titleTypeInvoice = computed(() => {
                       <AppSelectRemote :disabled="disabledFiledsView" label="Tipo Nota" v-model="form.tipo_nota_id"
                         url="/selectInfinitetipoNota" arrayInfo="tipoNotas" clearable :params="paramsSelectInfinite"
                         :itemsData="tipoNotas_arrayInfo" :firstFetch="false" :error-messages="errorsBack.note_number"
-                        @input="errorsBack.note_number = ''">
+                        @input="errorsBack.note_number = ''" :rules="tipoNotaRules"
+                        :requiredField="form.note_number ? true : false">
                       </AppSelectRemote>
                     </VCol>
 
@@ -395,9 +429,9 @@ const titleTypeInvoice = computed(() => {
 
 
                     <VCol cols="12" sm="3">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha de transacción"
+                      <AppTextField clearable :requiredField="true" type="date" label="Fecha de transacción"
                         v-model="form.invoice_date" :error-messages="errorsBack.invoice_date"
-                        :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
+                        :max="form.radication_date" :rules="[requiredValidator]" />
                     </VCol>
 
                     <VCol cols="12" sm="3">
@@ -407,19 +441,17 @@ const titleTypeInvoice = computed(() => {
                     </VCol>
 
                     <VCol cols="12" sm="3">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha Radicación"
-                        v-model="form.radication_date" :error-messages="errorsBack.radication_date"
-                        :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
+                      <AppTextField clearable type="date" label="Fecha Radicación" v-model="form.radication_date"
+                        :error-messages="errorsBack.radication_date" :min="form.invoice_date"
+                        :rules="radication_dateRules" :requiredField="form.radication_number ? true : false" />
                     </VCol>
 
                     <VCol cols="12" sm="3">
-                      <AppTextField :requiredField="true" :rules="[requiredValidator]" v-model="form.radication_number"
-                        label="Número de Radicado" :error-messages="errorsBack.radication_number"
-                        @input="errorsBack.radication_number = ''" clearable />
+                      <AppTextField :requiredField="form.radication_date ? true : false" :rules="radication_numberRules"
+                        v-model="form.radication_number" label="Número de Radicado"
+                        :error-messages="errorsBack.radication_number" @input="errorsBack.radication_number = ''"
+                        clearable />
                     </VCol>
-
-
-
 
                     <VCol cols="12" sm="3">
                       <FormatCurrency disabled label="Valor Glosado" v-model="totalValueGlosa" />
