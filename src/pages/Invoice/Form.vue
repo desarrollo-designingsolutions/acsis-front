@@ -382,8 +382,9 @@ const titleTypeInvoice = computed(() => {
 
                     <VCol cols="12" sm="4">
                       <AppTextField v-model="form.note_number" label="Número de Nota"
-                        :error-messages="errorsBack.note_number" :rules="note_numberRules"
-                        @input="errorsBack.note_number = ''" clearable counter maxlength="20" minlength="20" />
+                        :requiredField="form.tipo_nota_id ? true : false" :error-messages="errorsBack.note_number"
+                        :rules="note_numberRules" @input="errorsBack.note_number = ''" clearable counter maxlength="20"
+                        minlength="20" />
                     </VCol>
 
                     <VCol cols="12" sm="4">
@@ -394,14 +395,14 @@ const titleTypeInvoice = computed(() => {
 
 
                     <VCol cols="12" sm="3">
-                      <AppDateTimePicker clearable :requiredField="true" label="Fecha Factura"
+                      <AppDateTimePicker clearable :requiredField="true" label="Fecha de transacción"
                         v-model="form.invoice_date" :error-messages="errorsBack.invoice_date"
                         :rules="[requiredValidator]" :config="{ dateFormat: 'Y-m-d' }" />
                     </VCol>
 
                     <VCol cols="12" sm="3">
-                      <AppTextField @blur="checkInvoiceNumber" :requiredField="true" :rules="invoice_numberRules"
-                        v-model="form.invoice_number" label="Número de Factura"
+                      <AppTextField @blur="checkInvoiceNumber" :requiredField="form.tipo_nota_id ? false : true"
+                        :rules="invoice_numberRules" v-model="form.invoice_number" label="Número de Factura"
                         :error-messages="errorsBack.invoice_number" @input="errorsBack.invoice_number = ''" clearable />
                     </VCol>
 
