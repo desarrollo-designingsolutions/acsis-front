@@ -11,6 +11,8 @@ declare global {
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const EffectScope: typeof import('vue')['EffectScope']
   const ROLE_SUPERADMIN_UUID: typeof import('./src/utils/constants')['ROLE_SUPERADMIN_UUID']
+  const TYPE_CODE_GLOSA_001: typeof import('./src/utils/constants')['TYPE_CODE_GLOSA_001']
+  const TYPE_CODE_GLOSA_002: typeof import('./src/utils/constants')['TYPE_CODE_GLOSA_002']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const alphaDashValidator: typeof import('./src/@core/utils/validators')['alphaDashValidator']
   const alphaValidator: typeof import('./src/@core/utils/validators')['alphaValidator']
@@ -392,6 +394,8 @@ declare module 'vue' {
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly ROLE_SUPERADMIN_UUID: UnwrapRef<typeof import('./src/utils/constants')['ROLE_SUPERADMIN_UUID']>
+    readonly TYPE_CODE_GLOSA_001: UnwrapRef<typeof import('./src/utils/constants')['TYPE_CODE_GLOSA_001']>
+    readonly TYPE_CODE_GLOSA_002: UnwrapRef<typeof import('./src/utils/constants')['TYPE_CODE_GLOSA_002']>
     readonly acceptHMRUpdate: UnwrapRef<typeof import('pinia')['acceptHMRUpdate']>
     readonly alphaDashValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaDashValidator']>
     readonly alphaValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['alphaValidator']>

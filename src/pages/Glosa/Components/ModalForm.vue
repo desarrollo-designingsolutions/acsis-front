@@ -17,7 +17,12 @@ const titleModal = ref<string>("Glosa")
 const isDialogVisible = ref<boolean>(false)
 const disabledFiledsView = ref<boolean>(false)
 const isLoading = ref<boolean>(false)
-const codeGlosa_arrayInfo = ref([])
+const codeGlosa_arrayInfo1 = ref([])
+const codeGlosa_arrayInfo2 = ref([])
+const typeCodeGlosa_arrayInfo = ref<Array<{
+  title: string;
+  value: string;
+}>>([])
 
 const form = ref({
   id: null as string | null,
@@ -70,10 +75,17 @@ const fetchDataForm = async () => {
     const { data, response } = await useAxios(url).get();
 
     if (response.status === 200 && data) {
-      codeGlosa_arrayInfo.value = data.codeGlosa_arrayInfo
+      codeGlosa_arrayInfo1.value = data.codeGlosa1.codeGlosa_arrayInfo
+      codeGlosa_arrayInfo2.value = data.codeGlosa2.codeGlosa_arrayInfo
+
+      typeCodeGlosa_arrayInfo.value = data.typeCodeGlosa_arrayInfo
+
+      type_code_glosa_id.value = TYPE_CODE_GLOSA_001.id;
 
       if (data.form) {
         form.value = cloneObject(data.form);
+        type_code_glosa_id.value = data.type_code_glosa_id;
+
         totalValueGlosa.value = form.value.glosa_value;
         form.value.glosa_value = currencyFormat(formatToCurrencyFormat(totalValueGlosa.value));
         dataCalculate.real_glosa_value = cloneObject(totalValueGlosa.value);
@@ -179,6 +191,26 @@ const openModalQuestion = (response: IImageSelected) => {
 defineExpose({
   openModal
 });
+
+const paramsCodeGlosa = computed(() => {
+  return {
+    type_code_glosa_id: type_code_glosa_id.value,
+  };
+});
+const type_code_glosa_id = ref(null as string | null);
+
+
+const codeGlosa_arrayInfo = computed(() => {
+  if (type_code_glosa_id.value == TYPE_CODE_GLOSA_001.id) {
+    return codeGlosa_arrayInfo1.value;
+  } else if (type_code_glosa_id.value == TYPE_CODE_GLOSA_002.id) {
+
+    return codeGlosa_arrayInfo2.value;
+  }
+  return [];
+
+});
+
 </script>
 
 <template>
@@ -197,12 +229,19 @@ defineExpose({
           <VForm ref="refForm" @submit.prevent>
             <div class="glosa-form pa-4">
               <VRow>
+                <VCol cols="12">
+                  <VRadioGroup v-model="type_code_glosa_id" inline>
+                    <VRadio v-for="(item, index) in typeCodeGlosa_arrayInfo" :key="index" :label="item.title"
+                      :value="item.value" />
+                  </VRadioGroup>
+                </VCol>
+
                 <VCol cols="12" md="6">
                   <AppSelectRemote label="Código Glosa" :requiredField="true" :rules="[requiredValidator]"
                     :disabled="disabledFiledsView" v-model="form.code_glosa_id" url="/selectInfiniteCodeGlosa"
                     array-info="codeGlosa" :error-messages="errorsBack.code_glosa_id"
                     @input="errorsBack.code_glosa_id = ''" clearable :itemsData="codeGlosa_arrayInfo"
-                    :firstFetch="false" />
+                    :firstFetch="false" :params="paramsCodeGlosa" />
                 </VCol>
 
                 <VCol cols="12" md="6">
