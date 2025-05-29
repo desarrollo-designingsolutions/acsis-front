@@ -246,7 +246,7 @@ const numDocumentoIdentificacionRules = [
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppSelectRemote clearable label="codDiagnosticoMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
+                <AppSelectRemote clearable label="codDiagnosticoCausaMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
                   :error-messages="errorsBack.codDiagnosticoCausaMuerte_id"
                   @input="errorsBack.codDiagnosticoCausaMuerte_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
