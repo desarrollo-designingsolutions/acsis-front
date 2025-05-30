@@ -212,12 +212,10 @@ const ruleConceptoRecaudo = computed(() => {
 // Validations
 const idMIPRESRules = [
   value => lengthBetweenValidator(value, 0, 15),
-  value => requiredValidator(value),
 ];
 
 const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
-  value => requiredValidator(value),
 ];
 
 const numDocumentoIdentificacionRules = [
@@ -251,13 +249,13 @@ const cantidadOSRules = [
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"  
                   :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
                   @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :requiredField="true"
+                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES"  
                   :rules="idMIPRESRules" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
                   :disabled="disabledFiledsView" counter maxlength="15" />
               </VCol>

@@ -244,7 +244,7 @@ const numDocumentoIdentificacionRules = [
                   :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
                   :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
                   @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="16"
                   minlength="16" />
