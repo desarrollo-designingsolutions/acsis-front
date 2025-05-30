@@ -28,7 +28,10 @@ const conceptoRecaudo_arrayInfo = ref([])
 const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
-
+const invoice = ref<null | object>({
+  id: null as string | null,
+  invoice_date: null as string | null,
+})
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
@@ -62,6 +65,10 @@ const handleClearForm = () => {
   for (const key in form.value) {
     form.value[key] = null
   }
+  invoice.value = {
+    id: null,
+    invoice_date: null,
+  };
 }
 
 const handleDialogVisible = () => {
@@ -87,9 +94,15 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = service_id.value ? `/service/procedure/${service_id.value}/edit` : `/service/procedure/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        invoice_id: form.value.invoice_id,
+      }
+    });
 
     if (response.status === 200 && data) {
+
+      invoice.value = data.invoice
 
       cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
       viaIngresoUsuario_arrayInfo.value = data.viaIngresoUsuario_arrayInfo
@@ -233,7 +246,8 @@ const codComplicacionRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" />
+                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local"
+                  :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
               <VCol cols="12" md="6">

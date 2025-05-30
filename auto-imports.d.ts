@@ -62,6 +62,7 @@ declare global {
   const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
   const formatToCurrencyFormat: typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']
+  const formatToDateTimeLocal: typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']
   const formatToPorcentage: typeof import('./src/utils/formatCurrency')['formatToPorcentage']
   const formatoMoneda: typeof import('./src/@core/utils/helpers')['formatoMoneda']
   const getActivePinia: typeof import('pinia')['getActivePinia']
@@ -96,6 +97,8 @@ declare global {
   const mapStores: typeof import('pinia')['mapStores']
   const mapWritableState: typeof import('pinia')['mapWritableState']
   const markRaw: typeof import('vue')['markRaw']
+  const maxDateValidator: typeof import('./src/@core/utils/validators')['maxDateValidator']
+  const minDateValidator: typeof import('./src/@core/utils/validators')['minDateValidator']
   const nextTick: typeof import('vue')['nextTick']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -445,6 +448,7 @@ declare module 'vue' {
     readonly formatDate: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']>
     readonly formatToCurrencyFormat: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']>
+    readonly formatToDateTimeLocal: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']>
     readonly formatToPorcentage: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToPorcentage']>
     readonly formatoMoneda: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatoMoneda']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>

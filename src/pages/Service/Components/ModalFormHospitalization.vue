@@ -25,6 +25,10 @@ const cupsRips_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 
+const invoice = ref<null | object>({
+  id: null as string | null,
+  invoice_date: null as string | null,
+})
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
@@ -48,6 +52,10 @@ const handleClearForm = () => {
   for (const key in form.value) {
     form.value[key] = null
   }
+  invoice.value = {
+    id: null,
+    invoice_date: null,
+  };
 }
 
 const handleDialogVisible = () => {
@@ -70,9 +78,15 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = service_id.value ? `/service/hospitalization/${service_id.value}/edit` : `/service/hospitalization/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        invoice_id: form.value.invoice_id,
+      }
+    });
 
     if (response.status === 200 && data) {
+
+      invoice.value = data.invoice
 
       viaIngresoUsuario_arrayInfo.value = data.viaIngresoUsuario_arrayInfo
       cie10_arrayInfo.value = data.cie10_arrayInfo
@@ -143,6 +157,14 @@ const numDocumentoIdentificacionRules = [
   value => requiredValidator(value),
 ];
 
+
+const fechaInicioAtencionMaxDate = computed(() => {
+  if(form.value.fechaEgreso){
+    return formatToDateTimeLocal(form.value.fechaEgreso);
+  }else{
+    return formatToDateTimeLocal(invoice.value?.invoice_date);
+  }
+});
 </script>
 
 <template>
@@ -173,7 +195,7 @@ const numDocumentoIdentificacionRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" />
+                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" :max="fechaInicioAtencionMaxDate" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -255,7 +277,7 @@ const numDocumentoIdentificacionRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" :min="form.fechaInicioAtencion" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
             </VRow>

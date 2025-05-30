@@ -23,7 +23,10 @@ const sexos_arrayInfo = ref([])
 const tipoIdPisis_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
-
+const invoice = ref<null | object>({
+  id: null as string | null,
+  invoice_date: null as string | null,
+})
 const form = ref({
   id: null as string | null,
   invoice_id: null as string | null,
@@ -45,6 +48,10 @@ const handleClearForm = () => {
   for (const key in form.value) {
     form.value[key] = null
   }
+  invoice.value = {
+    id: null,
+    invoice_date: null,
+  };
 }
 
 const handleDialogVisible = () => {
@@ -67,9 +74,15 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = service_id.value ? `/service/newlyBorn/${service_id.value}/edit` : `/service/newlyBorn/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        invoice_id: form.value.invoice_id,
+      }
+    });
 
     if (response.status === 200 && data) {
+
+      invoice.value = data.invoice
 
       cie10_arrayInfo.value = data.cie10_arrayInfo
       condicionyDestinoUsuarioEgreso_arrayInfo.value = data.condicionyDestinoUsuarioEgreso_arrayInfo
@@ -149,6 +162,13 @@ const pesoRules = [
   value => requiredValidator(value),
 ];
 
+const fechaNacimientoMaxDate = computed(() => {
+  if(form.value.fechaEgreso){
+    return formatToDateTimeLocal(form.value.fechaEgreso);
+  }else{
+    return formatToDateTimeLocal(invoice.value?.invoice_date);
+  }
+});
 </script>
 
 <template>
@@ -169,7 +189,7 @@ const pesoRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaNacimiento" v-model="form.fechaNacimiento" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaNacimiento"
-                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local" />
+                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local" :max="fechaNacimientoMaxDate" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -226,7 +246,7 @@ const pesoRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"  :min="form.fechaNacimiento" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
 
