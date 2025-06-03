@@ -314,16 +314,56 @@ const radication_dateRules = [
       return requiredValidator(value);
     }
     return true;
+  },
+  value => {
+    if (form.value.status && form.value.status !== 'INVOICE_STATUS_008' && form.value.status !== 'INVOICE_STATUS_001') {
+      if (!form.value.radication_number) {
+        return 'El número de radicación es obligatorio ';
+      }
+    }
+
+    return true;
   }
 ];
+const radication_dateRequiredField = computed(() => {
+  if (form.value.status && form.value.status !== 'INVOICE_STATUS_008' && form.value.status !== 'INVOICE_STATUS_001') {
+    return true;
+  }
+  if (!form.value.radication_number) {
+    return false;
+  }
+
+  return true;
+});
+
 const radication_numberRules = [
   value => {
     if (form.value.radication_date) {
       return requiredValidator(value);
     }
     return true;
+  },
+  value => {
+    if (form.value.status !== 'INVOICE_STATUS_008' && form.value.status !== 'INVOICE_STATUS_001') {
+      if (!form.value.radication_number) {
+        return 'El número de radicación es obligatorio ';
+      }
+    }
+
+    return true;
   }
 ];
+
+const radication_numberRequiredField = computed(() => {
+  if (form.value.status !== 'INVOICE_STATUS_008' && form.value.status !== 'INVOICE_STATUS_001') {
+    return true;
+  }
+  if (!form.value.radication_date) {
+    return false;
+  }
+
+  return true;
+});
 
 
 const invoice_numberRules = [
@@ -443,11 +483,11 @@ const titleTypeInvoice = computed(() => {
                     <VCol cols="12" sm="3">
                       <AppTextField clearable type="date" label="Fecha Radicación" v-model="form.radication_date"
                         :error-messages="errorsBack.radication_date" :min="form.invoice_date"
-                        :rules="radication_dateRules" :requiredField="form.radication_number ? true : false" />
+                        :rules="radication_dateRules" :requiredField="radication_dateRequiredField" />
                     </VCol>
 
                     <VCol cols="12" sm="3">
-                      <AppTextField :requiredField="form.radication_date ? true : false" :rules="radication_numberRules"
+                      <AppTextField :requiredField="radication_numberRequiredField" :rules="radication_numberRules"
                         v-model="form.radication_number" label="Número de Radicado"
                         :error-messages="errorsBack.radication_number" @input="errorsBack.radication_number = ''"
                         clearable />

@@ -55,7 +55,7 @@ const handleClearForm = () => {
   for (const key in form.value) {
     form.value[key] = null
   }
-   invoice.value = {
+  invoice.value = {
     id: null,
     invoice_date: null,
   };
@@ -249,15 +249,15 @@ const cantidadOSRules = [
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"  
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
                   :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
                   @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES"  
-                  :rules="idMIPRESRules" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
-                  :disabled="disabledFiledsView" counter maxlength="15" />
+                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :rules="idMIPRESRules"
+                  :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''" :disabled="disabledFiledsView"
+                  counter maxlength="15" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -265,7 +265,7 @@ const cantidadOSRules = [
                   :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.fechaSuministroTecnologia"
                   @input="errorsBack.fechaSuministroTecnologia = ''" :disabled="disabledFiledsView"
-                  type="datetime-local" :max="formatToDateTimeLocal(invoice?.invoice_date)"/>
+                  type="datetime-local" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="tipoOS" v-model="form.tipoOS_id"

@@ -72,6 +72,8 @@ const fetchDataForm = async () => {
 
       form.value = cloneObject(data.form)
       tabs.value[1].show = true;
+
+      form.value.nit = form.value.nit || null;
     }
   }
   loading.form = false
@@ -185,7 +187,20 @@ const ipsables_select = computed<IpsableSelect>(() => {
 
 const clearIpsable_type = () => {
   form.value.ipsable_id = null
+  form.value.nit = null
 }
+
+watch(
+  () => form.value.ipsable_id,
+  (newCantidadOS) => {
+    if (newCantidadOS) {
+      form.value.nit = newCantidadOS.nit;
+    }
+
+  },
+  { immediate: true }
+);
+
 </script>
 
 
@@ -221,7 +236,7 @@ const clearIpsable_type = () => {
                 <VCol sm="4">
                   <AppTextField :requiredField="true" :rules="nitRules" v-model="form.nit" label="Nit"
                     :error-messages="errorsBack.nit" @input="errorsBack.nit = ''" clearable counter maxlength="12"
-                    minlength="4" />
+                    minlength="4" disabled />
                 </VCol>
                 <VCol sm="4">
                   <AppSelect :requiredField="true" :items="type_vendors" :rules="[requiredValidator]"
