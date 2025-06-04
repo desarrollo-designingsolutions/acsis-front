@@ -245,11 +245,14 @@ const openModalListInvoicePayment = () => {
 }
 
 const checkInvoiceNumber = async () => {
-  if (form.value.invoice_number) {
+
+  if (form.value.invoice_number && form.value.service_vendor_id && form.value.entity_id) {
     const url = '/invoice/validateInvoiceNumber'
 
     const { response, data } = await useAxios(url).post({
       invoice_number: form.value.invoice_number,
+      service_vendor_id: form.value.service_vendor_id?.value,
+      entity_id: form.value.entity_id?.value,
       company_id: authenticationStore.company.id,
     });
 
@@ -292,7 +295,7 @@ onUnmounted(() => {
 
 // Validations
 const note_numberRules = [
-  value => lengthValidator(value, 20),
+  value => lengthBetweenValidator(value, 0, 20),
   value => {
     if (form.value.tipo_nota_id) {
       return requiredValidator(value);

@@ -147,28 +147,32 @@ const numDocumentoIdentificacionRules = [
   value => requiredValidator(value),
 ];
 
-const edadGestacionalRules = [
-  value => lengthValidator(value, 2),
-  value => requiredValidator(value),
-];
+
 
 const numConsultasCPrenatalRules = [
   value => lengthValidator(value, 2),
   value => requiredValidator(value),
 ];
 
-const pesoRules = [
-  value => lengthBetweenValidator(value, 3, 4),
-  value => requiredValidator(value),
-];
-
 const fechaNacimientoMaxDate = computed(() => {
-  if(form.value.fechaEgreso){
+  if (form.value.fechaEgreso) {
     return formatToDateTimeLocal(form.value.fechaEgreso);
-  }else{
+  } else {
     return formatToDateTimeLocal(invoice.value?.invoice_date);
   }
 });
+
+const edadGestacionalRules = [
+  value => lengthValidator(value, 2),
+  value => requiredValidator(value),
+  value => (!isNaN(value) && Number(value) >= 20 && Number(value) <= 46) || 'La edad gestacional debe estar entre 20 y 46 semanas',
+];
+const pesoRules = [
+  value => requiredValidator(value),
+  value => lengthBetweenValidator(value, 3, 4),
+  value => (!isNaN(value) && Number(value) >= 500 && Number(value) <= 5000) || 'El peso debe estar entre 500 y 5000 gramos',
+];
+
 </script>
 
 <template>
@@ -189,7 +193,8 @@ const fechaNacimientoMaxDate = computed(() => {
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaNacimiento" v-model="form.fechaNacimiento" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaNacimiento"
-                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local" :max="fechaNacimientoMaxDate" />
+                  @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local"
+                  :max="fechaNacimientoMaxDate" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -237,7 +242,6 @@ const fechaNacimientoMaxDate = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoCausaMuerte" v-model="form.codDiagnosticoCausaMuerte_id"
-                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoCausaMuerte_id"
                   @input="errorsBack.codDiagnosticoCausaMuerte_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
@@ -246,17 +250,19 @@ const fechaNacimientoMaxDate = computed(() => {
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"  :min="form.fechaNacimiento" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"
+                  :min="form.fechaNacimiento" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="Tipo documento del recien nacido"
                   v-model="form.tipoDocumentoIdentificacion_id" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
-                  :params="{ codigo_in: ['CN', 'RC', 'MS'] }" @input="errorsBack.tipoDocumentoIdentificacion_id = ''"
-                  :disabled="disabledFiledsView" url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis"
-                  :itemsData="tipoIdPisis_arrayInfo" :firstFetch="false" />
+                  :error-messages="errorsBack.tipoDocumentoIdentificacion_id" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION,
+                  }" @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
+                  :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">

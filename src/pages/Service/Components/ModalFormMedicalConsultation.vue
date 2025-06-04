@@ -214,11 +214,64 @@ const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
 ];
 
-const numDocumentoIdentificacionRules = [
-  value => lengthBetweenValidator(value, 4, 20),
-  value => requiredValidator(value),
+
+
+
+
+const dynamicDocumentLengthRule = computed(() => (value: string) => {
+  const tipoId = form.value.tipoDocumentoIdentificacion_id?.codigo;
+
+  if (!tipoId || !value) return true;
+  const maxLength = documentLengthByType[tipoId] || 20;
+
+  return (
+    value.length <= maxLength ||
+    `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
+  );
+});
+
+const documentRules = [
+  (value: string) => requiredValidator(value) || 'El documento es requerido',
+  (value: string) => lengthBetweenValidator(value, 4, 20) || 'El documento debe tener entre 4 y 20 caracteres',
+  dynamicDocumentLengthRule.value, // Agregar la regla dinámica
 ];
 
+
+
+// Validations
+const valorPagoModeradorRules = [
+  value => positiveValidator(value),
+  value => {
+    if (form.value.conceptoRecaudo_id?.codigo == '02' || form.value.conceptoRecaudo_id?.codigo == '03') {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+
+const valorPagoModerador_requiredField = computed(() => {
+  return form.value.conceptoRecaudo_id?.codigo == '02' || form.value.conceptoRecaudo_id?.codigo == '03';
+});
+
+const numFEVPagoModeradoRules = [
+  value => {
+    if (form.value.conceptoRecaudo_id?.codigo == '02' || form.value.conceptoRecaudo_id?.codigo == '03' || dataCalculate.real_valorPagoModerador > 0) {
+      return requiredValidator(value);
+    }
+    return true;
+  }
+];
+const numFEVPagoModerador_requiredField = computed(() => {
+
+  if (form.value.conceptoRecaudo_id?.codigo == '02' || form.value.conceptoRecaudo_id?.codigo == '03') {
+    return true;
+  }
+
+  if (dataCalculate.real_valorPagoModerador > 0) {
+    return true
+  }
+  return false
+});
 
 </script>
 
@@ -246,15 +299,17 @@ const numDocumentoIdentificacionRules = [
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
                   :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
-                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="16"
-                  minlength="16" />
+                  @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30"
+                  minlength="0" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codConsulta" v-model="form.codConsulta_id" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.codConsulta_id"
                   @input="errorsBack.codConsulta_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteCupsRips"
-                  array-info="cupsRips" :itemsData="cupsRips_arrayInfo" :firstFetch="false" />
+                  array-info="cupsRips" :itemsData="cupsRips_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA,
+                  }" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="modalidadGrupoServicioTecSal"
@@ -283,14 +338,18 @@ const numDocumentoIdentificacionRules = [
                   :error-messages="errorsBack.finalidadTecnologiaSalud_id"
                   @input="errorsBack.finalidadTecnologiaSalud_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteRipsFinalidadConsultaVersion2" array-info="ripsFinalidadConsultaVersion2"
-                  :itemsData="ripsFinalidadConsultaVersion2_arrayInfo" :firstFetch="false" />
+                  :itemsData="ripsFinalidadConsultaVersion2_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD,
+                  }" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="causaMotivoAtencion" v-model="form.causaMotivoAtencion_id"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.causaMotivoAtencion_id"
                   @input="errorsBack.causaMotivoAtencion_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteRipsCausaExternaVersion2" array-info="ripsCausaExternaVersion2"
-                  :itemsData="ripsCausaExternaVersion2_arrayInfo" :firstFetch="false" />
+                  :itemsData="ripsCausaExternaVersion2_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION,
+                  }" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoPrincipal" v-model="form.codDiagnosticoPrincipal_id"
@@ -331,9 +390,9 @@ const numDocumentoIdentificacionRules = [
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
-                  :rules="[positiveValidator]" :error-messages="errorsBack.valorPagoModerador"
-                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
-                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :rules="valorPagoModeradorRules" :requiredField="valorPagoModerador_requiredField"
+                  :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
@@ -347,7 +406,9 @@ const numDocumentoIdentificacionRules = [
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
                   @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
-                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
+                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -356,20 +417,22 @@ const numDocumentoIdentificacionRules = [
                   :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
                   @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
-                  :firstFetch="false" />
+                  :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento persona realiza/ordena servicio"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
-                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="documentRules"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
                   maxlength="20" minlength="4" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
+                  :requiredField="numFEVPagoModerador_requiredField" :rules="numFEVPagoModeradoRules"
                   :error-messages="errorsBack.numFEVPagoModerador" @input="errorsBack.numFEVPagoModerador = ''"
                   :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0" />
               </VCol>

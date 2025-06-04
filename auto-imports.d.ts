@@ -8,6 +8,15 @@ declare global {
   const $api: typeof import('./src/utils/api')['$api']
   const API_KEY_EDITOR: typeof import('./src/utils/constants')['API_KEY_EDITOR']
   const BASE_BACK_STORAGE: typeof import('./src/utils/constants')['BASE_BACK_STORAGE']
+  const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION']
+  const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']
+  const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']
+  const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD']
+  const CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION']
+  const CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO']
+  const CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO']
+  const CODS_SELECT_FORM_SERVICE_PROCEDURE_FINALIDADTECNOLOGIASALUD: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_FINALIDADTECNOLOGIASALUD']
+  const CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION']
   const COOKIE_MAX_AGE_1_YEAR: typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']
   const EffectScope: typeof import('vue')['EffectScope']
   const ROLE_SUPERADMIN_UUID: typeof import('./src/utils/constants')['ROLE_SUPERADMIN_UUID']
@@ -52,6 +61,7 @@ declare global {
   const definePage: typeof import('unplugin-vue-router/runtime')['definePage']
   const defineStore: typeof import('pinia')['defineStore']
   const descargarArchivo: typeof import('./src/@core/utils/helpers')['descargarArchivo']
+  const documentLengthByType: typeof import('./src/utils/constants')['documentLengthByType']
   const downloadExcelBase64: typeof import('./src/@core/utils/helpers')['downloadExcelBase64']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
@@ -394,6 +404,15 @@ declare module 'vue' {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly API_KEY_EDITOR: UnwrapRef<typeof import('./src/utils/constants')['API_KEY_EDITOR']>
     readonly BASE_BACK_STORAGE: UnwrapRef<typeof import('./src/utils/constants')['BASE_BACK_STORAGE']>
+    readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION']>
+    readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']>
+    readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']>
+    readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD']>
+    readonly CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION']>
+    readonly CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO']>
+    readonly CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO']>
+    readonly CODS_SELECT_FORM_SERVICE_PROCEDURE_FINALIDADTECNOLOGIASALUD: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_FINALIDADTECNOLOGIASALUD']>
+    readonly CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION']>
     readonly COOKIE_MAX_AGE_1_YEAR: UnwrapRef<typeof import('./src/utils/constants')['COOKIE_MAX_AGE_1_YEAR']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly ROLE_SUPERADMIN_UUID: UnwrapRef<typeof import('./src/utils/constants')['ROLE_SUPERADMIN_UUID']>
@@ -438,6 +457,7 @@ declare module 'vue' {
     readonly definePage: UnwrapRef<typeof import('unplugin-vue-router/runtime')['definePage']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
     readonly descargarArchivo: UnwrapRef<typeof import('./src/@core/utils/helpers')['descargarArchivo']>
+    readonly documentLengthByType: UnwrapRef<typeof import('./src/utils/constants')['documentLengthByType']>
     readonly downloadExcelBase64: UnwrapRef<typeof import('./src/@core/utils/helpers')['downloadExcelBase64']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>

@@ -144,14 +144,8 @@ const birthDateRule = [
   (value: string) => {
     if (!value || !form.value.tipo_id_pisi_id) return true;
 
-    console.log("tipoIdPisis_arrayInfo:", tipoIdPisis_arrayInfo.value);
-    console.log("form.value.tipo_id_pisi_id:", form.value.tipo_id_pisi_id);
+    const tipoId = form.value.tipo_id_pisi_id?.codigo;
 
-    const tipoId = tipoIdPisis_arrayInfo.value.find(
-      (item: any) => item.value === form.value.tipo_id_pisi_id.value
-    )?.codigo;
-
-    console.log("Tipo de ID:", tipoId);
     if (!tipoId) return true;
 
     const birthDate = new Date(value);
@@ -166,10 +160,6 @@ const birthDateRule = [
     // Caso 1: Personas con edad >= 18 años y nacionalidad colombiana deben usar CC
     const paisOriginId = form.value?.pais_origin_id?.codigo as string | null;
     const isColombian = paisOriginId !== null && nacionalities[paisOriginId]?.code === 'CO';
-    console.log("age", age);
-    console.log("paisOriginId", paisOriginId);
-    console.log("isColombian", isColombian);
-    console.log("tipoId", tipoId);
     if (age >= 18 && isColombian && tipoId !== 'CC') {
       return 'Las personas mayores de 18 años con nacionalidad colombiana deben usar la Cédula de Ciudadanía (CC)';
     }
@@ -212,14 +202,9 @@ const paisOrigenRule = [
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-      const tipoId = tipoIdPisis_arrayInfo.value.find(
-        (item: any) => item.value === form.value.tipo_id_pisi_id.value
-      )?.codigo;
+      const tipoId = form.value.tipo_id_pisi_id?.codigo;
 
 
-      console.log("age", age);
-      console.log("value", value);
-      console.log("tipoId", tipoId);
       // Caso 1: Personas con edad >= 18 años y nacionalidad colombiana deben usar CC
       if (age >= 18 && value.extra_II === 'CO' && tipoId !== 'CC') {
         return 'Las personas mayores de 18 años con nacionalidad colombiana deben usar la Cédula de Ciudadanía (CC)';
@@ -256,21 +241,15 @@ const paisResidenciaRule = [
   (value: string) => {
     if (!value || !form.value.pais_origin_id || !form.value.tipo_id_pisi_id) return true;
 
-    const tipoId = tipoIdPisis_arrayInfo.value.find(
-      (item: any) => item.value === form.value.tipo_id_pisi_id.value
-    )?.codigo;
+    const tipoId = form.value.tipo_id_pisi_id?.codigo;
     if (!tipoId) return true;
 
-    console.log("value", value);
-    console.log("tipoId", tipoId);
 
     // Determinar si es extranjero (país de origen no es Colombia)
     const isForeigner = nacionalities[form.value.pais_origin_id.codigo]?.code !== 'CO';
-    console.log("isForeigner", isForeigner);
 
     // Determinar si está de paso (reside en Colombia, pero no es colombiano)
     const isTransient = nacionalities[value.codigo]?.code === 'CO';
-    console.log("isTransient", isTransient);
 
     // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
     if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
@@ -286,9 +265,7 @@ const tipoIdRule = [
   (value: string) => {
     if (!value || !form.value.pais_origin_id || !form.value.pais_residency_id) return true;
 
-    const tipoId = tipoIdPisis_arrayInfo.value.find(
-      (item: any) => item.value === value.value
-    )?.codigo;
+    const tipoId = value?.codigo;
     if (!tipoId) return true;
 
     // Determinar si es extranjero y está de paso
@@ -304,41 +281,12 @@ const tipoIdRule = [
   },
 ];
 
-
-
-const documentLengthByType: { [key: string]: number } = {
-  'CC': 10,  // Cédula de ciudadanía
-  'CE': 6,   // Cédula de extranjería
-  'CD': 16,  // Carnet diplomático
-  'PA': 16,  // Pasaporte
-  'SC': 16,  // Salvoconducto
-  'PE': 15,  // Permiso especial de permanencia
-  'RC': 11,  // Registro civil
-  'TI': 11,  // Tarjeta de identidad
-  'CN': 9,   // Certificado de nacido vivo
-  'AS': 10,  // Adulto sin identificar
-  'MS': 12,  // Menor sin identificar
-  'DE': 20,  // Documento extranjero
-  'PT': 20,  // Permiso temporal
-  'SI': 20,  // Sin identificación
-  'NI': 12,  // Número de identificación tributario NIT 
-  'NV': 20,   // Certificado nacido vivo 
-};
-
-
 const dynamicDocumentLengthRule = computed(() => (value: string) => {
-  const tipoId = tipoIdPisis_arrayInfo.value.find(
-    (item: any) => item.value === form.value.tipo_id_pisi_id.value
-  )?.codigo;
-
-  console.log("tipoIdPisis_arrayInfo:", tipoIdPisis_arrayInfo.value);
-  console.log("form.value.tipo_id_pisi_id:", form.value.tipo_id_pisi_id);
-
-  console.log("tipoId:", tipoId);
-
+  const tipoId = form.value.tipo_id_pisi_id?.codigo;
 
   if (!tipoId || !value) return true;
   const maxLength = documentLengthByType[tipoId] || 20;
+
   return (
     value.length <= maxLength ||
     `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
@@ -407,16 +355,15 @@ const documentRules = [
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Municipio de Residencia" v-model="form.municipio_residency_id"
-                url="/selectInfiniteMunicipio" arrayInfo="municipios" :requiredField="true" :rules="[requiredValidator]"
-                clearable :params="paramsSelect" :itemsData="municipios_arrayInfo" :firstFetch="false">
+                url="/selectInfiniteMunicipio" arrayInfo="municipios" clearable :params="paramsSelect"
+                :itemsData="municipios_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
             <VCol cols="12" sm="4">
               <AppSelectRemote label="Zona Territorial de Residencia" v-model="form.zona_version2_id"
-                url="/selectInfiniteZonaVersion2" arrayInfo="zonaVersion2s" :requiredField="true"
-                :rules="[requiredValidator]" clearable :params="paramsSelect" :itemsData="zonaVersion2s_arrayInfo"
-                :firstFetch="false">
+                url="/selectInfiniteZonaVersion2" arrayInfo="zonaVersion2s" clearable :params="paramsSelect"
+                :itemsData="zonaVersion2s_arrayInfo" :firstFetch="false">
               </AppSelectRemote>
             </VCol>
 
