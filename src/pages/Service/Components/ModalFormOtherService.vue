@@ -218,10 +218,6 @@ const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
 ];
 
-const numDocumentoIdentificacionRules = [
-  value => lengthBetweenValidator(value, 4, 20),
-  value => requiredValidator(value),
-];
 
 const nomTecnologiaSaludRules = [
   value => lengthBetweenValidator(value, 0, 60),
@@ -230,6 +226,24 @@ const nomTecnologiaSaludRules = [
 const cantidadOSRules = [
   value => lengthValidator(value, 5),
   value => requiredValidator(value),
+];
+
+const dynamicDocumentLengthRule = computed(() => (value: string) => {
+  const tipoId = form.value.tipoDocumentoIdentificacion_id?.codigo;
+
+  if (!tipoId || !value) return true;
+  const maxLength = documentLengthByType[tipoId] || 20;
+
+  return (
+    value.length <= maxLength ||
+    `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
+  );
+});
+
+const documentRules = [
+  (value: string) => requiredValidator(value) || 'El documento es requerido',
+  (value: string) => lengthBetweenValidator(value, 4, 20) || 'El documento debe tener entre 4 y 20 caracteres',
+  dynamicDocumentLengthRule.value, // Agregar la regla dinámica
 ];
 </script>
 
@@ -313,7 +327,9 @@ const cantidadOSRules = [
                   :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
                   :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
-                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
+                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -322,13 +338,15 @@ const cantidadOSRules = [
                   :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
                   @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
-                  :firstFetch="false" />
+                  :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento persona realiza/ordena servicio"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
-                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="documentRules"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
                   maxlength="20" minlength="4" />
               </VCol>

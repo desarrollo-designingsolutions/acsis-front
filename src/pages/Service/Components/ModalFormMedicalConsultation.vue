@@ -418,7 +418,7 @@ const numFEVPagoModerador_requiredField = computed(() => {
                   @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
                   :firstFetch="false" :params="{
-                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_TIPODOCUMENTOIDENTIFICACION,
+                    codigo_in: CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION,
                   }" />
               </VCol>
 

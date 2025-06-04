@@ -65,7 +65,7 @@ const handleClearForm = () => {
   for (const key in form.value) {
     form.value[key] = null
   }
-   invoice.value = {
+  invoice.value = {
     id: null,
     invoice_date: null,
   };
@@ -216,12 +216,10 @@ const ruleConceptoRecaudo = computed(() => {
 // Validations
 const idMIPRESRules = [
   value => lengthBetweenValidator(value, 0, 15),
-  value => requiredValidator(value),
 ];
 
 const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
-  value => requiredValidator(value),
 ];
 
 const numDocumentoIdentificacionRules = [
@@ -282,21 +280,22 @@ const diasTratamientoRules = [
           <VForm ref="refForm" @submit.prevent>
             <VRow>
               <VCol cols="12" md="6">
-                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion" :requiredField="true"
+                <AppTextField clearable label="numAutorizacion" v-model="form.numAutorizacion"
                   :rules="numAutorizacionRules" :error-messages="errorsBack.numAutorizacion"
                   @input="errorsBack.numAutorizacion = ''" :disabled="disabledFiledsView" counter maxlength="30" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :requiredField="true"
-                  :rules="idMIPRESRules" :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''"
-                  :disabled="disabledFiledsView" counter maxlength="15" />
+                <AppTextField clearable label="idMIPRES" v-model="form.idMIPRES" :rules="idMIPRESRules"
+                  :error-messages="errorsBack.idMIPRES" @input="errorsBack.idMIPRES = ''" :disabled="disabledFiledsView"
+                  counter maxlength="15" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaDispensAdmon" v-model="form.fechaDispensAdmon" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaDispensAdmon"
-                  @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="datetime-local" :max="formatToDateTimeLocal(invoice?.invoice_date)"  />
+                  @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="datetime-local"
+                  :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -309,7 +308,6 @@ const diasTratamientoRules = [
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionado" v-model="form.codDiagnosticoRelacionado_id"
-                  :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.codDiagnosticoRelacionado_id"
                   @input="errorsBack.codDiagnosticoRelacionado_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
