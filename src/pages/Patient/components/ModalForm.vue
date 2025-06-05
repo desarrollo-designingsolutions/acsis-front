@@ -152,7 +152,7 @@ const birthDateRule = [
 
     const birthDate = new Date(value);
     const today = new Date();
-    const age = today.getFullYear() - birthDate.getFullYear();
+    let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--; // Ajuste para edades exactas (considera meses y días)
@@ -199,7 +199,7 @@ const paisOrigenRule = [
     if (value && form.value.birth_date && form.value.tipo_id_pisi_id && form.value.pais_residency_id) {
       const birthDate = new Date(form.value.birth_date);
       const today = new Date();
-      const age = today.getFullYear() - birthDate.getFullYear();
+      let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
         age--;
