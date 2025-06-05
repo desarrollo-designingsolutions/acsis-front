@@ -307,9 +307,7 @@ const numFEVPagoModerador_requiredField = computed(() => {
                 <AppSelectRemote clearable label="codConsulta" v-model="form.codConsulta_id" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.codConsulta_id"
                   @input="errorsBack.codConsulta_id = ''" :disabled="disabledFiledsView" url="/selectInfiniteCupsRips"
-                  array-info="cupsRips" :itemsData="cupsRips_arrayInfo" :firstFetch="false" :params="{
-                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA,
-                  }" />
+                  array-info="cupsRips" :itemsData="cupsRips_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="modalidadGrupoServicioTecSal"

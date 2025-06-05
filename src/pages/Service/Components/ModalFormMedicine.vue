@@ -22,6 +22,9 @@ const tipoMedicamentoPosVersion2_arrayInfo = ref([])
 const umm_arrayInfo = ref([])
 const conceptoRecaudo_arrayInfo = ref([])
 const tipoIdPisis_arrayInfo = ref([])
+const upr_arrayInfo = ref([])
+const ffm_arrayInfo = ref([])
+const dci_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 const invoice = ref<null | object>({
@@ -38,12 +41,13 @@ const form = ref({
   codDiagnosticoPrincipal_id: null as string | null,
   codDiagnosticoRelacionado_id: null as string | null,
   tipoMedicamento_id: null as string | null,
-  codTecnologiaSalud: null as string | null,
+  codTecnologiaSaludable_id: null as string | null,
+  codTecnologiaSaludable_type: null as string | null,
   nomTecnologiaSalud: null as string | null,
   concentracionMedicamento: null as string | null,
   unidadMedida_id: null as string | null,
   formaFarmaceutica: null as string | null,
-  unidadMinDispensa: null as string | null,
+  unidadMinDispensa_id: null as string | null,
   cantidadMedicamento: null as string | null,
   diasTratamiento: null as string | null,
   vrUnitMedicamento: null as string | null,
@@ -109,6 +113,16 @@ const fetchDataForm = async () => {
       umm_arrayInfo.value = data.umm_arrayInfo
       conceptoRecaudo_arrayInfo.value = data.conceptoRecaudo_arrayInfo
       tipoIdPisis_arrayInfo.value = data.tipoIdPisis_arrayInfo
+      upr_arrayInfo.value = data.upr_arrayInfo
+      ffm_arrayInfo.value = data.ffm_arrayInfo
+      dci_arrayInfo.value = data.dci_arrayInfo
+
+      type_vendors.value = data.type_vendors
+      codTecnologiaSaludables.value = data.codTecnologiaSaludables
+
+      console.log("codTecnologiaSaludables.value", codTecnologiaSaludables.value.at(0)?.value);
+
+      form.value.codTecnologiaSaludable_type = codTecnologiaSaludables.value.at(0)?.value ?? null;
 
 
       if (data.form) {
@@ -232,7 +246,7 @@ const codTecnologiaSaludRules = [
   value => requiredValidator(value),
 ];
 
-const nomTecnologiaSaludRules = [
+const nomTecnologiaSalud_idRules = [
   value => lengthBetweenValidator(value, 0, 30),
   value => requiredValidator(value),
 ];
@@ -242,13 +256,11 @@ const concentracionMedicamentoRules = [
   value => requiredValidator(value),
 ];
 
-const formaFarmaceuticaRules = [
-  value => customLengthValidator(value, [0, 6, 8]),
+const formaFarmaceutica_idRules = [
   value => requiredValidator(value),
 ];
 
-const unidadMinDispensaRules = [
-  value => lengthBetweenValidator(value, 1, 2),
+const unidadMinDispensa_idRules = [
   value => requiredValidator(value),
 ];
 
@@ -262,6 +274,42 @@ const diasTratamientoRules = [
   value => requiredValidator(value),
 ];
 
+const type_vendors = ref([])
+
+const codTecnologiaSaludables = ref<Array<{
+  label: string;
+  value: string;
+}>>([])
+
+interface CodTecnologiaSaludablesSelect {
+  label: string;
+  url: string;
+  arrayInfo: string;
+  itemsData: any[];
+}
+
+const codTecnologiaSaludables_select = computed<CodTecnologiaSaludablesSelect>(() => {
+
+  if (form.value.codTecnologiaSaludable_type) {
+    return codTecnologiaSaludables.value.find(item => item.value === form.value.codTecnologiaSaludable_type) || {
+      label: "",
+      url: "",
+      arrayInfo: "",
+      itemsData: [],
+    };
+  }
+
+  return {
+    label: "",
+    url: "",
+    arrayInfo: "",
+    itemsData: [],
+  };
+});
+
+const clearCodTecnologiaSaludable_type = () => {
+  form.value.codTecnologiaSaludable_id = null
+}
 </script>
 
 <template>
@@ -322,16 +370,25 @@ const diasTratamientoRules = [
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="codTecnologiaSalud" v-model="form.codTecnologiaSalud"
-                  :requiredField="true" :rules="codTecnologiaSaludRules" :error-messages="errorsBack.codTecnologiaSalud"
-                  @input="errorsBack.codTecnologiaSalud = ''" :disabled="disabledFiledsView" counter maxlength="20"
-                  minlength="1" />
+                <VRadioGroup v-model="form.codTecnologiaSaludable_type" inline>
+                  <VRadio v-for="(item, index) in codTecnologiaSaludables" :key="index" :label="item.label"
+                    :value="item.value" @click="clearCodTecnologiaSaludable_type" />
+                </VRadioGroup>
+
+                <AppSelectRemote clearable :label="codTecnologiaSaludables_select.label"
+                  v-model="form.codTecnologiaSaludable_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.codTecnologiaSaludable_id"
+                  @input="errorsBack.codTecnologiaSaludable_id = ''" :disabled="disabledFiledsView"
+                  :url="codTecnologiaSaludables_select.url" :array-info="codTecnologiaSaludables_select.arrayInfo"
+                  :itemsData="codTecnologiaSaludables_select.itemsData" :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="nomTecnologiaSalud" v-model="form.nomTecnologiaSalud"
-                  :requiredField="true" :rules="nomTecnologiaSaludRules" :error-messages="errorsBack.nomTecnologiaSalud"
-                  @input="errorsBack.nomTecnologiaSalud = ''" :disabled="disabledFiledsView" counter maxlength="30" />
+                <AppSelectRemote clearable label="nomTecnologiaSalud" v-model="form.nomTecnologiaSalud_id"
+                  :requiredField="true" :rules="nomTecnologiaSalud_idRules"
+                  :error-messages="errorsBack.nomTecnologiaSalud_id" @input="errorsBack.nomTecnologiaSalud_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteDci" array-info="dci" :itemsData="dci_arrayInfo"
+                  :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -350,16 +407,19 @@ const diasTratamientoRules = [
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="formaFarmaceutica" v-model="form.formaFarmaceutica" :requiredField="true"
-                  :rules="formaFarmaceuticaRules" :error-messages="errorsBack.formaFarmaceutica"
-                  @input="errorsBack.formaFarmaceutica = ''" :disabled="disabledFiledsView" counter maxlength="8" />
+                <AppSelectRemote clearable label="formaFarmaceutica" v-model="form.formaFarmaceutica_id"
+                  :requiredField="true" :rules="formaFarmaceutica_idRules"
+                  :error-messages="errorsBack.formaFarmaceutica_id" @input="errorsBack.formaFarmaceutica_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteFfm" array-info="ffm" :itemsData="ffm_arrayInfo"
+                  :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="unidadMinDispensa" v-model="form.unidadMinDispensa" :requiredField="true"
-                  :rules="unidadMinDispensaRules" :error-messages="errorsBack.unidadMinDispensa"
-                  @input="errorsBack.unidadMinDispensa = ''" :disabled="disabledFiledsView" counter maxlength="2"
-                  minlength="1" />
+                <AppSelectRemote clearable label="unidadMinDispensa" v-model="form.unidadMinDispensa_id"
+                  :requiredField="true" :rules="unidadMinDispensa_idRules"
+                  :error-messages="errorsBack.unidadMinDispensa_id" @input="errorsBack.unidadMinDispensa_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteUpr" array-info="upr" :itemsData="upr_arrayInfo"
+                  :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
