@@ -141,12 +141,23 @@ defineExpose({
   openModal
 });
 
-// Validations
-const numDocumentoIdentificacionRules = [
-  value => lengthBetweenValidator(value, 4, 20),
-  value => requiredValidator(value),
-];
+// Validations  
+const dynamicDocumentLengthRule = computed(() => (value: string) => {
+  const tipoId = form.value.tipoDocumentoIdentificacion_id?.codigo;
 
+  if (!tipoId || !value) return true;
+  const maxLength = documentLengthByType[tipoId] || 20;
+  return (
+    value.length <= maxLength ||
+    `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
+  );
+});
+
+const documentRules = [
+  (value: string) => requiredValidator(value) || 'El documento es requerido',
+  (value: string) => lengthBetweenValidator(value, 4, 20) || 'El documento debe tener entre 4 y 20 caracteres',
+  dynamicDocumentLengthRule.value, // Agregar la regla dinámica
+];
 
 
 const numConsultasCPrenatalRules = [
@@ -173,6 +184,30 @@ const pesoRules = [
   value => (!isNaN(value) && Number(value) >= 500 && Number(value) <= 5000) || 'El peso debe estar entre 500 y 5000 gramos',
 ];
 
+const fechaNacimientoRules = [
+  (value: string) => requiredValidator(value) || 'El campo es requerido',
+  (value: string) => {
+
+    const maxDate = form.value.fechaEgreso
+      ? form.value.fechaEgreso
+      : invoice.value?.invoice_date;
+
+    return maxDateValidator(value, maxDate)
+  },
+]
+
+const fechaEgresoRules = [
+  (value: string) => requiredValidator(value) || 'El campo es requerido',
+  (value: string) => {
+
+    const maxDate = form.value.fechaNacimiento
+      ? form.value.fechaNacimiento
+      : invoice.value?.invoice_date;
+
+    return minDateValidator(value, maxDate)
+  },
+]
+
 </script>
 
 <template>
@@ -192,7 +227,7 @@ const pesoRules = [
             <VRow>
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaNacimiento" v-model="form.fechaNacimiento" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.fechaNacimiento"
+                  :rules="fechaNacimientoRules" :error-messages="errorsBack.fechaNacimiento"
                   @input="errorsBack.fechaNacimiento = ''" :disabled="disabledFiledsView" type="datetime-local"
                   :max="fechaNacimientoMaxDate" />
               </VCol>
@@ -249,7 +284,7 @@ const pesoRules = [
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
+                  :rules="fechaEgresoRules" :error-messages="errorsBack.fechaEgreso"
                   @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"
                   :min="form.fechaNacimiento" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
@@ -267,8 +302,8 @@ const pesoRules = [
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento del recien nacido"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
-                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="documentRules"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
                   maxlength="20" minlength="4" />
               </VCol>

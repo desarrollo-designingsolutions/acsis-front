@@ -209,7 +209,6 @@ watch(
     const valuePagoModerador = newValorPagoModerador || 0;
     if (valuePagoModerador <= 0) {
       form.value.numFEVPagoModerador = null;
-      form.value.conceptoRecaudo_id = null;
     }
     const total = (unitValue * quantity) - valuePagoModerador;
     form.value.vrServicio = currencyFormat(formatToCurrencyFormat(total));
@@ -217,15 +216,6 @@ watch(
   },
   { immediate: true }
 );
-
-const ruleConceptoRecaudo = computed(() => {
-  if (dataCalculate.real_valorPagoModerador > 0) {
-    return [
-      value => requiredValidator(value),
-    ]
-  }
-  return [];
-})
 
 // Validations
 const idMIPRESRules = [
@@ -236,10 +226,6 @@ const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
 ];
 
-const numDocumentoIdentificacionRules = [
-  value => lengthBetweenValidator(value, 4, 20),
-  value => requiredValidator(value),
-];
 
 const codTecnologiaSaludRules = [
   value => lengthBetweenValidator(value, 1, 20),
@@ -310,6 +296,44 @@ const codTecnologiaSaludables_select = computed<CodTecnologiaSaludablesSelect>((
 const clearCodTecnologiaSaludable_type = () => {
   form.value.codTecnologiaSaludable_id = null
 }
+
+
+
+const dynamicDocumentLengthRule = computed(() => (value: string) => {
+  const tipoId = form.value.tipoDocumentoIdentificacion_id?.codigo;
+
+  if (!tipoId || !value) return true;
+  const maxLength = documentLengthByType[tipoId] || 20;
+
+  return (
+    value.length <= maxLength ||
+    `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
+  );
+});
+
+const documentRules = [
+  (value: string) => requiredValidator(value) || 'El documento es requerido',
+  (value: string) => lengthBetweenValidator(value, 4, 20) || 'El documento debe tener entre 4 y 20 caracteres',
+  dynamicDocumentLengthRule.value, // Agregar la regla dinámica
+];
+
+
+const disabledValorPagoModerador = ref<boolean>(false)
+watch(
+  [() => form.value.conceptoRecaudo_id],
+  ([newValueConceptoRecaudo_id]) => {
+    disabledValorPagoModerador.value = false
+    const valuePagoModerador = newValueConceptoRecaudo_id || null;
+    if (valuePagoModerador && valuePagoModerador.codigo == "05") {
+      form.value.numFEVPagoModerador = null
+      form.value.valorPagoModerador = "0,00"
+      dataCalculate.real_valorPagoModerador = 0
+      disabledValorPagoModerador.value = true
+    }
+  },
+  { immediate: true }
+);
+
 </script>
 
 <template>
@@ -446,24 +470,26 @@ const clearCodTecnologiaSaludable_type = () => {
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
                   :rules="[lessThanVrService, positiveValidator]" :error-messages="errorsBack.valorPagoModerador"
-                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
+                  @input="errorsBack.valorPagoModerador = ''"
+                  :disabled="disabledFiledsView || disabledValorPagoModerador"
                   @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <FormatCurrency clearable disabled label="vrServicio" v-model="form.vrServicio" :requiredField="true"
-                  :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" :disabled="disabledFiledsView"
-                  @realValue="dataReal($event, 'real_vrServicio')" />
+                  :rules="[requiredValidator, positiveValidator, greaterThanZeroValidator]"
+                  :error-messages="errorsBack.vrServicio" @input="errorsBack.vrServicio = ''"
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
-                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
-                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
+                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
-                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" />
+                  :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -472,13 +498,15 @@ const clearCodTecnologiaSaludable_type = () => {
                   :error-messages="errorsBack.tipoDocumentoIdentificacion_id"
                   @input="errorsBack.tipoDocumentoIdentificacion_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteTipoIdPisis" array-info="tipoIdPisis" :itemsData="tipoIdPisis_arrayInfo"
-                  :firstFetch="false" />
+                  :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_SERVICE_TIPODOCUMENTOIDENTIFICACION,
+                  }" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="Número documento persona realiza/ordena servicio"
-                  v-model="form.numDocumentoIdentificacion" :requiredField="true"
-                  :rules="numDocumentoIdentificacionRules" :error-messages="errorsBack.numDocumentoIdentificacion"
+                  v-model="form.numDocumentoIdentificacion" :requiredField="true" :rules="documentRules"
+                  :error-messages="errorsBack.numDocumentoIdentificacion"
                   @input="errorsBack.numDocumentoIdentificacion = ''" :disabled="disabledFiledsView" counter
                   maxlength="20" minlength="4" />
               </VCol>

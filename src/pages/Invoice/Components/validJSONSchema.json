@@ -834,7 +834,7 @@
                     },
                     "cantidadOS": {
                       "type": "integer",
-                      "pattern": "^(|.{5})$"
+                      "pattern": "^(|.{1,5})$"
                     },
                     "tipoDocumentoIdentificacion": {
                       "type": "string",

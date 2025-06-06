@@ -188,35 +188,28 @@ defineExpose({
   openModal
 });
 
-const ruleConceptoRecaudo = computed(() => {
-  if (dataCalculate.real_valorPagoModerador > 0) {
-    return [
-      value => requiredValidator(value),
-    ]
-  }
-  return [];
-})
+const disabledValorPagoModerador = ref<boolean>(false)
 
 watch(
-  [() => dataCalculate.real_valorPagoModerador],
-  ([newValorPagoModerador]) => {
-    const valuePagoModerador = newValorPagoModerador || 0;
-    if (valuePagoModerador <= 0) {
-      form.value.numFEVPagoModerador = null;
-      form.value.conceptoRecaudo_id = null;
+  [() => form.value.conceptoRecaudo_id],
+  ([newValueConceptoRecaudo_id]) => {
+    disabledValorPagoModerador.value = false
+    const valuePagoModerador = newValueConceptoRecaudo_id || null;
+    if (valuePagoModerador && valuePagoModerador.codigo == "05") {
+      form.value.numFEVPagoModerador = null
+      form.value.valorPagoModerador = "0,00"
+      dataCalculate.real_valorPagoModerador = 0
+      disabledValorPagoModerador.value = true
     }
   },
   { immediate: true }
 );
 
+
 // Validations
 const numAutorizacionRules = [
   value => lengthBetweenValidator(value, 0, 30),
 ];
-
-
-
-
 
 const dynamicDocumentLengthRule = computed(() => (value: string) => {
   const tipoId = form.value.tipoDocumentoIdentificacion_id?.codigo;
@@ -272,6 +265,8 @@ const numFEVPagoModerador_requiredField = computed(() => {
   }
   return false
 });
+
+
 
 </script>
 
@@ -390,13 +385,14 @@ const numFEVPagoModerador_requiredField = computed(() => {
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
                   :rules="valorPagoModeradorRules" :requiredField="valorPagoModerador_requiredField"
                   :error-messages="errorsBack.valorPagoModerador" @input="errorsBack.valorPagoModerador = ''"
-                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_valorPagoModerador')" />
+                  :disabled="disabledFiledsView || disabledValorPagoModerador"
+                  @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
-                  :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" :disabled="disabledFiledsView"
-                  @realValue="dataReal($event, 'real_vrServicio')" />
+                  :rules="[requiredValidator, positiveValidator, greaterThanZeroValidator]"
+                  :error-messages="errorsBack.vrServicio" @input="errorsBack.vrServicio = ''"
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
 
               <VCol cols="12" md="6">

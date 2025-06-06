@@ -133,7 +133,7 @@ const downloadJson = async (id: string, invoice_number: string) => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `${invoice_number}.json`); // Nombre del archivo
+    link.setAttribute('download', `${id}.json`); // Nombre del archivo
     document.body.appendChild(link);
     link.click();
 
@@ -192,7 +192,7 @@ const downloadZip = async (id: string, invoice_number: string) => {
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `factura_${invoice_number}.zip`);
+    link.setAttribute('download', `factura_${id}.zip`);
     document.body.appendChild(link);
     link.click();
 

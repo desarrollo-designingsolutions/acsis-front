@@ -196,17 +196,7 @@ const ruleConceptoRecaudo = computed(() => {
   return [];
 })
 
-watch(
-  [() => dataCalculate.real_valorPagoModerador],
-  ([newValorPagoModerador]) => {
-    const valuePagoModerador = newValorPagoModerador || 0;
-    if (valuePagoModerador <= 0) {
-      form.value.numFEVPagoModerador = null;
-      form.value.conceptoRecaudo_id = null;
-    }
-  },
-  { immediate: true }
-);
+
 
 // Validations
 const idMIPRESRules = [
@@ -240,6 +230,22 @@ const documentRules = [
   dynamicDocumentLengthRule.value, // Agregar la regla dinámica
 ];
 
+
+const disabledValorPagoModerador = ref<boolean>(false)
+watch(
+  [() => form.value.conceptoRecaudo_id],
+  ([newValueConceptoRecaudo_id]) => {
+    disabledValorPagoModerador.value = false
+    const valuePagoModerador = newValueConceptoRecaudo_id || null;
+    if (valuePagoModerador && valuePagoModerador.codigo == "05") {
+      form.value.numFEVPagoModerador = null
+      form.value.valorPagoModerador = "0,00"
+      dataCalculate.real_valorPagoModerador = 0
+      disabledValorPagoModerador.value = true
+    }
+  },
+  { immediate: true }
+);
 
 </script>
 
@@ -354,21 +360,21 @@ const documentRules = [
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" v-model="form.valorPagoModerador"
                   :rules="[positiveValidator, lessThanVrService]" :error-messages="errorsBack.valorPagoModerador"
-                  @input="errorsBack.valorPagoModerador = ''" :disabled="disabledFiledsView"
+                  @input="errorsBack.valorPagoModerador = ''"
+                  :disabled="disabledFiledsView || disabledValorPagoModerador"
                   @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
-                  :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" :disabled="disabledFiledsView"
-                  @realValue="dataReal($event, 'real_vrServicio')" />
+                  :rules="[requiredValidator, positiveValidator, greaterThanZeroValidator]"
+                  :error-messages="errorsBack.vrServicio" @input="errorsBack.vrServicio = ''"
+                  :disabled="disabledFiledsView" @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
-                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
-                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
+                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" :params="{
                     codigo_in: CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO,

@@ -150,6 +150,7 @@ export const exportArrayToExcel = (dataArray: Array<any> = [], nameExcel: string
   link.click();
 };
 
+// Función para formatear fechas al formato datetime-local
 export const formatToDateTimeLocal = (dateString: string | null): string => {
   if (!dateString) return '';
   const date = new Date(dateString);
@@ -160,3 +161,21 @@ export const formatToDateTimeLocal = (dateString: string | null): string => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
+
+
+
+
+// Función para formatear fechas al formato d-m-Y h:i AM/PM
+export const formatToDMYHI = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date)) return '';
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12 || 12; // Convierte 0 a 12 para medianoche
+  return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
+};

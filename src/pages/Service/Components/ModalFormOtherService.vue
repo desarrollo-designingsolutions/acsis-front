@@ -184,7 +184,6 @@ watch(
     const valuePagoModerador = newValorPagoModerador || 0;
     if (valuePagoModerador <= 0) {
       form.value.numFEVPagoModerador = null;
-      form.value.conceptoRecaudo_id = null;
     }
     const total = (unitValue * quantity) - valuePagoModerador;
     form.value.vrServicio = currencyFormat(formatToCurrencyFormat(total));
@@ -198,15 +197,6 @@ const changeCodTecnologiaSalud = (event) => {
     form.value.nomTecnologiaSalud = event.nombre
   }
 }
-
-const ruleConceptoRecaudo = computed(() => {
-  if (dataCalculate.real_valorPagoModerador > 0) {
-    return [
-      value => requiredValidator(value),
-    ]
-  }
-  return [];
-})
 
 
 // Validations
@@ -224,7 +214,7 @@ const nomTecnologiaSaludRules = [
 ];
 
 const cantidadOSRules = [
-  value => lengthValidator(value, 5),
+  value => lengthBetweenValidator(value, 1, 5),
   value => requiredValidator(value),
 ];
 
@@ -245,6 +235,22 @@ const documentRules = [
   (value: string) => lengthBetweenValidator(value, 4, 20) || 'El documento debe tener entre 4 y 20 caracteres',
   dynamicDocumentLengthRule.value, // Agregar la regla dinámica
 ];
+
+const disabledConceptoRecaudo = ref<boolean>(false)
+watch(
+  [() => form.value.conceptoRecaudo_id],
+  ([newValueConceptoRecaudo_id]) => {
+    disabledConceptoRecaudo.value = false
+    const valuePagoModerador = newValueConceptoRecaudo_id || null;
+    if (valuePagoModerador && valuePagoModerador.codigo == "05") {
+      form.value.numFEVPagoModerador = null
+      form.value.valorPagoModerador = "0,00"
+      dataCalculate.real_valorPagoModerador = 0
+      disabledConceptoRecaudo.value = true
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -312,20 +318,20 @@ const documentRules = [
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="valorPagoModerador" :rules="[lessThanVrService]"
-                  v-model="form.valorPagoModerador" :disabled="disabledFiledsView"
+                  v-model="form.valorPagoModerador" :disabled="disabledFiledsView || disabledConceptoRecaudo"
                   @realValue="dataReal($event, 'real_valorPagoModerador')" />
               </VCol>
               <VCol cols="12" md="6">
                 <FormatCurrency clearable label="vrServicio" v-model="form.vrServicio" :requiredField="true"
-                  :rules="[requiredValidator, positiveValidator]" :error-messages="errorsBack.vrServicio"
-                  @input="errorsBack.vrServicio = ''" disabled @realValue="dataReal($event, 'real_vrServicio')" />
+                  :rules="[requiredValidator, positiveValidator, greaterThanZeroValidator]"
+                  :error-messages="errorsBack.vrServicio" @input="errorsBack.vrServicio = ''" disabled
+                  @realValue="dataReal($event, 'real_vrServicio')" />
               </VCol>
 
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="conceptoRecaudo" v-model="form.conceptoRecaudo_id"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
-                  :error-messages="errorsBack.conceptoRecaudo_id" @input="errorsBack.conceptoRecaudo_id = ''"
-                  :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0"
+                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.conceptoRecaudo_id"
+                  @input="errorsBack.conceptoRecaudo_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteConceptoRecaudo" array-info="conceptoRecaudo"
                   :itemsData="conceptoRecaudo_arrayInfo" :firstFetch="false" :params="{
                     codigo_in: CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO,
@@ -353,7 +359,6 @@ const documentRules = [
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="numFEVPagoModerador" v-model="form.numFEVPagoModerador"
-                  :requiredField="dataCalculate.real_valorPagoModerador > 0 ? true : false" :rules="ruleConceptoRecaudo"
                   :error-messages="errorsBack.numFEVPagoModerador" @input="errorsBack.numFEVPagoModerador = ''"
                   :disabled="disabledFiledsView || dataCalculate.real_valorPagoModerador <= 0" />
               </VCol>

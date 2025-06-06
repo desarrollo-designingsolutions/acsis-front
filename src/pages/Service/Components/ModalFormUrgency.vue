@@ -20,7 +20,7 @@ const isLoading = ref<boolean>(false)
 
 const cie10_arrayInfo = ref([])
 const ripsCausaExternaVersion2_arrayInfo = ref([])
-const cupsRips_arrayInfo = ref([])
+const condicionyDestinoUsuarioEgreso_arrayInfo = ref([])
 
 const service_id = ref<null | string>(null)
 const invoice = ref<null | object>({
@@ -38,7 +38,7 @@ const form = ref({
   codDiagnosticoRelacionadoE1_id: null as string | null,
   codDiagnosticoRelacionadoE2_id: null as string | null,
   codDiagnosticoRelacionadoE3_id: null as string | null,
-  condicionDestinoUsuarioEgreso: null as string | null,
+  condicionDestinoUsuarioEgreso_id: null as string | null,
   codDiagnosticoCausaMuerte_id: null as string | null,
   fechaEgreso: null as string | null,
 })
@@ -88,7 +88,7 @@ const fetchDataForm = async () => {
 
       cie10_arrayInfo.value = data.cie10_arrayInfo
       ripsCausaExternaVersion2_arrayInfo.value = data.ripsCausaExternaVersion2_arrayInfo
-      cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
+      condicionyDestinoUsuarioEgreso_arrayInfo.value = data.condicionyDestinoUsuarioEgreso_arrayInfo
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -145,20 +145,43 @@ defineExpose({
   openModal
 });
 
-// Validations
-const condicionDestinoUsuarioEgresoRules = [
-  value => lengthValidator(value, 2),
-  value => requiredValidator(value),
-];
 
 
+// Computada para la fecha máxima de fechaInicioAtencion
 const fechaInicioAtencionMaxDate = computed(() => {
-  if(form.value.fechaEgreso){
+  if (form.value.fechaEgreso) {
     return formatToDateTimeLocal(form.value.fechaEgreso);
-  }else{
+  } else {
     return formatToDateTimeLocal(invoice.value?.invoice_date);
   }
 });
+
+
+
+const fechaInicioAtencionRules = [
+  (value: string) => requiredValidator(value) || 'El campo es requerido',
+  (value: string) => {
+
+    const maxDate = form.value.fechaEgreso
+      ? form.value.fechaEgreso
+      : invoice.value?.invoice_date;
+
+    return maxDateValidator(value, maxDate)
+  },
+]
+
+const fechaEgresoRules = [
+  (value: string) => requiredValidator(value) || 'El campo es requerido',
+  (value: string) => {
+
+    const maxDate = form.value.fechaInicioAtencion
+      ? form.value.fechaInicioAtencion
+      : invoice.value?.invoice_date;
+
+    return minDateValidator(value, maxDate)
+  },
+]
+
 </script>
 
 <template>
@@ -179,8 +202,9 @@ const fechaInicioAtencionMaxDate = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
-                  @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local" :max="fechaInicioAtencionMaxDate" />
+                  :requiredField="true" :rules="fechaInicioAtencionRules"
+                  :error-messages="errorsBack.fechaInicioAtencion" @input="errorsBack.fechaInicioAtencion = ''"
+                  :disabled="disabledFiledsView" type="datetime-local" :max="fechaInicioAtencionMaxDate" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -200,9 +224,10 @@ const fechaInicioAtencionMaxDate = computed(() => {
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoPrincipalE" v-model="form.codDiagnosticoPrincipalE_id"
-                  :error-messages="errorsBack.codDiagnosticoPrincipalE_id"
-                  @input="errorsBack.codDiagnosticoPrincipalE_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteCie10" array-info="cie10" :itemsData="cie10_arrayInfo" :firstFetch="false" />
+                  :error-messages="errorsBack.codDiagnosticoPrincipalE_id" :requiredField="true"
+                  :rules="[requiredValidator]" @input="errorsBack.codDiagnosticoPrincipalE_id = ''"
+                  :disabled="disabledFiledsView" url="/selectInfiniteCie10" array-info="cie10"
+                  :itemsData="cie10_arrayInfo" :firstFetch="false" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="codDiagnosticoRelacionadoE1"
@@ -227,11 +252,12 @@ const fechaInicioAtencionMaxDate = computed(() => {
               </VCol>
 
               <VCol cols="12" md="6">
-                <AppTextField clearable label="condicionDestinoUsuarioEgreso"
-                  v-model="form.condicionDestinoUsuarioEgreso" :requiredField="true"
-                  :rules="condicionDestinoUsuarioEgresoRules" :error-messages="errorsBack.condicionDestinoUsuarioEgreso"
-                  @input="errorsBack.condicionDestinoUsuarioEgreso = ''" :disabled="disabledFiledsView" counter
-                  maxlength="2" />
+                <AppSelectRemote clearable label="condicionDestinoUsuarioEgreso"
+                  v-model="form.condicionDestinoUsuarioEgreso_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.condicionDestinoUsuarioEgreso_id"
+                  @input="errorsBack.condicionDestinoUsuarioEgreso_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCondicionyDestinoUsuarioEgreso" array-info="condicionyDestinoUsuarioEgreso"
+                  :itemsData="condicionyDestinoUsuarioEgreso_arrayInfo" :firstFetch="false" />
               </VCol>
 
               <VCol cols="12" md="6">
@@ -243,8 +269,9 @@ const fechaInicioAtencionMaxDate = computed(() => {
 
               <VCol cols="12" md="6">
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
-                  :rules="[requiredValidator]" :error-messages="errorsBack.fechaEgreso"
-                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local" :min="form.fechaInicioAtencion" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  :rules="fechaEgresoRules" :error-messages="errorsBack.fechaEgreso"
+                  @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"
+                  :min="form.fechaInicioAtencion" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
               </VCol>
 
             </VRow>

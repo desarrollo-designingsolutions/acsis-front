@@ -12,6 +12,8 @@ declare global {
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD']
+  const CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO']
+  const CODS_SELECT_FORM_SERVICE_MEDICINE_TIPODOCUMENTOIDENTIFICACION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICINE_TIPODOCUMENTOIDENTIFICACION']
   const CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION']
   const CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO']
   const CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO']
@@ -72,12 +74,14 @@ declare global {
   const formatDate: typeof import('./src/@core/utils/formatters')['formatDate']
   const formatDateToMonthShort: typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']
   const formatToCurrencyFormat: typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']
+  const formatToDMYHI: typeof import('./src/@core/utils/helpers')['formatToDMYHI']
   const formatToDateTimeLocal: typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']
   const formatToPorcentage: typeof import('./src/utils/formatCurrency')['formatToPorcentage']
   const formatoMoneda: typeof import('./src/@core/utils/helpers')['formatoMoneda']
   const getActivePinia: typeof import('pinia')['getActivePinia']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
+  const greaterThanZeroValidator: typeof import('./src/@core/utils/validators')['greaterThanZeroValidator']
   const h: typeof import('vue')['h']
   const hexToRgb: typeof import('./src/@core/utils/colorConverter')['hexToRgb']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
@@ -408,6 +412,7 @@ declare module 'vue' {
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']>
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']>
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_FINALIDADTECNOLOGIASALUD']>
+    readonly CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO']>
     readonly CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_NEWBORN_TIPODOCUMENTOIDENTIFICACION']>
     readonly CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_OTHERSERVICE_CONCEPTORECAUDO']>
     readonly CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_PROCEDURE_CONCEPTORECAUDO']>
@@ -468,12 +473,14 @@ declare module 'vue' {
     readonly formatDate: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDate']>
     readonly formatDateToMonthShort: UnwrapRef<typeof import('./src/@core/utils/formatters')['formatDateToMonthShort']>
     readonly formatToCurrencyFormat: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']>
+    readonly formatToDMYHI: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDMYHI']>
     readonly formatToDateTimeLocal: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']>
     readonly formatToPorcentage: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToPorcentage']>
     readonly formatoMoneda: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatoMoneda']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
+    readonly greaterThanZeroValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['greaterThanZeroValidator']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly hexToRgb: UnwrapRef<typeof import('./src/@core/utils/colorConverter')['hexToRgb']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
@@ -503,6 +510,8 @@ declare module 'vue' {
     readonly mapStores: UnwrapRef<typeof import('pinia')['mapStores']>
     readonly mapWritableState: UnwrapRef<typeof import('pinia')['mapWritableState']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly maxDateValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['maxDateValidator']>
+    readonly minDateValidator: UnwrapRef<typeof import('./src/@core/utils/validators')['minDateValidator']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>

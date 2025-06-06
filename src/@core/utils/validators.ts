@@ -134,3 +134,44 @@ export const customLengthValidator = (value: unknown, allowedLengths: number[]) 
 };
 
 
+export const greaterThanZeroValidator = (value: number | string) => {
+  // Convertir el valor a un número si es una cadena
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+
+  // Verificar si el valor no es un número o si es menor o igual a cero
+  if (isNaN(num) || num <= 0) {
+    return 'El valor debe ser mayor que cero';
+  }
+
+  // Si el valor es válido, retornar true
+  return true;
+};
+
+
+
+
+// Regla de validación personalizada para fechaInicioAtencion
+export const maxDateValidator = (date: string, dateComparation: string) => {
+  if (!date) return true; // Si no hay valor, pasa la validación (manejar required por separado)
+
+  const startDate = new Date(date); // fechaInicioAtencion
+  const maxDate = new Date(dateComparation);
+
+  if (!maxDate || isNaN(maxDate)) return true; // Si no hay fecha de egreso o invoice_date, no valida
+
+  // Compara las fechas incluyendo horas
+  return startDate <= maxDate || `La fecha no puede ser posterior a ${formatToDMYHI(dateComparation)}`;
+};
+
+
+// Regla de validación para fechaEgreso
+export const minDateValidator = (date: string, dateComparation: string) => {
+  if (!date) return true; // Si no hay valor, pasa la validación (manejar required por separado)
+
+  const endDate = new Date(date); // fechaEgreso
+  const minDate = new Date(dateComparation);;
+
+  if (!minDate || isNaN(minDate)) return true; // Si no hay fecha de inicio, no valida
+
+  return endDate >= minDate || `La fecha no puede ser anterior a ${formatToDMYHI(dateComparation)}`;
+};
