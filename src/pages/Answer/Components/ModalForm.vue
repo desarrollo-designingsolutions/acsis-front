@@ -56,17 +56,14 @@ const handleDialogVisible = () => {
 const total_value_glosa = ref()
 const glosa_date = ref()
 
-const openModal = async ({ id, glosa_id, total_value, date }: any, disabled: boolean = false) => {
+const openModal = async ({ id, glosa_id, total_value }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
-
-  console.log(date)
 
   disabledFiledsView.value = disabled;
   form.value.id = id;
   form.value.glosa_id = glosa_id;
   total_value_glosa.value = total_value;
-  glosa_date.value = date;
 
   await fetchDataForm();
 };
@@ -75,13 +72,19 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = form.value.id ? `/glosaAnswer/${form.value.id}/edit` : `/glosaAnswer/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        glosa_id: form.value.glosa_id,
+      }
+    });
 
     if (response.status === 200 && data) {
       statusGlosaAnswerEnumValues.value = data.statusGlosaAnswerEnumValues
 
       form.value.value_approved = '0,00';
       form.value.value_accepted = '0,00';
+
+      glosa_date.value = data.glosa_date;
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -103,7 +106,6 @@ const fetchDataForm = async () => {
 const submitForm = async () => {
   try {
     const validation = await refForm.value?.validate();
-    console.log(validation)
     if (!validation?.valid) {
       toast('Faltan campos por diligenciar', '', 'warning');
       return;
@@ -252,16 +254,14 @@ const rulesValueApprovedAccepted = [
                     :error-messages="errorsBack.date_answer" :rules="[requiredValidator]" v-model="form.date_answer"
                     label="Fecha De Respuesta" @input="errorsBack.date_answer = ''"
                     :min="formatToDateTimeLocal(glosa_date)" />
+                  {{ formatToDateTimeLocal(glosa_date) }}
                 </VCol>
-
-                {{ glosa_date }}
 
                 <VCol cols="12" md="6">
                   <AppSelect :requiredField="true" :items="statusGlosaAnswerEnumValues" label="Estado"
                     :rules="[requiredValidator]" v-model="form.status_id" :error-messages="errorsBack.status_id"
                     clearable :disabled="disabledFiledsView" />
                 </VCol>
-                {{ form.status_id }}
               </VRow>
             </div>
           </VForm>

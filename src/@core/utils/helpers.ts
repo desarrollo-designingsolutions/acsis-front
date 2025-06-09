@@ -153,19 +153,7 @@ export const exportArrayToExcel = (dataArray: Array<any> = [], nameExcel: string
 // Función para formatear fechas al formato datetime-local
 export const formatToDateTimeLocal = (dateString: string | null): string => {
   if (!dateString) return '';
-
-  // Detecta si está en formato DD-MM-YYYY
-  const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(dateString);
-  let isoDate = dateString;
-
-  if (match) {
-    const [_, day, month, year] = match;
-    isoDate = `${year}-${month}-${day}`;
-  }
-
-  const date = new Date(isoDate);
-  if (isNaN(date.getTime())) return ''; // Previene fallos silenciosos
-
+  const date = new Date(dateString);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');

@@ -90,7 +90,6 @@ const handleForceSearch = (params) => {
 const refModalListAnswer = ref()
 
 const openModalListAnswer = (data: any) => {
-  console.log(data)
   refModalListAnswer.value.openModal({
     ...data,
   })
