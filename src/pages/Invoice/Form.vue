@@ -250,6 +250,7 @@ const checkInvoiceNumber = async () => {
     const url = '/invoice/validateInvoiceNumber'
 
     const { response, data } = await useAxios(url).post({
+      id: form.value.id,
       invoice_number: form.value.invoice_number,
       service_vendor_id: form.value.service_vendor_id?.value,
       entity_id: form.value.entity_id?.value,
@@ -601,20 +602,21 @@ const titleTypeInvoice = computed(() => {
 
                 <AppTextField clearable label="Fecha siniestro" v-model="soat.accident_date" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.accident_date"
-                  @input="errorsBack.accident_date = ''" :disabled="disabledFiledsView" type="date" />
+                  @input="errorsBack.accident_date = ''" :disabled="disabledFiledsView" type="date"
+                  :max="form.invoice_date" />
 
               </VCol>
 
               <VCol cols="12">
                 <AppTextField clearable :requiredField="true" label="Fecha inicio de vigencia de la póliza"
                   v-model="soat.start_date" :error-messages="errorsBack.start_date" :rules="[requiredValidator]"
-                  :disabled="disabledFiledsView" type="date" />
+                  :disabled="disabledFiledsView" type="date" :max="soat.end_date" />
               </VCol>
 
               <VCol cols="12">
                 <AppTextField clearable :requiredField="true" label="Fecha final de vigencia de la póliza"
                   v-model="soat.end_date" :error-messages="errorsBack.end_date" :rules="[requiredValidator]"
-                  :disabled="disabledFiledsView" type="date" />
+                  :disabled="disabledFiledsView" type="date" :min="soat.start_date" />
               </VCol>
 
               <VCol cols="12">
