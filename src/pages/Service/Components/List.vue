@@ -14,7 +14,7 @@ import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 const { toast } = useToast();
 
 const props = defineProps<{
-  invoice_id: string
+  invoice_id: string,
 }>()
 
 const loading = reactive({
@@ -86,6 +86,7 @@ const refModalListGlosa = ref()
 const openModalListGlosa = (data: any) => {
   refModalListGlosa.value.openModal({
     ...data,
+    invoice_id: invoice_id,
   })
 }
 

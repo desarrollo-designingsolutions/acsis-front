@@ -31,7 +31,9 @@ const handleDialogVisible = () => {
   handleClearForm()
 };
 
-const openModal = async ({ id, code_glosa_description, code_glosa_code, glosa_value, showBtnsView }: any, disabled: boolean = false) => {
+const glosa_date = ref()
+
+const openModal = async ({ id, code_glosa_description, code_glosa_code, glosa_value, showBtnsView, date }: any, disabled: boolean = false) => {
   disabledFiledsView.value = disabled
   btnsView.value = showBtnsView
 
@@ -39,6 +41,7 @@ const openModal = async ({ id, code_glosa_description, code_glosa_code, glosa_va
 
   form.value.id = id;
   form.value.glosa_value = glosa_value;
+  glosa_date.value = date;
   titleModal.value = `Listado de Respuestas: ${code_glosa_code} - ${code_glosa_description}`
 };
 
@@ -62,7 +65,8 @@ defineExpose({
         </VToolbar>
 
         <VCardText class="px-0">
-          <ListAnswers v-if="showList" :glosa_id="form.id" :total_value="form.glosa_value" :showBtnsView="btnsView">
+          <ListAnswers v-if="showList" :glosa_id="form.id" :total_value="form.glosa_value" :showBtnsView="btnsView"
+            :glosa_date="glosa_date">
           </ListAnswers>
         </VCardText>
       </VCard>

@@ -14,7 +14,10 @@ const props = defineProps({
   showBtnsView: {
     type: Boolean,
     default: true
-  }
+  },
+  glosa_date: {
+    type: String,
+  },
 })
 
 //TABLE
@@ -54,15 +57,15 @@ const optionsFilter = ref({
 const refModalForm = ref()
 
 const openModalFormCreate = () => {
-  refModalForm.value.openModal({ glosa_id: props.glosa_id, total_value: props.total_value })
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, total_value: props.total_value, date: props.glosa_date })
 }
 
 const openModalFormEdit = async (data: any) => {
-  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value })
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value, date: props.glosa_date })
 }
 
 const openModalFormView = async (data: any) => {
-  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value }, true)
+  refModalForm.value.openModal({ glosa_id: props.glosa_id, id: data.id, total_value: props.total_value, date: props.glosa_date }, true)
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla

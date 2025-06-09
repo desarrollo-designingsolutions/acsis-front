@@ -153,7 +153,19 @@ export const exportArrayToExcel = (dataArray: Array<any> = [], nameExcel: string
 // Función para formatear fechas al formato datetime-local
 export const formatToDateTimeLocal = (dateString: string | null): string => {
   if (!dateString) return '';
-  const date = new Date(dateString);
+
+  // Detecta si está en formato DD-MM-YYYY
+  const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec(dateString);
+  let isoDate = dateString;
+
+  if (match) {
+    const [_, day, month, year] = match;
+    isoDate = `${year}-${month}-${day}`;
+  }
+
+  const date = new Date(isoDate);
+  if (isNaN(date.getTime())) return ''; // Previene fallos silenciosos
+
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -179,3 +191,10 @@ export const formatToDMYHI = (dateString) => {
   hours = hours % 12 || 12; // Convierte 0 a 12 para medianoche
   return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 };
+
+export const parseCurrencyToFloat = (value: string) => {
+  if (!value) return 0;
+  return parseFloat(
+    value.replace(/\s|\$/g, '').replace(',', '.')
+  );
+}
