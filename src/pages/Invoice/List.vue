@@ -118,7 +118,7 @@ const downloadExcel = async () => {
 onMounted(() => {
 })
 
-const downloadJson = async (id: string, invoice_number: string) => {
+const downloadJson = async (id: string, item: string) => {
   try {
     loadingItems[id] = true;
     // Hacer la solicitud GET al endpoint
@@ -133,7 +133,7 @@ const downloadJson = async (id: string, invoice_number: string) => {
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.setAttribute('download', `${id}.json`); // Nombre del archivo
+    link.setAttribute('download', `${item.serviceVendor_nit + '-' + id}.json`); // Nombre del archivo
     document.body.appendChild(link);
     link.click();
 
@@ -306,7 +306,7 @@ const openModalUploadFileJson = () => {
                   </template>
                   <span>Eliminar</span>
                 </VListItem>
-                <VListItem @click="downloadJson(item.id, item.invoice_number)">
+                <VListItem @click="downloadJson(item.id, item)">
                   <template #prepend>
                     <VIcon icon="tabler-json"></VIcon>
                   </template>
