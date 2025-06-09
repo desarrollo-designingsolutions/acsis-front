@@ -250,6 +250,7 @@ const checkInvoiceNumber = async () => {
     const url = '/invoice/validateInvoiceNumber'
 
     const { response, data } = await useAxios(url).post({
+      id: form.value.id,
       invoice_number: form.value.invoice_number,
       service_vendor_id: form.value.service_vendor_id?.value,
       entity_id: form.value.entity_id?.value,
