@@ -8,6 +8,8 @@ declare global {
   const $api: typeof import('./src/utils/api')['$api']
   const API_KEY_EDITOR: typeof import('./src/utils/constants')['API_KEY_EDITOR']
   const BASE_BACK_STORAGE: typeof import('./src/utils/constants')['BASE_BACK_STORAGE']
+  const CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE: typeof import('./src/utils/constants')['CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE']
+  const CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE: typeof import('./src/utils/constants')['CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE']
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION']
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']
   const CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']
@@ -408,6 +410,8 @@ declare module 'vue' {
     readonly $api: UnwrapRef<typeof import('./src/utils/api')['$api']>
     readonly API_KEY_EDITOR: UnwrapRef<typeof import('./src/utils/constants')['API_KEY_EDITOR']>
     readonly BASE_BACK_STORAGE: UnwrapRef<typeof import('./src/utils/constants')['BASE_BACK_STORAGE']>
+    readonly CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE']>
+    readonly CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE']>
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CAUSAMOTIVOATENCION']>
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CODCONSULTA']>
     readonly CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO: UnwrapRef<typeof import('./src/utils/constants')['CODS_SELECT_FORM_SERVICE_MEDICAL_CONSULTATION_CONCEPTORECAUDO']>

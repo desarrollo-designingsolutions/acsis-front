@@ -244,4 +244,28 @@ export const CODS_SELECT_FORM_SERVICE_MEDICINE_CONCEPTORECAUDO = [
   "01",
   "03",
   "05",
+];
+
+export const CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE = [
+  'CC',
+  'CE',
+  'CD',
+  'DE',
+  'SC',
+  'PE',
+  'PT',
+  'NI',
+];
+
+export const CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE = [
+  'CC',
+  'CE',
+  'PA',
+  'RC',
+  'TI',
+  'CD',
+  'SC',
+  'DE',
+  'PE',
+  'PT',
 ]; 

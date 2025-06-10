@@ -222,6 +222,10 @@ const refModalUploadFileJson = ref()
 const openModalUploadFileJson = () => {
   refModalUploadFileJson.value.openModal()
 }
+
+const goViewFurips1 = (data: any) => {
+  router.push({ name: "Invoice-Furips1", params: { id: data.id } })
+}
 </script>
 
 <template>
@@ -330,6 +334,27 @@ const openModalUploadFileJson = () => {
                     <VIcon icon="tabler-upload"></VIcon>
                   </template>
                   Subir XML
+                </VListItem>
+                <VListItem v-if="item.status != 'INVOICE_TYPE_002'" @click="() => { }">
+
+                  <VMenu>
+                    <template #activator="{ props }">
+                      <div class="flex items-center w-full" v-bind="props" @click.stop>
+                        <VIcon icon="tabler-upload" class="mr-2"></VIcon>
+                        <span>Anexos</span>
+                        <VIcon icon="tabler-chevron-right" class="ml-auto" />
+                      </div>
+                    </template>
+                    <VList>
+                      <VListItem @click="goViewFurips1(item)">
+                        <template #prepend>
+                          <VIcon icon="tabler-file" />
+                        </template>
+                        <span>FURIPS-1</span>
+                      </VListItem>
+                    </VList>
+                  </VMenu>
+
                 </VListItem>
               </VList>
             </VMenu>
