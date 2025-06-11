@@ -179,3 +179,10 @@ export const formatToDMYHI = (dateString) => {
   hours = hours % 12 || 12; // Convierte 0 a 12 para medianoche
   return `${day}-${month}-${year} ${hours}:${minutes} ${ampm}`;
 };
+
+export const parseCurrencyToFloat = (value: string) => {
+  if (!value) return 0;
+  return parseFloat(
+    value.replace(/\s|\$/g, '').replace(',', '.')
+  );
+}

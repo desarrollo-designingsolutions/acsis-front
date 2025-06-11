@@ -15,7 +15,10 @@ const props = defineProps({
   showBtnsView: {
     type: Boolean,
     default: true
-  }
+  },
+  invoice_id: {
+    type: String,
+  },
 })
 
 //TABLE
@@ -54,15 +57,15 @@ const optionsFilter = ref({
 const refModalForm = ref()
 
 const openModalFormCreate = () => {
-  refModalForm.value.openModal({ service_id: props.service_id, total_value: props.total_value })
+  refModalForm.value.openModal({ service_id: props.service_id, total_value: props.total_value, invoice_id: props.invoice_id })
 }
 
 const openModalFormEdit = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value })
+  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value, invoice_id: props.invoice_id })
 }
 
 const openModalFormView = async (data: any) => {
-  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value }, true)
+  refModalForm.value.openModal({ service_id: props.service_id, id: data.id, total_value: props.total_value, invoice_id: props.invoice_id }, true)
 }
 
 const tableLoading = ref(false); // Estado de carga de la tabla
@@ -87,7 +90,6 @@ const handleForceSearch = (params) => {
 const refModalListAnswer = ref()
 
 const openModalListAnswer = (data: any) => {
-  console.log(data)
   refModalListAnswer.value.openModal({
     ...data,
   })

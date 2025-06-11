@@ -56,7 +56,10 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async ({ id, service_id, total_value }: any, disabled: boolean = false) => {
+const invoiceId = ref()
+const radication_date = ref()
+
+const openModal = async ({ id, service_id, total_value, invoice_id }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
 
@@ -64,6 +67,7 @@ const openModal = async ({ id, service_id, total_value }: any, disabled: boolean
   form.value.id = id;
   form.value.service_id = service_id;
   totalValueService.value = total_value;
+  invoiceId.value = invoice_id;
 
   await fetchDataForm();
 };
@@ -72,7 +76,11 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = form.value.id ? `/glosa/${form.value.id}/edit` : `/glosa/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        invoice_id: invoiceId.value,
+      }
+    });
 
     if (response.status === 200 && data) {
       codeGlosa_arrayInfo1.value = data.codeGlosa1.codeGlosa_arrayInfo
@@ -81,6 +89,8 @@ const fetchDataForm = async () => {
       typeCodeGlosa_arrayInfo.value = data.typeCodeGlosa_arrayInfo
 
       type_code_glosa_id.value = TYPE_CODE_GLOSA_001.id;
+
+      radication_date.value = data.radication_date;
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -264,9 +274,10 @@ const codeGlosa_arrayInfo = computed(() => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField :disabled="disabledFiledsView" clearable type="date" :requiredField="true"
+                  <AppTextField :disabled="disabledFiledsView" clearable type="datetime-local" :requiredField="true"
                     :error-messages="errorsBack.date" :rules="[requiredValidator]" v-model="form.date"
-                    label="Fecha De Notificacion De Glosa" @input="errorsBack.date = ''" />
+                    label="Fecha De Notificacion De Glosa" @input="errorsBack.date = ''"
+                    :min="formatToDateTimeLocal(radication_date)" />
                 </VCol>
               </VRow>
             </div>

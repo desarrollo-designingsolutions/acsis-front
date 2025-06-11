@@ -53,13 +53,17 @@ const handleDialogVisible = () => {
   }
 };
 
-const openModal = async ({ id, glosa_id }: any, disabled: boolean = false) => {
+const total_value_glosa = ref()
+const glosa_date = ref()
+
+const openModal = async ({ id, glosa_id, total_value }: any, disabled: boolean = false) => {
   handleClearForm();
   handleDialogVisible();
 
   disabledFiledsView.value = disabled;
   form.value.id = id;
   form.value.glosa_id = glosa_id;
+  total_value_glosa.value = total_value;
 
   await fetchDataForm();
 };
@@ -68,10 +72,19 @@ const fetchDataForm = async () => {
   try {
     isLoading.value = true;
     const url = form.value.id ? `/glosaAnswer/${form.value.id}/edit` : `/glosaAnswer/create`;
-    const { data, response } = await useAxios(url).get();
+    const { data, response } = await useAxios(url).get({
+      params: {
+        glosa_id: form.value.glosa_id,
+      }
+    });
 
     if (response.status === 200 && data) {
       statusGlosaAnswerEnumValues.value = data.statusGlosaAnswerEnumValues
+
+      form.value.value_approved = '0,00';
+      form.value.value_accepted = '0,00';
+
+      glosa_date.value = data.glosa_date;
 
       if (data.form) {
         form.value = cloneObject(data.form);
@@ -171,6 +184,22 @@ const positiveValidator = (value: number | string) => {
   const num = typeof value === 'string' ? parseFloat(value) : value;
   return isNaN(num) || num <= 0 ? 'El valor debe ser mayor que cero' : true;
 };
+
+const sumEqualsTotalValidator = () => {
+  const approved = parseFloat(dataCalculate.real_value_approved || '0');
+  const accepted = parseFloat(dataCalculate.real_value_accepted || '0');
+  const total = parseCurrencyToFloat(total_value_glosa.value);
+  const sum = approved + accepted;
+  return sum === total
+    ? true
+    : `La suma del valor aprobado (${approved}) y aceptado (${accepted}) debe ser igual al total de la glosa (${total})`;
+};
+
+const rulesValueApprovedAccepted = [
+  value => form.value.status_id == 'GLOSA_ANSWER_STATUS_002' ? requiredValidator(value) : true,
+  value => form.value.status_id == 'GLOSA_ANSWER_STATUS_002' ? positiveValidator(value) : true,
+  value => form.value.status_id == 'GLOSA_ANSWER_STATUS_002' ? sumEqualsTotalValidator() : true,
+];
 </script>
 
 <template>
@@ -196,15 +225,19 @@ const positiveValidator = (value: number | string) => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <FormatCurrency label="Valor Aprobado" :requiredField="true" :disabled="disabledFiledsView"
-                    :rules="[requiredValidator, positiveValidator]" v-model="form.value_approved"
+                  <FormatCurrency label="Valor Aprobado"
+                    :requiredField="form.status_id == 'GLOSA_ANSWER_STATUS_002' ? true : false"
+                    :disabled="disabledFiledsView || form.status_id != 'GLOSA_ANSWER_STATUS_002'"
+                    :rules="rulesValueApprovedAccepted" v-model="form.value_approved"
                     @realValue="dataReal($event, 'real_value_approved')" :error-messages="errorsBack.value_approved"
                     @input="errorsBack.value_approved = ''" clearable />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <FormatCurrency label="Valor Aceptado" :requiredField="true" :disabled="disabledFiledsView"
-                    :rules="[requiredValidator, positiveValidator]" v-model="form.value_accepted"
+                  <FormatCurrency label="Valor Aceptado"
+                    :requiredField="form.status_id == 'GLOSA_ANSWER_STATUS_002' ? true : false"
+                    :disabled="disabledFiledsView || form.status_id != 'GLOSA_ANSWER_STATUS_002'"
+                    :rules="rulesValueApprovedAccepted" v-model="form.value_accepted"
                     @realValue="dataReal($event, 'real_value_accepted')" :error-messages="errorsBack.value_accepted"
                     @input="errorsBack.value_accepted = ''" clearable />
                 </VCol>
@@ -217,9 +250,11 @@ const positiveValidator = (value: number | string) => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField :disabled="disabledFiledsView" clearable type="date" :requiredField="true"
+                  <AppTextField :disabled="disabledFiledsView" clearable type="datetime-local" :requiredField="true"
                     :error-messages="errorsBack.date_answer" :rules="[requiredValidator]" v-model="form.date_answer"
-                    label="Fecha De Respuesta" @input="errorsBack.date_answer = ''" />
+                    label="Fecha De Respuesta" @input="errorsBack.date_answer = ''"
+                    :min="formatToDateTimeLocal(glosa_date)" />
+                  {{ formatToDateTimeLocal(glosa_date) }}
                 </VCol>
 
                 <VCol cols="12" md="6">
