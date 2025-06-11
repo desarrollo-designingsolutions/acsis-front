@@ -214,8 +214,6 @@ const isLoading = computed(() => {
 
 const loadingItems = reactive({});
 
-
-
 //ModalUploadFileJson
 const refModalUploadFileJson = ref()
 
@@ -224,7 +222,9 @@ const openModalUploadFileJson = () => {
 }
 
 const goViewFurips1 = (data: any) => {
-  router.push({ name: "Invoice-Furips1", params: { id: data.id } })
+  console.log("data", data);
+
+  router.push({ name: "Invoice-Furips1", params: { invoice_id: data.id, id: data.furips1_id } })
 }
 </script>
 

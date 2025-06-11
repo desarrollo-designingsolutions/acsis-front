@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useToast } from '@/composables/useToast';
 import IErrorsBack from '@/interfaces/Axios/IErrorsBack';
+import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 import { reactive, ref } from 'vue';
 import type { VForm } from 'vuetify/components';
@@ -38,18 +39,18 @@ interface IForm {
   eventOccurrenceAddress: null | string;
   eventOccurrenceDate: null | string;
   eventOccurrenceTime: null | string;
-  eventDepartmentCode: null | string;
-  eventMunicipalityCode: null | string;
+  eventDepartmentCode_id: null | string;
+  eventMunicipalityCode_id: null | string;
   eventZone: null | string;
   referenceType: null | string;
   referralDate: null | string;
   departureTime: null | string;
-  referringHealthProviderCode: null | string;
+  referringHealthProviderCode_id: null | string;
   referringProfessional: null | string;
   referringPersonPosition: null | string;
   admissionDate: null | string;
   admissionTime: null | string;
-  receivingHealthProviderCode: null | string;
+  receivingHealthProviderCode_id: null | string;
   receivingProfessional: null | string;
   interinstitutionalTransferAmbulancePlate: null | string;
   vehicleBrand: null | string;
@@ -58,7 +59,7 @@ interface IForm {
   sirasFilingNumber: null | string;
   insurerCapExhaustionCharge: null | string;
   surgicalProcedureComplexity: null | string;
-  ownerDocumentType: null | string;
+  ownerDocumentType_id: null | string;
   ownerDocumentNumber: null | string;
   ownerFirstLastName: null | string;
   ownerSecondLastName: null | string;
@@ -66,17 +67,16 @@ interface IForm {
   ownerSecondName: null | string;
   ownerResidenceAddress: null | string;
   ownerResidencePhone: null | string;
-  ownerResidenceDepartmentCode: null | string;
-  ownerResidenceMunicipalityCode: null | string;
+  ownerResidenceDepartmentCode_id: null | string;
+  ownerResidenceMunicipalityCode_id: null | string;
   driverFirstLastName: null | string;
   driverSecondLastName: null | string;
   driverFirstName: null | string;
   driverSecondName: null | string;
-  driverDocumentType: null | string;
   driverDocumentNumber: null | string;
   driverResidenceAddress: null | string;
-  driverResidenceDepartmentCode: null | string;
-  driverResidenceMunicipalityCode: null | string;
+  driverResidenceDepartmentCode_id: null | string;
+  driverResidenceMunicipalityCode_id: null | string;
   driverResidencePhone: null | string;
   primaryTransferAmbulancePlate: null | string;
   victimTransportFromEventSite: null | string;
@@ -109,18 +109,18 @@ const form = ref<IForm>({
   eventOccurrenceAddress: null,
   eventOccurrenceDate: null,
   eventOccurrenceTime: null,
-  eventDepartmentCode: null,
-  eventMunicipalityCode: null,
+  eventDepartmentCode_id: null,
+  eventMunicipalityCode_id: null,
   eventZone: null,
   referenceType: null,
   referralDate: null,
   departureTime: null,
-  referringHealthProviderCode: null,
+  referringHealthProviderCode_id: null,
   referringProfessional: null,
   referringPersonPosition: null,
   admissionDate: null,
   admissionTime: null,
-  receivingHealthProviderCode: null,
+  receivingHealthProviderCode_id: null,
   receivingProfessional: null,
   interinstitutionalTransferAmbulancePlate: null,
   vehicleBrand: null,
@@ -129,7 +129,7 @@ const form = ref<IForm>({
   sirasFilingNumber: null,
   insurerCapExhaustionCharge: null,
   surgicalProcedureComplexity: null,
-  ownerDocumentType: null,
+  ownerDocumentType_id: null,
   ownerDocumentNumber: null,
   ownerFirstLastName: null,
   ownerSecondLastName: null,
@@ -137,17 +137,17 @@ const form = ref<IForm>({
   ownerSecondName: null,
   ownerResidenceAddress: null,
   ownerResidencePhone: null,
-  ownerResidenceDepartmentCode: null,
-  ownerResidenceMunicipalityCode: null,
+  ownerResidenceDepartmentCode_id: null,
+  ownerResidenceMunicipalityCode_id: null,
   driverFirstLastName: null,
   driverSecondLastName: null,
   driverFirstName: null,
   driverSecondName: null,
-  driverDocumentType: null,
+  ownerResidenceMunicipalityCode_id: null,
   driverDocumentNumber: null,
   driverResidenceAddress: null,
-  driverResidenceDepartmentCode: null,
-  driverResidenceMunicipalityCode: null,
+  driverResidenceDepartmentCode_id: null,
+  driverResidenceMunicipalityCode_id: null,
   driverResidencePhone: null,
   primaryTransferAmbulancePlate: null,
   victimTransportFromEventSite: null,
@@ -174,10 +174,15 @@ const clearForm = () => {
 
 const errorsBack = ref<IErrorsBack>({});
 const loading = reactive({ form: false });
-const isLoading = ref(false);
 const disabledFiledsView = ref(false);
 const route = useRoute()
 const authenticationStore = useAuthenticationStore();
+
+
+// Computed que verifica si al menos uno de los valores es true
+const isLoading = computed(() => {
+  return Object.values(loading).some(value => value);
+});
 
 const tabs = ref([
   { title: 'Datos Iniciales', show: true, errorsValidations: false },
@@ -232,21 +237,30 @@ const allValidations = async () => {
   return validations.every(valid => valid === true);
 };
 
-const submitForm = async (save: boolean) => {
-  isLoading.value = true;
+const submitForm = async () => {
   const isValid = await allValidations();
   if (isValid) {
-    console.log('Form data:', form.value);
-  } else {
-    console.log('Form has errors');
-  }
-  isLoading.value = false;
-};
 
-// watch(form, (newForm) => {
-//   sections.value[3].show = !!newForm.referralDate;
-//   sections.value[8].show = !!newForm.primaryTransferAmbulancePlate;
-// }, { deep: true });
+    const url = form.value.id ? `/furips1/update/${form.value.id}` : `/furips1/store`
+
+    loading.form = true;
+    const { data, response } = await useAxios(url).post(form.value);
+    loading.form = false;
+
+    if (response.status == 200 && data) {
+
+      form.value.id = data.furips1.id
+
+      router.replace({ name: "Invoice-Furips1", params: { invoice_id: form.value.invoice_id, id: form.value.id } });
+
+    }
+    if (data.code === 422) errorsBack.value = data.errors ?? {};
+
+
+  } else {
+    toast('Faltan Campos Por Diligenciar', '', 'danger')
+  }
+};
 
 
 const limitNumberLength = () => {
@@ -273,6 +287,9 @@ const ownerDocumentType_arrayInfo = ref<ISelect[]>([])
 const driverDocumentType_arrayInfo = ref<ISelect[]>([])
 const transportServiceTypeEnum_arrayInfo = ref<ISelect[]>([])
 const pickupZoneEnum_arrayInfo = ref<ISelect[]>([])
+const municipios_arrayInfo = ref<ISelect[]>([])
+const paises_arrayInfo = ref<ISelect[]>([])
+const departamentos_arrayInfo = ref<ISelect[]>([])
 
 const invoice = ref<IInvoiceData>({
   id: null,
@@ -306,6 +323,9 @@ const fetchDataForm = async () => {
     driverDocumentType_arrayInfo.value = data.driverDocumentType_arrayInfo
     transportServiceTypeEnum_arrayInfo.value = data.transportServiceTypeEnum_arrayInfo
     pickupZoneEnum_arrayInfo.value = data.pickupZoneEnum_arrayInfo
+    municipios_arrayInfo.value = data.municipios_arrayInfo
+    paises_arrayInfo.value = data.paises_arrayInfo
+    departamentos_arrayInfo.value = data.departamentos_arrayInfo
 
     invoice.value = data.invoice
 
@@ -425,7 +445,7 @@ const ownerDocumentType_validation = computed(() => {
 })
 
 const dynamicDocumentLengthRule = computed(() => (value: string) => {
-  const tipoId = form.value.ownerDocumentType?.codigo;
+  const tipoId = form.value.ownerDocumentType_id?.codigo;
 
   if (!tipoId || !value) return true;
   const maxLength = documentLengthByType[tipoId] || 20;
@@ -489,7 +509,7 @@ const insuranceStatuseCode12467_validation = computed(() => {
 
 
 const driverDocumentTypeRuleMaxCharacters = computed(() => (value: string) => {
-  const tipoId = form.value.driverDocumentType?.codigo;
+  const tipoId = form.value.ownerResidenceMunicipalityCode_id?.codigo;
 
   if (!tipoId || !value) return true;
   const maxLength = documentLengthByType[tipoId] || 20;
@@ -626,16 +646,20 @@ const driverDocumentType_validation = computed(() => {
                   @input="errorsBack.eventOccurrenceTime = ''" :rules="[requiredValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Código del departamento de ocurrencia"
-                  v-model="form.eventDepartmentCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.eventDepartmentCode" @input="errorsBack.eventDepartmentCode = ''"
-                  :rules="[requiredValidator]" />
+                <AppSelectRemote :disabled="disabledFiledsView" :requiredField="true"
+                  label="Código del departamento de ocurrencia del evento" v-model="form.eventDepartmentCode_id"
+                  :errorMessages="errorsBack.eventDepartmentCode_id" @input="errorsBack.eventDepartmentCode_id = ''"
+                  url="/selectInfiniteDepartamento" arrayInfo="departamentos" clearable
+                  :itemsData="departamentos_arrayInfo" :firstFetch="false" :rules="[requiredValidator]">
+                </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Código del municipio de ocurrencia"
-                  v-model="form.eventMunicipalityCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.eventMunicipalityCode" @input="errorsBack.eventMunicipalityCode = ''"
-                  :rules="[requiredValidator]" />
+                <AppSelectRemote :disabled="disabledFiledsView" :requiredField="true"
+                  label="Código del municipio de ocurrencia del evento" v-model="form.eventMunicipalityCode_id"
+                  :errorMessages="errorsBack.eventMunicipalityCode_id" @input="errorsBack.eventMunicipalityCode_id = ''"
+                  url="/selectInfiniteMunicipio" arrayInfo="municipios" clearable :itemsData="municipios_arrayInfo"
+                  :firstFetch="false" :rules="[requiredValidator]">
+                </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelect :requiredField="true" label="Zona de ocurrencia del evento" v-model="form.eventZone"
@@ -667,9 +691,9 @@ const driverDocumentType_validation = computed(() => {
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote clearable label="Código de habilitación del prestador de servicios de salud remitente"
-                  v-model="form.referringHealthProviderCode" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.referringHealthProviderCode"
-                  @input="errorsBack.referringHealthProviderCode = ''" :disabled="disabledFiledsView"
+                  v-model="form.referringHealthProviderCode_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.referringHealthProviderCode_id"
+                  @input="errorsBack.referringHealthProviderCode_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteIpsCodHabilitacion" array-info="ipsCodHabilitacion"
                   :itemsData="ipsCodHabilitacion_arrayInfo" :firstFetch="false" />
               </VCol>
@@ -696,9 +720,9 @@ const driverDocumentType_validation = computed(() => {
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote clearable label="Código de habilitación del prestador de servicios de salud que recibe"
-                  v-model="form.receivingHealthProviderCode" :requiredField="true" :rules="[requiredValidator]"
-                  :error-messages="errorsBack.receivingHealthProviderCode"
-                  @input="errorsBack.receivingHealthProviderCode = ''" :disabled="disabledFiledsView"
+                  v-model="form.receivingHealthProviderCode_id" :requiredField="true" :rules="[requiredValidator]"
+                  :error-messages="errorsBack.receivingHealthProviderCode_id"
+                  @input="errorsBack.receivingHealthProviderCode_id = ''" :disabled="disabledFiledsView"
                   url="/selectInfiniteIpsCodHabilitacion" array-info="ipsCodHabilitacion"
                   :itemsData="ipsCodHabilitacion_arrayInfo" :firstFetch="false" />
               </VCol>
@@ -775,9 +799,9 @@ const driverDocumentType_validation = computed(() => {
             <VRow>
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Tipo de documento de identidad del propietario"
-                  v-model="form.ownerDocumentType" url="/selectInfiniteTipoIdPisis" arrayInfo="tipoIdPisis"
+                  v-model="form.ownerDocumentType_id" url="/selectInfiniteTipoIdPisis" arrayInfo="tipoIdPisis"
                   :requiredField="ownerDocumentType_validation.requiredField"
-                  :errorMessages="errorsBack.ownerDocumentType" @input="errorsBack.ownerDocumentType = ''"
+                  :errorMessages="errorsBack.ownerDocumentType_id" @input="errorsBack.ownerDocumentType_id = ''"
                   :rules="ownerDocumentType_validation.rules" clearable :itemsData="ownerDocumentType_arrayInfo"
                   :firstFetch="false" :params="{
                     codigo_in: CODS_SELECT_FORM_FURIPS1_OWNERDOCUMENTTYPE,
@@ -826,20 +850,27 @@ const driverDocumentType_validation = computed(() => {
                   @input="errorsBack.ownerResidencePhone = ''" :rules="insuranceStatuseCode1246_validation.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="insuranceStatuseCode1246_validation.requiredField"
+                <AppSelectRemote :disabled="disabledFiledsView"
+                  :requiredField="insuranceStatuseCode1246_validation.requiredField"
                   label="Código del departamento de residencia del propietario"
-                  v-model="form.ownerResidenceDepartmentCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.ownerResidenceDepartmentCode"
-                  @input="errorsBack.ownerResidenceDepartmentCode = ''"
-                  :rules="insuranceStatuseCode1246_validation.rules" />
+                  v-model="form.ownerResidenceDepartmentCode_id"
+                  :errorMessages="errorsBack.ownerResidenceDepartmentCode_id"
+                  @input="errorsBack.ownerResidenceDepartmentCode_id = ''" url="/selectInfiniteDepartamento"
+                  arrayInfo="departamentos" clearable :itemsData="departamentos_arrayInfo" :firstFetch="false"
+                  :rules="insuranceStatuseCode1246_validation.rules">
+                </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="insuranceStatuseCode1246_validation.requiredField"
+                <AppSelectRemote :disabled="disabledFiledsView"
+                  :requiredField="insuranceStatuseCode1246_validation.requiredField"
                   label="Código del municipio de residencia del propietario"
-                  v-model="form.ownerResidenceMunicipalityCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.ownerResidenceMunicipalityCode"
-                  @input="errorsBack.ownerResidenceMunicipalityCode = ''"
-                  :rules="insuranceStatuseCode1246_validation.rules" />
+                  v-model="form.ownerResidenceMunicipalityCode_id"
+                  :errorMessages="errorsBack.ownerResidenceMunicipalityCode_id"
+                  @input="errorsBack.ownerResidenceMunicipalityCode_id = ''" url="/selectInfiniteMunicipio"
+                  arrayInfo="municipios" clearable :itemsData="municipios_arrayInfo" :firstFetch="false"
+                  :rules="insuranceStatuseCode1246_validation.rules">
+                </AppSelectRemote>
+
               </VCol>
             </VRow>
           </VForm>
@@ -872,9 +903,9 @@ const driverDocumentType_validation = computed(() => {
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Tipo de documento de identidad del conductor"
-                  v-model="form.driverDocumentType" url="/selectInfiniteTipoIdPisis" arrayInfo="tipoIdPisis"
+                  v-model="form.driverDocumentType_id" url="/selectInfiniteTipoIdPisis" arrayInfo="tipoIdPisis"
                   :requiredField="insuranceStatuseCode12467_validation.requiredField"
-                  :errorMessages="errorsBack.driverDocumentType" @input="errorsBack.driverDocumentType = ''"
+                  :errorMessages="errorsBack.driverDocumentType_id" @input="errorsBack.driverDocumentType_id = ''"
                   :rules="insuranceStatuseCode12467_validation.rules" clearable
                   :itemsData="driverDocumentType_arrayInfo" :firstFetch="false" :params="{
                     codigo_in: CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE,
@@ -894,20 +925,26 @@ const driverDocumentType_validation = computed(() => {
                   @input="errorsBack.driverResidenceAddress = ''" :rules="insuranceStatuseCode12467_validation.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="insuranceStatuseCode12467_validation.requiredField"
+                <AppSelectRemote :disabled="disabledFiledsView"
+                  :requiredField="insuranceStatuseCode12467_validation.requiredField"
                   label="Código del departamento de residencia del conductor"
-                  v-model="form.driverResidenceDepartmentCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.driverResidenceDepartmentCode"
-                  @input="errorsBack.driverResidenceDepartmentCode = ''"
-                  :rules="insuranceStatuseCode12467_validation.rules" />
+                  v-model="form.driverResidenceDepartmentCode_id"
+                  :errorMessages="errorsBack.driverResidenceDepartmentCode_id"
+                  @input="errorsBack.driverResidenceDepartmentCode_id = ''" url="/selectInfiniteDepartamento"
+                  arrayInfo="departamentos" clearable :itemsData="departamentos_arrayInfo" :firstFetch="false"
+                  :rules="insuranceStatuseCode12467_validation.rules">
+                </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="insuranceStatuseCode12467_validation.requiredField"
+                <AppSelectRemote :disabled="disabledFiledsView"
+                  :requiredField="insuranceStatuseCode12467_validation.requiredField"
                   label="Código del municipio de residencia del conductor"
-                  v-model="form.driverResidenceMunicipalityCode" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.driverResidenceMunicipalityCode"
-                  @input="errorsBack.driverResidenceMunicipalityCode = ''"
-                  :rules="insuranceStatuseCode12467_validation.rules" />
+                  v-model="form.driverResidenceMunicipalityCode_id"
+                  :errorMessages="errorsBack.driverResidenceMunicipalityCode_id"
+                  @input="errorsBack.driverResidenceMunicipalityCode_id = ''" url="/selectInfiniteMunicipio"
+                  arrayInfo="municipios" clearable :itemsData="municipios_arrayInfo" :firstFetch="false"
+                  :rules="insuranceStatuseCode12467_validation.rules">
+                </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
                 <AppTextField :requiredField="insuranceStatuseCode12467_validation.requiredField"
@@ -1045,7 +1082,7 @@ const driverDocumentType_validation = computed(() => {
 
       <VCardText class="d-flex justify-end gap-3 flex-wrap mt-5">
         <BtnBack :disabled="isLoading" :loading="isLoading" />
-        <VBtn v-if="!disabledFiledsView" :disabled="isLoading" :loading="isLoading" @click="submitForm(true)">
+        <VBtn v-if="!disabledFiledsView" :disabled="isLoading" :loading="isLoading" @click="submitForm()">
           Guardar
         </VBtn>
       </VCardText>
