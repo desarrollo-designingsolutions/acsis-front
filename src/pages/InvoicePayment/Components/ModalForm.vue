@@ -186,9 +186,6 @@ defineExpose({
 
 const remainingBalance = computed(() => {
   // Asegúrate de que remaining_balance sea un número, con 0 como valor por defecto
-  console.log("remaining_balance 11", invoiceData.value?.remaining_balance);
-  console.log("value_paid 11", paymentData.value?.value_paid);
-
   const unitValue = Number(invoiceData.value?.remaining_balance) || 0;
   const value_paid = Number(paymentData.value?.value_paid) || 0;
   const total = unitValue + value_paid;

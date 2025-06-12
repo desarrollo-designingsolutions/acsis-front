@@ -39,8 +39,6 @@ const openModal = async ({ id, nombre_servicio, codigo_servicio, total_value_ori
 
   handleDialogVisible();
 
-  console.log(invoice_id)
-
   form.value.id = id;
   form.value.total_value_origin = total_value_origin;
   invoiceId.value = invoice_id;

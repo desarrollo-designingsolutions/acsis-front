@@ -120,8 +120,6 @@ const fetchDataForm = async () => {
       type_vendors.value = data.type_vendors
       codTecnologiaSaludables.value = data.codTecnologiaSaludables
 
-      console.log("codTecnologiaSaludables.value", codTecnologiaSaludables.value.at(0)?.value);
-
       form.value.codTecnologiaSaludable_type = codTecnologiaSaludables.value.at(0)?.value ?? null;
 
 

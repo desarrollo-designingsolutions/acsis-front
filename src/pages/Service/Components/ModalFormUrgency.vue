@@ -66,9 +66,6 @@ const openModal = async ({ serviceId = null, invoice_id }: any | null, disabled:
   form.value.invoice_id = invoice_id;
   service_id.value = serviceId;
 
-  console.log("");
-
-
   await fetchDataForm();
 };
 

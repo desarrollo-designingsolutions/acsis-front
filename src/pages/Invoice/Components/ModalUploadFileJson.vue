@@ -80,8 +80,6 @@ const openModalErrorsJson = (data: any) => {
 
 const changeFile = (file: File) => {
   form.value.fileJson = file
-  console.log("file", file);
-
 }
 const clearFile = () => {
   form.value.fileJson = null

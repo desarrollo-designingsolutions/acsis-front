@@ -274,8 +274,6 @@ const listenForInvoiceUpdates = () => {
       .channel(`invoice.${form.value.id}`)
       .listen('InvoiceRowUpdatedNow', (event: any) => {
 
-        console.log(event);
-
         totalValueGlosa.value = currencyFormat(formatToCurrencyFormat(event.value_glosa));
         totalValueTotal.value = currencyFormat(formatToCurrencyFormat(event.total));
         totalValuePaid.value = currencyFormat(formatToCurrencyFormat(event.value_paid));

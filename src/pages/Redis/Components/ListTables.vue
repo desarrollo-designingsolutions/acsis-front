@@ -42,9 +42,6 @@ onMounted(() => {
   init(route.query, '');
 })
 
-const synchronizeTable = (item: any) => {
-  console.log('entra metodo')
-};
 
 //FILTER
 const optionsFilter = ref({

@@ -68,8 +68,6 @@ const fetchDataForm = async () => {
 
     //formulario 
     if (data.form) {
-      console.log("data.form", data.form);
-
       form.value = cloneObject(data.form)
       tabs.value[1].show = true;
 

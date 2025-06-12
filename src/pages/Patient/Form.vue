@@ -212,11 +212,9 @@ const paisOrigenRule = [
 
       // Determinar si es extranjero (país de origen no es Colombia)
       const isForeigner = nacionalities[value.codigo]?.code !== 'CO';
-      console.log("isForeigner", isForeigner);
 
       // Determinar si está de paso (reside en Colombia, pero no es colombiano)
       const isTransient = nacionalities[form.value.pais_residency_id.codigo]?.code === 'CO';
-      console.log("isTransient", isTransient);
 
       // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
       if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
@@ -225,7 +223,6 @@ const paisOrigenRule = [
 
       // Caso 3: Migrantes venezolanos deben usar PE
       const isVenezuelan = nacionalities[value.codigo]?.code === 'VE';
-      console.log("isVenezuelan", isVenezuelan);
 
       if (isVenezuelan && tipoId !== 'PE') {
         return 'Los migrantes venezolanos deben identificarse con el Permiso Especial de Permanencia (PE)';

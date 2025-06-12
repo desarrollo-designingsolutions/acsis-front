@@ -112,8 +112,6 @@ const validateJson = (jsonData: any) => {
 };
 
 const formatErrorMessage = (error: any) => {
-  console.log("error", error);
-
   if (error.keyword === 'required') {
     return `Campo obligatorio faltante: '${error.params.missingProperty}'`;
   }
@@ -121,8 +119,6 @@ const formatErrorMessage = (error: any) => {
     return `Campo no permitido: '${error.params.additionalProperty}'`;
   }
   if (error.keyword === 'type') {
-    console.log("error.params.type", error);
-
     const expectedType = Array.isArray(error.params.type)
       ? error.params.type.join(' o ')
       : error.params.type;

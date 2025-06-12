@@ -222,8 +222,6 @@ const openModalUploadFileJson = () => {
 }
 
 const goViewFurips1 = (data: any) => {
-  console.log("data", data);
-
   router.push({ name: "Invoice-Furips1", params: { invoice_id: data.id, id: data.furips1_id } })
 }
 </script>
