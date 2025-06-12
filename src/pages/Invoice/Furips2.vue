@@ -40,7 +40,7 @@ interface IForm {
   serviceCode_type: string | null;
   serviceCode_id: string | null;
   serviceDescription: string | null;
-  serviceDate: string | null;
+  serviceQuantity: string | null;
   serviceValue: string | null;
   totalFactoryValue: string | null;
   totalClaimedValue: string | null;
@@ -55,7 +55,7 @@ const form = ref<IForm>({
   serviceCode_type: null,
   serviceCode_id: null,
   serviceDescription: null,
-  serviceDate: null,
+  serviceQuantity: null,
   serviceValue: null,
   totalFactoryValue: null,
   totalClaimedValue: null,
@@ -132,9 +132,6 @@ const fetchDataForm = async () => {
     codTecnologiaSaludables.value = data.codTecnologiaSaludables
     decreto780de2026_arrayInfo.value = data.decreto780de2026_arrayInfo
 
-    form.value.serviceCode_type = codTecnologiaSaludables.value.at(0)?.value ?? null;
-
-
     invoice.value = data.invoice
 
     form.value.consecutiveNumberClaim = invoice.value.furips1_consecutiveClaimNumber
@@ -144,11 +141,11 @@ const fetchDataForm = async () => {
       form.value = cloneObject(data.form)
 
 
-      if (form.value.serviceType == '1') {
-        showServiceCodeType1.value = true
+      if (form.value.serviceType == 'SERVICE_TYPE_001') {
+        disabledServiceCodeType.value = false
       }
-      if (form.value.serviceType == '2') {
-        showServiceCodeType2.value = true
+      if (form.value.serviceType == 'SERVICE_TYPE_002') {
+        disabledServiceCodeType.value = false
       }
     }
   }
@@ -166,7 +163,7 @@ const serviceDescription_validation = computed(() => {
     value => requiredValidator(value),
   ]
 
-  if (invoice.value && ["3", "4", "5", "6", "7", "8"].includes(form.value.serviceType ?? "")) {
+  if (invoice.value && ["SERVICE_TYPE_003", "SERVICE_TYPE_004", "SERVICE_TYPE_005", "SERVICE_TYPE_006", "SERVICE_TYPE_007", "SERVICE_TYPE_008"].includes(form.value.serviceType ?? "")) {
     return {
       rules: [],
       requiredField: false
@@ -198,42 +195,60 @@ const codTecnologiaSaludables_select = computed<CodTecnologiaSaludablesSelect>((
   };
 });
 
+
+const serviceCode_id_validation = computed(() => {
+  const rules = [
+    value => requiredValidator(value),
+  ]
+
+  if (invoice.value && ["SERVICE_TYPE_001", "SERVICE_TYPE_002"].includes(form.value.serviceType ?? "")) {
+    return {
+      rules: rules,
+      requiredField: true
+
+    }
+  }
+  return {
+    rules: [],
+    requiredField: false
+  }
+})
+
 const clearserviceCode_type = () => {
   form.value.serviceCode_id = null
 }
 
-
-const showServiceCodeType1 = ref<boolean>(false)
-const showServiceCodeType2 = ref<boolean>(false)
+const disabledServiceCodeType = ref<boolean>(true)
 
 const changeServiceType = (event: any) => {
-
-  // showServiceCodeType1.value = false
-  // showServiceCodeType2.value = false
+  disabledServiceCodeType.value = true
 
   form.value.serviceCode_type = null
   form.value.serviceCode_id = null
 
-  if (event == '1') {
-    showServiceCodeType1.value = true
-  } else {
+  if (event == 'SERVICE_TYPE_001') {
+    disabledServiceCodeType.value = false
+    form.value.serviceCode_type = codTecnologiaSaludables_modify.value.at(0)?.value ?? null;
 
-    showServiceCodeType1.value = false
   }
-  if (event == '2') {
-    showServiceCodeType2.value = true
-    form.value.serviceCode_type = 'App\\Models\\Decreto780de2026'
-  } else {
-    showServiceCodeType2.value = false
+
+  if (event == 'SERVICE_TYPE_002') {
+    disabledServiceCodeType.value = false
+    form.value.serviceCode_type = codTecnologiaSaludables_modify.value.at(0)?.value ?? null;
+
   }
+
+
+
+
 }
 
-const codTecnologiaSaludables2222 = computed(() => {
+const codTecnologiaSaludables_modify = computed(() => {
   if (form.value.serviceType) {
-    if (form.value.serviceType == "1") {
+    if (form.value.serviceType == "SERVICE_TYPE_001") {
       // Omite el último elemento del array
       return codTecnologiaSaludables.value.slice(0, -1);
-    } else if (form.value.serviceType == "2") {
+    } else if (form.value.serviceType == "SERVICE_TYPE_002") {
       // Omite los dos primeros elementos del array
       return codTecnologiaSaludables.value.slice(2);
     } else {
@@ -243,6 +258,16 @@ const codTecnologiaSaludables2222 = computed(() => {
   } else {
     return []
   }
+});
+
+const totalFactoryValue = computed(() => {
+  const serviceQuantity = Number(form.value.serviceQuantity)
+  const serviceValue = Number(form.value.serviceValue)
+  const totalFactoryValue = serviceQuantity * serviceValue
+
+  form.value.totalFactoryValue = String(totalFactoryValue)
+
+  return totalFactoryValue
 });
 </script>
 
@@ -269,15 +294,17 @@ const codTecnologiaSaludables2222 = computed(() => {
                 @update:modelValue="changeServiceType" />
             </VCol>
             <VCol cols="12" sm="4">
-              <VRadioGroup v-model="form.serviceCode_type" inline>
-                <VRadio v-for="(item, index) in codTecnologiaSaludables2222" :key="index" :label="item.label"
+              <VRadioGroup :disabled="disabledFiledsView || disabledServiceCodeType" v-model="form.serviceCode_type"
+                inline>
+                <VRadio v-for="(item, index) in codTecnologiaSaludables_modify" :key="index" :label="item.label"
                   :value="item.value" @click="clearserviceCode_type" />
               </VRadioGroup>
 
-              <AppSelectRemote clearable label="Código del servicio" v-model="form.serviceCode_id" :requiredField="true"
-                :rules="[requiredValidator]" :error-messages="errorsBack.serviceCode_id"
-                @input="errorsBack.serviceCode_id = ''" :disabled="disabledFiledsView"
-                :url="codTecnologiaSaludables_select.url" :array-info="codTecnologiaSaludables_select.arrayInfo"
+              <AppSelectRemote clearable label="Código del servicio" v-model="form.serviceCode_id"
+                :requiredField="serviceCode_id_validation.requiredField" :rules="serviceCode_id_validation.rules"
+                :error-messages="errorsBack.serviceCode_id" @input="errorsBack.serviceCode_id = ''"
+                :disabled="disabledFiledsView || disabledServiceCodeType" :url="codTecnologiaSaludables_select.url"
+                :array-info="codTecnologiaSaludables_select.arrayInfo"
                 :itemsData="codTecnologiaSaludables_select.itemsData" :firstFetch="false" />
 
             </VCol>
@@ -289,22 +316,22 @@ const codTecnologiaSaludables2222 = computed(() => {
             </VCol>
             <VCol cols="12" sm="4">
               <AppTextField type="number" :requiredField="true" :rules="[requiredValidator, greaterThanZeroValidator]"
-                label="Cantidád de servicios" v-model="form.serviceDate" clearable :maxlength="15" counter
-                :errorMessages="errorsBack.serviceDate" @input="errorsBack.serviceDate = ''" />
+                label="Cantidád de servicios" v-model="form.serviceQuantity" clearable :maxlength="15" counter
+                :errorMessages="errorsBack.serviceQuantity" @input="errorsBack.serviceQuantity = ''" />
             </VCol>
             <VCol cols="12" sm="4">
-              <AppTextField :requiredField="true" :rules="[requiredValidator]" label="Valor unitario"
-                v-model="form.serviceValue" clearable :maxlength="15" counter :errorMessages="errorsBack.serviceValue"
-                @input="errorsBack.serviceValue = ''" />
+              <AppTextField :requiredField="true" :rules="[requiredValidator, greaterThanZeroValidator]"
+                label="Valor unitario" v-model="form.serviceValue" clearable :maxlength="15" counter
+                :errorMessages="errorsBack.serviceValue" @input="errorsBack.serviceValue = ''" />
             </VCol>
             <VCol cols="12" sm="4">
-              <AppTextField :requiredField="true" :rules="[requiredValidator]" label="Valor total facturado"
-                v-model="form.totalFactoryValue" clearable :maxlength="15" counter
-                :errorMessages="errorsBack.totalFactoryValue" @input="errorsBack.totalFactoryValue = ''" />
+              <AppTextField :requiredField="true" :rules="[requiredValidator, greaterThanZeroValidator]"
+                label="Valor total facturado" v-model="totalFactoryValue" clearable :maxlength="15" counter
+                :errorMessages="errorsBack.totalFactoryValue" @input="errorsBack.totalFactoryValue = ''" disabled />
             </VCol>
             <VCol cols="12" sm="4">
-              <AppTextField :requiredField="true" :rules="[requiredValidator]" label="Valor total reclamado"
-                v-model="form.totalClaimedValue" clearable :maxlength="15" counter
+              <AppTextField :requiredField="true" :rules="[requiredValidator, greaterThanZeroValidator]"
+                label="Valor total reclamado" v-model="form.totalClaimedValue" clearable :maxlength="15" counter
                 :errorMessages="errorsBack.totalClaimedValue" @input="errorsBack.totalClaimedValue = ''" />
             </VCol>
             <VCol cols="12" sm="4">
