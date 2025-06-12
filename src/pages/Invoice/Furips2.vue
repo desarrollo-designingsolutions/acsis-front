@@ -237,10 +237,6 @@ const changeServiceType = (event: any) => {
     form.value.serviceCode_type = codTecnologiaSaludables_modify.value.at(0)?.value ?? null;
 
   }
-
-
-
-
 }
 
 const codTecnologiaSaludables_modify = computed(() => {
