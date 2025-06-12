@@ -229,15 +229,19 @@ const changeServiceType = (event: any) => {
 }
 
 const codTecnologiaSaludables2222 = computed(() => {
-  if (form.value.serviceType == "1") {
-    // Omite el último elemento del array
-    return codTecnologiaSaludables.value.slice(0, -1);
-  } else if (form.value.serviceType == "2") {
-    // Omite los dos primeros elementos del array
-    return codTecnologiaSaludables.value.slice(2);
+  if (form.value.serviceType) {
+    if (form.value.serviceType == "1") {
+      // Omite el último elemento del array
+      return codTecnologiaSaludables.value.slice(0, -1);
+    } else if (form.value.serviceType == "2") {
+      // Omite los dos primeros elementos del array
+      return codTecnologiaSaludables.value.slice(2);
+    } else {
+      // No omite ningún elemento
+      return codTecnologiaSaludables.value;
+    }
   } else {
-    // No omite ningún elemento
-    return codTecnologiaSaludables.value;
+    return []
   }
 });
 </script>
@@ -265,7 +269,6 @@ const codTecnologiaSaludables2222 = computed(() => {
                 @update:modelValue="changeServiceType" />
             </VCol>
             <VCol cols="12" sm="4">
-              <!-- <div v-if="showServiceCodeType1"> -->
               <VRadioGroup v-model="form.serviceCode_type" inline>
                 <VRadio v-for="(item, index) in codTecnologiaSaludables2222" :key="index" :label="item.label"
                   :value="item.value" @click="clearserviceCode_type" />
@@ -276,14 +279,6 @@ const codTecnologiaSaludables2222 = computed(() => {
                 @input="errorsBack.serviceCode_id = ''" :disabled="disabledFiledsView"
                 :url="codTecnologiaSaludables_select.url" :array-info="codTecnologiaSaludables_select.arrayInfo"
                 :itemsData="codTecnologiaSaludables_select.itemsData" :firstFetch="false" />
-              <!-- </div> -->
-              <!-- <div v-if="showServiceCodeType2">
-                <AppSelectRemote clearable label="Código del servicio" v-model="form.serviceCode_id"
-                  :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.serviceCode_id"
-                  @input="errorsBack.serviceCode_id = ''" :disabled="disabledFiledsView"
-                  url="/selectInfiniteDecreto780de2026" array-info="decreto780de2026"
-                  :itemsData="decreto780de2026_arrayInfo" :firstFetch="false" />
-              </div> -->
 
             </VCol>
             <VCol cols="12" sm="4">
