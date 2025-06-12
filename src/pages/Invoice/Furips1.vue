@@ -73,6 +73,7 @@ interface IForm {
   driverSecondLastName: null | string;
   driverFirstName: null | string;
   driverSecondName: null | string;
+  driverDocumentType_id: null | string;
   driverDocumentNumber: null | string;
   driverResidenceAddress: null | string;
   driverResidenceDepartmentCode_id: null | string;
@@ -143,7 +144,7 @@ const form = ref<IForm>({
   driverSecondLastName: null,
   driverFirstName: null,
   driverSecondName: null,
-  ownerResidenceMunicipalityCode_id: null,
+  driverDocumentType_id: null,
   driverDocumentNumber: null,
   driverResidenceAddress: null,
   driverResidenceDepartmentCode_id: null,
@@ -194,12 +195,12 @@ const sections = ref([
   { title: 'I. Datos de la reclamación', show: true, errorsValidations: false },
   { title: 'III. Datos de la víctima del evento catastrófico o accidente de tránsito', show: true, errorsValidations: false },
   { title: 'IV. Datos del sitio donde ocurrió el evento catastrófico o el accidente de tránsito', show: true, errorsValidations: false },
-  { title: 'IX. Datos de remisión', show: false, errorsValidations: false },
+  { title: 'IX. Datos de remisión', show: true, errorsValidations: false },
   { title: 'V. Datos del vehículo involucrado en el accidente de tránsito', show: true, errorsValidations: false },
   { title: 'VI. Datos Relacionados con la Atención de la Víctima', show: true, errorsValidations: false },
   { title: 'VII. Datos del propietario del vehículo', show: true, errorsValidations: false },
   { title: 'VIII. Datos del conductor involucrado en el accidente de tránsito', show: true, errorsValidations: false },
-  { title: 'X. Transporte y movilización de la víctima', show: false, errorsValidations: false },
+  { title: 'X. Transporte y movilización de la víctima', show: true, errorsValidations: false },
   { title: 'XII. Datos del médico o profesional de la salud tratante', show: true, errorsValidations: false },
   { title: 'XIII. Amparos que reclama', show: true, errorsValidations: false },
   { title: 'XIV. Confirmación servicios habilitados', show: true, errorsValidations: false },
@@ -877,7 +878,7 @@ const driverDocumentType_validation = computed(() => {
 
           <!-- Section 7: Datos del conductor -->
           <VCardTitle class="mt-4">VIII. Datos del conductor involucrado en el accidente de tránsito</VCardTitle>
-          <VForm :ref="el => formRefs[7] = el" @submit.prevent="true" :disabled="disabledFiledsView">
+          <VForm :ref="el => formRefs[7] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
                 <AppTextField :requiredField="insuranceStatuseCode12467_validation.requiredField"
