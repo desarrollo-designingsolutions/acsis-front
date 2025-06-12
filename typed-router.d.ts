@@ -46,6 +46,7 @@ declare module 'vue-router/auto-routes' {
     'invoice-components-valid-jsonschema': RouteRecordInfo<'invoice-components-valid-jsonschema', '/Invoice/Components/ValidJSONSchema', Record<never, never>, Record<never, never>>,
     'Invoice-Form': RouteRecordInfo<'Invoice-Form', 'invoice-Form/:action/:id?', Record<never, never>, Record<never, never>>,
     'Invoice-Furips1': RouteRecordInfo<'Invoice-Furips1', 'invoice-Furips1/:invoice_id/:id?', Record<never, never>, Record<never, never>>,
+    'Invoice-Furips2': RouteRecordInfo<'Invoice-Furips2', 'invoice-Furips2/:invoice_id/:id?', Record<never, never>, Record<never, never>>,
     'Invoice-List': RouteRecordInfo<'Invoice-List', '/Invoice/List', Record<never, never>, Record<never, never>>,
     'invoice-payment-components-list': RouteRecordInfo<'invoice-payment-components-list', '/InvoicePayment/Components/List', Record<never, never>, Record<never, never>>,
     'invoice-payment-components-modal-form': RouteRecordInfo<'invoice-payment-components-modal-form', '/InvoicePayment/Components/ModalForm', Record<never, never>, Record<never, never>>,

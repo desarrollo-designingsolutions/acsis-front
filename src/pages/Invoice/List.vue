@@ -42,6 +42,7 @@ const optionsFilter = ref({
   },
 })
 
+const loadingItems = reactive({});
 
 
 //TABLE
@@ -179,6 +180,7 @@ const downloadFileData = async (file: any) => {
   descargarArchivo(filePath);
 };
 
+
 //descarga de ZIP
 const downloadZip = async (id: string, invoice_number: string) => {
   try {
@@ -212,7 +214,6 @@ const isLoading = computed(() => {
   return Object.values(loading).some(value => value);
 });
 
-const loadingItems = reactive({});
 
 //ModalUploadFileJson
 const refModalUploadFileJson = ref()
@@ -223,6 +224,9 @@ const openModalUploadFileJson = () => {
 
 const goViewFurips1 = (data: any) => {
   router.push({ name: "Invoice-Furips1", params: { invoice_id: data.id, id: data.furips1_id } })
+}
+const goViewFurips2 = (data: any) => {
+  router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
 }
 </script>
 
@@ -349,6 +353,12 @@ const goViewFurips1 = (data: any) => {
                           <VIcon icon="tabler-file" />
                         </template>
                         <span>FURIPS-1</span>
+                      </VListItem>
+                      <VListItem @click="goViewFurips2(item)">
+                        <template #prepend>
+                          <VIcon icon="tabler-file" />
+                        </template>
+                        <span>FURIPS-2</span>
                       </VListItem>
                     </VList>
                   </VMenu>
