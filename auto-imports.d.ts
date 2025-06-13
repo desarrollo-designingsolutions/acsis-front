@@ -79,6 +79,7 @@ declare global {
   const formatToCurrencyFormat: typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']
   const formatToDMYHI: typeof import('./src/@core/utils/helpers')['formatToDMYHI']
   const formatToDateTimeLocal: typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']
+  const formatToDateYMD: typeof import('./src/@core/utils/helpers')['formatToDateYMD']
   const formatToPorcentage: typeof import('./src/utils/formatCurrency')['formatToPorcentage']
   const formatoMoneda: typeof import('./src/@core/utils/helpers')['formatoMoneda']
   const getActivePinia: typeof import('pinia')['getActivePinia']
@@ -482,6 +483,7 @@ declare module 'vue' {
     readonly formatToCurrencyFormat: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToCurrencyFormat']>
     readonly formatToDMYHI: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDMYHI']>
     readonly formatToDateTimeLocal: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDateTimeLocal']>
+    readonly formatToDateYMD: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatToDateYMD']>
     readonly formatToPorcentage: UnwrapRef<typeof import('./src/utils/formatCurrency')['formatToPorcentage']>
     readonly formatoMoneda: UnwrapRef<typeof import('./src/@core/utils/helpers')['formatoMoneda']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>

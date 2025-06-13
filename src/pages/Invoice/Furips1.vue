@@ -19,6 +19,7 @@ definePage({
 
 interface IInvoiceData {
   id: string | null;
+  invoice_date: string | null;
   insurance_statuse_code: string | null;
 }
 interface ISelect {
@@ -293,6 +294,7 @@ const departamentos_arrayInfo = ref<ISelect[]>([])
 
 const invoice = ref<IInvoiceData>({
   id: null,
+  invoice_date: null,
   insurance_statuse_code: null,
 })
 
@@ -536,6 +538,42 @@ const driverDocumentType_validation = computed(() => {
   }
 })
 
+
+const validationDependInfo = computed(() => {
+  const rules = [
+    value => requiredValidator(value),
+  ]
+
+  if (form.value.primaryTransferAmbulancePlate || form.value.victimTransportFromEventSite || form.value.victimTransportToEnd || form.value.transportServiceType || form.value.victimPickupZone) {
+    return {
+      rules: rules,
+      requiredField: true
+    }
+  }
+
+  return {
+    rules: [],
+    requiredField: false
+  }
+})
+
+const validationDependInfoPreviousFilingNumberRgoResponse = computed(() => {
+  const rules = [
+    value => requiredValidator(value),
+  ]
+
+  if (form.value.previousFilingNumber || form.value.rgoResponse) {
+    return {
+      rules: rules,
+      requiredField: true
+    }
+  }
+
+  return {
+    rules: [],
+    requiredField: false
+  }
+})
 </script>
 
 
@@ -566,21 +604,23 @@ const driverDocumentType_validation = computed(() => {
           <VForm :ref="el => formRefs[0] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Número de radicado anterior"
-                  v-model="form.previousFilingNumber" clearable :maxlength="10" counter
-                  :errorMessages="errorsBack.previousFilingNumber" @input="errorsBack.previousFilingNumber = ''"
-                  :rules="[requiredValidator]" />
+                <AppTextField :requiredField="validationDependInfoPreviousFilingNumberRgoResponse.requiredField"
+                  label="Número de radicado anterior" v-model="form.previousFilingNumber" clearable :maxlength="10"
+                  counter :errorMessages="errorsBack.previousFilingNumber" @input="errorsBack.previousFilingNumber = ''"
+                  :rules="validationDependInfoPreviousFilingNumberRgoResponse.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppSelect label="RGO Respuesta a Glosa u objeción" v-model="form.rgoResponse" clearable
+                <AppSelect :requiredField="validationDependInfoPreviousFilingNumberRgoResponse.requiredField"
+                  label="RGO Respuesta a Glosa u objeción" v-model="form.rgoResponse" clearable
                   :errorMessages="errorsBack.rgoResponse" @input="errorsBack.rgoResponse = ''"
-                  :items="rgoResponseEnum_arrayInfo" />
+                  :items="rgoResponseEnum_arrayInfo"
+                  :rules="validationDependInfoPreviousFilingNumberRgoResponse.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true" label="Número consecutivo de la reclamación"
+                <AppTextField type="number" label="Número consecutivo de la reclamación"
                   v-model="form.consecutiveClaimNumber" clearable :maxlength="12" counter
-                  :errorMessages="errorsBack.consecutiveClaimNumber" :rules="[requiredValidator]"
-                  @input="limitNumberLength" />
+                  :errorMessages="errorsBack.consecutiveClaimNumber" @input="limitNumberLength"
+                  :rules="[greaterThanZeroValidator]" />
               </VCol>
             </VRow>
           </VForm>
@@ -637,12 +677,18 @@ const driverDocumentType_validation = computed(() => {
               <VCol cols="12" sm="4">
                 <AppTextField type="date" :requiredField="true" label="Fecha de ocurrencia del evento"
                   v-model="form.eventOccurrenceDate" clearable :errorMessages="errorsBack.eventOccurrenceDate"
-                  @input="errorsBack.eventOccurrenceDate = ''" :rules="[requiredValidator]" />
+                  @input="errorsBack.eventOccurrenceDate = ''" :rules="[requiredValidator]"
+                  :max="invoice.invoice_date" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="time" :requiredField="true" label="Hora de ocurrencia del evento"
+                <AppDateTimePicker :requiredField="true" label="Hora de ocurrencia del evento"
                   v-model="form.eventOccurrenceTime" clearable :errorMessages="errorsBack.eventOccurrenceTime"
-                  @input="errorsBack.eventOccurrenceTime = ''" :rules="[requiredValidator]" />
+                  @input="errorsBack.eventOccurrenceTime = ''" :rules="[requiredValidator]" :config="{
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true
+                  }" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" :requiredField="true"
@@ -684,9 +730,14 @@ const driverDocumentType_validation = computed(() => {
                   :rules="[requiredValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="time" :requiredField="true" label="Hora de salida" v-model="form.departureTime"
-                  clearable :errorMessages="errorsBack.departureTime" @input="errorsBack.departureTime = ''"
-                  :rules="[requiredValidator]" />
+                <AppDateTimePicker :requiredField="true" label="Hora de salida" v-model="form.departureTime" clearable
+                  :errorMessages="errorsBack.departureTime" @input="errorsBack.departureTime = ''"
+                  :rules="[requiredValidator]" :config="{
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true
+                  }" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote clearable label="Código de habilitación del prestador de servicios de salud remitente"
@@ -713,9 +764,15 @@ const driverDocumentType_validation = computed(() => {
                   :rules="[requiredValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="time" :requiredField="true" label="Hora de ingreso" v-model="form.admissionTime"
-                  clearable :errorMessages="errorsBack.admissionTime" @input="errorsBack.admissionTime = ''"
-                  :rules="[requiredValidator]" />
+
+                <AppDateTimePicker :requiredField="true" label="Hora de ingreso" v-model="form.admissionTime" clearable
+                  :errorMessages="errorsBack.admissionTime" @input="errorsBack.admissionTime = ''"
+                  :rules="[requiredValidator]" :config="{
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true
+                  }" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote clearable label="Código de habilitación del prestador de servicios de salud que recibe"
@@ -962,33 +1019,34 @@ const driverDocumentType_validation = computed(() => {
           <VForm :ref="el => formRefs[8] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Placa ambulancia traslado primario"
-                  v-model="form.primaryTransferAmbulancePlate" clearable :maxlength="6" counter
-                  :errorMessages="errorsBack.primaryTransferAmbulancePlate"
-                  @input="errorsBack.primaryTransferAmbulancePlate = ''" :rules="[requiredValidator]" />
+                <AppTextField :requiredField="validationDependInfo.requiredField"
+                  label="Placa ambulancia traslado primario" v-model="form.primaryTransferAmbulancePlate" clearable
+                  :maxlength="6" counter :errorMessages="errorsBack.primaryTransferAmbulancePlate"
+                  @input="errorsBack.primaryTransferAmbulancePlate = ''" :rules="validationDependInfo.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Transporte de la víctima desde el sitio del evento"
-                  v-model="form.victimTransportFromEventSite" clearable :maxlength="40" counter
-                  :errorMessages="errorsBack.victimTransportFromEventSite"
-                  @input="errorsBack.victimTransportFromEventSite = ''" :rules="[requiredValidator]" />
+                <AppTextField :requiredField="validationDependInfo.requiredField"
+                  label="Transporte de la víctima desde el sitio del evento" v-model="form.victimTransportFromEventSite"
+                  clearable :maxlength="40" counter :errorMessages="errorsBack.victimTransportFromEventSite"
+                  @input="errorsBack.victimTransportFromEventSite = ''" :rules="validationDependInfo.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="true" label="Transporte de la víctima hasta el fin del recorrido"
-                  v-model="form.victimTransportToEnd" clearable :maxlength="40" counter
-                  :errorMessages="errorsBack.victimTransportToEnd" @input="errorsBack.victimTransportToEnd = ''"
-                  :rules="[requiredValidator]" />
+                <AppTextField :requiredField="validationDependInfo.requiredField"
+                  label="Transporte de la víctima hasta el fin del recorrido" v-model="form.victimTransportToEnd"
+                  clearable :maxlength="40" counter :errorMessages="errorsBack.victimTransportToEnd"
+                  @input="errorsBack.victimTransportToEnd = ''" :rules="validationDependInfo.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppSelect :requiredField="true" label="Tipo de servicio del transporte"
+                <AppSelect :requiredField="validationDependInfo.requiredField" label="Tipo de servicio del transporte"
                   v-model="form.transportServiceType" clearable :errorMessages="errorsBack.transportServiceType"
                   @input="errorsBack.transportServiceType = ''" :items="transportServiceTypeEnum_arrayInfo"
-                  :rules="[requiredValidator]" />
+                  :rules="validationDependInfo.rules" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppSelect :requiredField="true" label="Zona donde recoge víctima" v-model="form.victimPickupZone"
-                  clearable :errorMessages="errorsBack.victimPickupZone" @input="errorsBack.victimPickupZone = ''"
-                  :items="zoneEnum_arrayInfo" :rules="[requiredValidator]" />
+                <AppSelect :requiredField="validationDependInfo.requiredField" label="Zona donde recoge víctima"
+                  v-model="form.victimPickupZone" clearable :errorMessages="errorsBack.victimPickupZone"
+                  @input="errorsBack.victimPickupZone = ''" :items="zoneEnum_arrayInfo"
+                  :rules="validationDependInfo.rules" />
               </VCol>
             </VRow>
           </VForm>
@@ -1037,28 +1095,30 @@ const driverDocumentType_validation = computed(() => {
                   label="Total facturado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalBilledMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalBilledMedicalSurgical"
-                  @input="errorsBack.totalBilledMedicalSurgical = ''" :rules="[requiredValidator]" />
+                  @input="errorsBack.totalBilledMedicalSurgical = ''"
+                  :rules="[requiredValidator, greaterThanZeroValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppTextField type="number" :requiredField="true"
                   label="Total reclamado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalClaimedMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalClaimedMedicalSurgical"
-                  @input="errorsBack.totalClaimedMedicalSurgical = ''" :rules="[requiredValidator]" />
+                  @input="errorsBack.totalClaimedMedicalSurgical = ''"
+                  :rules="[requiredValidator, greaterThanZeroValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppTextField type="number" :requiredField="true"
                   label="Total facturado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalBilledTransport" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalBilledTransport" @input="errorsBack.totalBilledTransport = ''"
-                  :rules="[requiredValidator]" />
+                  :rules="[requiredValidator, greaterThanZeroValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppTextField type="number" :requiredField="true"
                   label="Total reclamado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalClaimedTransport" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalClaimedTransport" @input="errorsBack.totalClaimedTransport = ''"
-                  :rules="[requiredValidator]" />
+                  :rules="[requiredValidator, greaterThanZeroValidator]" />
               </VCol>
             </VRow>
           </VForm>
