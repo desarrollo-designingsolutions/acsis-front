@@ -223,7 +223,7 @@ const openModalUploadFileJson = () => {
 }
 
 const goViewFurips1 = (data: any) => {
-  router.push({ name: "Invoice-Furips1", params: { invoice_id: data.id, id: data.furips1_id } })
+  router.push({ name: "Invoice-Furips1", params: { action: data.furips1_id ? 'view' : 'create', invoice_id: data.id, id: data.furips1_id } })
 }
 const goViewFurips2 = (data: any) => {
   router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
