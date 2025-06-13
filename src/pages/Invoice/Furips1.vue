@@ -8,7 +8,7 @@ import type { VForm } from 'vuetify/components';
 const { toast } = useToast()
 
 definePage({
-  path: 'invoice-Furips1/:invoice_id/:id?',
+  path: 'invoice-Furips1/:action/:invoice_id/:id?',
   name: 'Invoice-Furips1',
   meta: {
     redirectIfLoggedIn: true,
@@ -337,6 +337,8 @@ const fetchDataForm = async () => {
   }
 }
 
+if (route.params.action == 'view') disabledFiledsView.value = true
+
 onMounted(async () => {
   clearForm()
 
@@ -538,7 +540,6 @@ const driverDocumentType_validation = computed(() => {
   }
 })
 
-
 const validationDependInfo = computed(() => {
   const rules = [
     value => requiredValidator(value),
@@ -574,6 +575,31 @@ const validationDependInfoPreviousFilingNumberRgoResponse = computed(() => {
     requiredField: false
   }
 })
+
+
+const downloadPDF = async () => {
+
+  loading.form = true;
+  const { response, data } = await useAxios(`/furips1/${form.value.invoice_id}/pdf`).get();
+
+  if (response.status == 200 && data) {
+    openPdfBase64(data.path);
+  }
+
+  loading.form = false;
+}
+
+const goView = (data: { action: string, invoice_id: string | null, id: string | null } = { action: "create", invoice_id: null, id: null }) => {
+  disabledFiledsView.value = false;
+  router.push({ name: "Invoice-Furips1", params: { action: data.action, invoice_id: data.invoice_id, id: data.id } })
+}
+
+const loadEdit = () => {
+  goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
+}
+
+
+
 </script>
 
 
@@ -583,7 +609,19 @@ const validationDependInfoPreviousFilingNumberRgoResponse = computed(() => {
   <div>
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
-        <span>Información del vehículo</span>
+        <span>Información del furips1</span>
+        <div>
+          <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadPDF">PDF
+              </VBtn>
+            </VCol>
+            <VCol>
+              <VBtn @click="loadEdit">Editar
+              </VBtn>
+            </VCol>
+          </VRow>
+        </div>
       </VCardTitle>
 
       <VCardText>
