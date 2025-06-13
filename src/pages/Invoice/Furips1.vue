@@ -278,7 +278,6 @@ const limitNumberLength = () => {
 const rgoResponseEnum_arrayInfo = ref<ISelect[]>([])
 const victimConditionEnum_arrayInfo = ref<ISelect[]>([])
 const eventNatureEnum_arrayInfo = ref<ISelect[]>([])
-const eventZoneEnum_arrayInfo = ref<ISelect[]>([])
 const referenceTypeEnum_arrayInfo = ref<ISelect[]>([])
 const ipsCodHabilitacion_arrayInfo = ref<ISelect[]>([])
 const vehicleTypeEnum_arrayInfo = ref<ISelect[]>([])
@@ -287,7 +286,7 @@ const surgicalComplexityEnum_arrayInfo = ref<ISelect[]>([])
 const ownerDocumentType_arrayInfo = ref<ISelect[]>([])
 const driverDocumentType_arrayInfo = ref<ISelect[]>([])
 const transportServiceTypeEnum_arrayInfo = ref<ISelect[]>([])
-const pickupZoneEnum_arrayInfo = ref<ISelect[]>([])
+const zoneEnum_arrayInfo = ref<ISelect[]>([])
 const municipios_arrayInfo = ref<ISelect[]>([])
 const paises_arrayInfo = ref<ISelect[]>([])
 const departamentos_arrayInfo = ref<ISelect[]>([])
@@ -314,7 +313,7 @@ const fetchDataForm = async () => {
     rgoResponseEnum_arrayInfo.value = data.rgoResponseEnum_arrayInfo
     victimConditionEnum_arrayInfo.value = data.victimConditionEnum_arrayInfo
     eventNatureEnum_arrayInfo.value = data.eventNatureEnum_arrayInfo
-    eventZoneEnum_arrayInfo.value = data.eventZoneEnum_arrayInfo
+    zoneEnum_arrayInfo.value = data.zoneEnum_arrayInfo
     referenceTypeEnum_arrayInfo.value = data.referenceTypeEnum_arrayInfo
     ipsCodHabilitacion_arrayInfo.value = data.ipsCodHabilitacion_arrayInfo
     vehicleTypeEnum_arrayInfo.value = data.vehicleTypeEnum_arrayInfo
@@ -323,7 +322,6 @@ const fetchDataForm = async () => {
     ownerDocumentType_arrayInfo.value = data.ownerDocumentType_arrayInfo
     driverDocumentType_arrayInfo.value = data.driverDocumentType_arrayInfo
     transportServiceTypeEnum_arrayInfo.value = data.transportServiceTypeEnum_arrayInfo
-    pickupZoneEnum_arrayInfo.value = data.pickupZoneEnum_arrayInfo
     municipios_arrayInfo.value = data.municipios_arrayInfo
     paises_arrayInfo.value = data.paises_arrayInfo
     departamentos_arrayInfo.value = data.departamentos_arrayInfo
@@ -665,7 +663,7 @@ const driverDocumentType_validation = computed(() => {
               <VCol cols="12" sm="4">
                 <AppSelect :requiredField="true" label="Zona de ocurrencia del evento" v-model="form.eventZone"
                   clearable :errorMessages="errorsBack.eventZone" @input="errorsBack.eventZone = ''"
-                  :items="eventZoneEnum_arrayInfo" :rules="[requiredValidator]" />
+                  :items="zoneEnum_arrayInfo" :rules="[requiredValidator]" />
               </VCol>
             </VRow>
           </VForm>
@@ -990,7 +988,7 @@ const driverDocumentType_validation = computed(() => {
               <VCol cols="12" sm="4">
                 <AppSelect :requiredField="true" label="Zona donde recoge víctima" v-model="form.victimPickupZone"
                   clearable :errorMessages="errorsBack.victimPickupZone" @input="errorsBack.victimPickupZone = ''"
-                  :items="pickupZoneEnum_arrayInfo" :rules="[requiredValidator]" />
+                  :items="zoneEnum_arrayInfo" :rules="[requiredValidator]" />
               </VCol>
             </VRow>
           </VForm>

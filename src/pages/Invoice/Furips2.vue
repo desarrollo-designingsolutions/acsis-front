@@ -44,7 +44,7 @@ interface IForm {
   serviceValue: string | null;
   totalFactoryValue: string | null;
   totalClaimedValue: string | null;
-  victimResidenceAddress: string | null; // Existing field
+  victimResidenceAddress: string | null;
 }
 
 const form = ref<IForm>({

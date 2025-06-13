@@ -19,51 +19,40 @@ const tooltip = computed(
   () => useAttrs().tooltip as object | undefined
 );
 
- 
+
 </script>
 
 <template>
-  <div
-    class="app-combobox flex-grow-1"
-    :class="$attrs.class"
-  > 
+  <div class="app-combobox flex-grow-1" :class="$attrs.class">
 
-    <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2 text-high-emphasis">
+    <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2 text-high-emphasis d-block text-wrap">
       {{ label }}
       <span v-if="requiredField">&nbsp; <b class="text-warning">*</b></span>
       <VTooltip v-if="tooltip" :location="tooltip.location ?? 'top'">
         <template #activator="{ props }">
           <VIcon v-if="tooltip.icon" v-bind="props" :icon="tooltip.icon" />
         </template>
-        <span>{{tooltip.text}}</span>
+        <span>{{ tooltip.text }}</span>
       </VTooltip>
     </VLabel>
 
-    <VCombobox
-      v-bind="{
-        ...$attrs,
-        class: null,
-        label: undefined,
-        variant: 'outlined',
-        id: elementId,
-        menuProps: {
-          contentClass: [
-            'app-inner-list',
-            'app-combobox__content',
-            'v-combobox__content',
-            $attrs.multiple !== undefined ? 'v-list-select-multiple' : '',
-          ],
-        },
-      }"
-    >
-      <template
-        v-for="(_, name) in $slots"
-        #[name]="slotProps"
-      >
-        <slot
-          :name="name"
-          v-bind="slotProps || {}"
-        />
+    <VCombobox v-bind="{
+      ...$attrs,
+      class: null,
+      label: undefined,
+      variant: 'outlined',
+      id: elementId,
+      menuProps: {
+        contentClass: [
+          'app-inner-list',
+          'app-combobox__content',
+          'v-combobox__content',
+          $attrs.multiple !== undefined ? 'v-list-select-multiple' : '',
+        ],
+      },
+    }">
+      <template v-for="(_, name) in $slots" #[name]="slotProps">
+        <slot :name="name" v-bind="slotProps || {}" />
       </template>
     </VCombobox>
   </div>

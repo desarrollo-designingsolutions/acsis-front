@@ -45,6 +45,7 @@ declare module 'vue-router/auto-routes' {
     'invoice-components-modal-upload-file-xml': RouteRecordInfo<'invoice-components-modal-upload-file-xml', '/Invoice/Components/ModalUploadFileXml', Record<never, never>, Record<never, never>>,
     'invoice-components-valid-jsonschema': RouteRecordInfo<'invoice-components-valid-jsonschema', '/Invoice/Components/ValidJSONSchema', Record<never, never>, Record<never, never>>,
     'Invoice-Form': RouteRecordInfo<'Invoice-Form', 'invoice-Form/:action/:id?', Record<never, never>, Record<never, never>>,
+    'Invoice-Fultran': RouteRecordInfo<'Invoice-Fultran', 'invoice-Fultran/:invoice_id/:id?', Record<never, never>, Record<never, never>>,
     'Invoice-Furips1': RouteRecordInfo<'Invoice-Furips1', 'invoice-Furips1/:invoice_id/:id?', Record<never, never>, Record<never, never>>,
     'Invoice-Furips2': RouteRecordInfo<'Invoice-Furips2', 'invoice-Furips2/:invoice_id/:id?', Record<never, never>, Record<never, never>>,
     'Invoice-List': RouteRecordInfo<'Invoice-List', '/Invoice/List', Record<never, never>, Record<never, never>>,

@@ -226,7 +226,23 @@ const goViewFurips1 = (data: any) => {
   router.push({ name: "Invoice-Furips1", params: { invoice_id: data.id, id: data.furips1_id } })
 }
 const goViewFurips2 = (data: any) => {
+  if (!data.furips1_id) {
+    openModalQuestionFurips2(data)
+    return false
+  }
   router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
+}
+const goViewFultran = (data: any) => {
+  router.push({ name: "Invoice-Fultran", params: { invoice_id: data.id, id: data.fultran_id } })
+}
+
+//ModalQuestionFurips2
+const refModalQuestionFurips2 = ref()
+
+const openModalQuestionFurips2 = (data: any) => {
+  refModalQuestionFurips2.value.openModal(data)
+  refModalQuestionFurips2.value.componentData.title = "Se requiere primero crear el FURIPS 1 para avanzar"
+  refModalQuestionFurips2.value.componentData.btnSuccessText = "Crear FURIPS 1"
 }
 </script>
 
@@ -337,12 +353,12 @@ const goViewFurips2 = (data: any) => {
                   </template>
                   Subir XML
                 </VListItem>
-                <VListItem v-if="item.status != 'INVOICE_TYPE_002'" @click="() => { }">
+                <VListItem v-if="item.type == 'INVOICE_TYPE_002'" @click="() => { }">
 
                   <VMenu>
                     <template #activator="{ props }">
                       <div class="flex items-center w-full" v-bind="props" @click.stop>
-                        <VIcon icon="tabler-upload" class="mr-2"></VIcon>
+                        <VIcon icon="tabler-clipboard" class="mr-2"></VIcon>
                         <span>Anexos</span>
                         <VIcon icon="tabler-chevron-right" class="ml-auto" />
                       </div>
@@ -360,6 +376,12 @@ const goViewFurips2 = (data: any) => {
                         </template>
                         <span>FURIPS-2</span>
                       </VListItem>
+                      <VListItem @click="goViewFultran(item)">
+                        <template #prepend>
+                          <VIcon icon="tabler-file" />
+                        </template>
+                        <span>FULTRAN</span>
+                      </VListItem>
                     </VList>
                   </VMenu>
 
@@ -376,6 +398,9 @@ const goViewFurips2 = (data: any) => {
 
     <ModalUploadFileXml ref="refModalUploadFileXml" />
     <ModalUploadFileJson ref="refModalUploadFileJson" />
+
+    <ModalQuestion ref="refModalQuestionFurips2" @success="goViewFurips1" />
+
 
   </div>
 </template>

@@ -268,4 +268,13 @@ export const CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE = [
   'DE',
   'PE',
   'PT',
+];
+export const CODS_SELECT_FORM_FULTRAN_CLAIMANIDTYPE = [
+  'CC',
+  'CE',
+  'PA',
+  'CD',
+  'PE',
+  'PT',
+  'DE',
 ]; 
