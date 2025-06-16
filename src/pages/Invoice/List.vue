@@ -230,10 +230,10 @@ const goViewFurips2 = (data: any) => {
     openModalQuestionFurips2(data)
     return false
   }
-  router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
+  router.push({ name: "Invoice-Furips2", params: { action: data.furips2_id ? 'view' : 'create', invoice_id: data.id, id: data.furips2_id } })
 }
 const goViewFultran = (data: any) => {
-  router.push({ name: "Invoice-Fultran", params: { invoice_id: data.id, id: data.fultran_id } })
+  router.push({ name: "Invoice-Fultran", params: { action: data.fultran_id ? 'view' : 'create', invoice_id: data.id, id: data.fultran_id } })
 }
 
 //ModalQuestionFurips2

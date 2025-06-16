@@ -9,7 +9,7 @@ import type { VForm } from 'vuetify/components/VForm';
 const { toast } = useToast()
 
 definePage({
-  path: 'invoice-Furips2/:invoice_id/:id?',
+  path: 'invoice-Furips2/:action/:invoice_id/:id?',
   name: 'Invoice-Furips2',
   meta: {
     redirectIfLoggedIn: true,
@@ -151,6 +151,8 @@ const fetchDataForm = async () => {
   }
 }
 
+if (route.params.action == 'view') disabledFiledsView.value = true
+
 onMounted(async () => {
   clearForm()
   await fetchDataForm()
@@ -265,6 +267,15 @@ const totalFactoryValue = computed(() => {
 
   return totalFactoryValue
 });
+
+const goView = (data: { action: string, invoice_id: string | null, id: string | null } = { action: "create", invoice_id: null, id: null }) => {
+  disabledFiledsView.value = false;
+  router.push({ name: "Invoice-Furips2", params: { action: data.action, invoice_id: data.invoice_id, id: data.id } })
+}
+
+const loadEdit = () => {
+  goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
+}
 </script>
 
 <template>
@@ -272,6 +283,14 @@ const totalFactoryValue = computed(() => {
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
         <span>Información del Furips2</span>
+        <div>
+          <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn @click="loadEdit">Editar
+              </VBtn>
+            </VCol>
+          </VRow>
+        </div>
       </VCardTitle>
 
       <VCardText>

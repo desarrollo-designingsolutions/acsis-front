@@ -9,7 +9,7 @@ import type { VForm } from 'vuetify/components/VForm';
 const { toast } = useToast()
 
 definePage({
-  path: 'invoice-Fultran/:invoice_id/:id?',
+  path: 'invoice-Fultran/:action/:invoice_id/:id?',
   name: 'Invoice-Fultran',
   meta: {
     redirectIfLoggedIn: true,
@@ -189,6 +189,8 @@ const fetchDataForm = async () => {
   }
 }
 
+if (route.params.action == 'view') disabledFiledsView.value = true
+
 onMounted(async () => {
   clearForm()
   await fetchDataForm()
@@ -286,6 +288,27 @@ const insurerCode_validation = computed(() => {
     requiredField: false
   }
 })
+
+const downloadPDF = async () => {
+
+  loading.form = true;
+  const { response, data } = await useAxios(`/fultran/${form.value.invoice_id}/pdf`).get();
+
+  if (response.status == 200 && data) {
+    openPdfBase64(data.path);
+  }
+
+  loading.form = false;
+}
+
+const goView = (data: { action: string, invoice_id: string | null, id: string | null } = { action: "create", invoice_id: null, id: null }) => {
+  disabledFiledsView.value = false;
+  router.push({ name: "Invoice-Fultran", params: { action: data.action, invoice_id: data.invoice_id, id: data.id } })
+}
+
+const loadEdit = () => {
+  goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
+}
 </script>
 
 <template>
@@ -293,6 +316,18 @@ const insurerCode_validation = computed(() => {
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
         <span>Información del Fultran</span>
+        <div>
+          <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadPDF">PDF
+              </VBtn>
+            </VCol>
+            <VCol>
+              <VBtn @click="loadEdit">Editar
+              </VBtn>
+            </VCol>
+          </VRow>
+        </div>
       </VCardTitle>
 
       <VCardText>

@@ -658,8 +658,6 @@ const loadEdit = () => {
   goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
 }
 
-
-
 </script>
 
 
@@ -1258,7 +1256,7 @@ const loadEdit = () => {
         <!-- Tab 3: Datos adicionales -->
         <div v-show="currentTab == 3">
           <!-- Certificación de la atención medica de la víctima como prueba del accidente o evento. -->
-          <VCardTitle class="mt-4">XI.. Certificación de la atención medica de la víctima como prueba del accidente o
+          <VCardTitle class="mt-4">XI. Certificación de la atención medica de la víctima como prueba del accidente o
             evento.</VCardTitle>
           <VForm :ref="el => formRefs[12] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
