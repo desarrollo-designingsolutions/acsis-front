@@ -85,6 +85,8 @@ interface IForm {
   victimTransportToEnd: null | string;
   transportServiceType: null | string;
   victimPickupZone: null | string;
+  doctorIdType_id: null | string;
+  doctorIdNumber: null | string;
   doctorFirstLastName: null | string;
   doctorSecondLastName: null | string;
   doctorFirstName: null | string;
@@ -95,6 +97,19 @@ interface IForm {
   totalBilledTransport: null | string;
   totalClaimedTransport: null | string;
   enabledServicesConfirmation: null | string;
+  medicalAdmissionDate: null | string;
+  medicalAdmissionTime: null | string;
+  medicalDischargeDate: null | string;
+  medicalDischargeTime: null | string;
+  primaryAdmissionDiagnosisCode_id: null | string;
+  associatedAdmissionDiagnosisCode1_id: null | string;
+  associatedAdmissionDiagnosisCode2_id: null | string;
+  primaryDischargeDiagnosisCode_id: null | string;
+  associatedDischargeDiagnosisCode1_id: null | string;
+  associatedDischargeDiagnosisCode2_id: null | string;
+  authorityIntervention: null | string;
+  policyExcessCharge: null | string;
+  referralRecipientCharge: null | string;
 }
 
 const form = ref<IForm>({
@@ -156,6 +171,8 @@ const form = ref<IForm>({
   victimTransportToEnd: null,
   transportServiceType: null,
   victimPickupZone: null,
+  doctorIdType_id: null,
+  doctorIdNumber: null,
   doctorFirstLastName: null,
   doctorSecondLastName: null,
   doctorFirstName: null,
@@ -166,6 +183,19 @@ const form = ref<IForm>({
   totalBilledTransport: null,
   totalClaimedTransport: null,
   enabledServicesConfirmation: null,
+  medicalAdmissionDate: null,
+  medicalAdmissionTime: null,
+  medicalDischargeDate: null,
+  medicalDischargeTime: null,
+  primaryAdmissionDiagnosisCode_id: null,
+  associatedAdmissionDiagnosisCode1_id: null,
+  associatedAdmissionDiagnosisCode2_id: null,
+  primaryDischargeDiagnosisCode_id: null,
+  associatedDischargeDiagnosisCode1_id: null,
+  associatedDischargeDiagnosisCode2_id: null,
+  authorityIntervention: null,
+  policyExcessCharge: null,
+  referralRecipientCharge: null,
 });
 
 const clearForm = () => {
@@ -190,6 +220,7 @@ const tabs = ref([
   { title: 'Datos Iniciales', show: true, errorsValidations: false },
   { title: 'Información del Vehículo y Atención', show: true, errorsValidations: false },
   { title: 'Transporte, Médico y Reclamaciones', show: true, errorsValidations: false },
+  { title: 'Datos Adicionales', show: true, errorsValidations: false },
 ]);
 
 const sections = ref([
@@ -205,6 +236,8 @@ const sections = ref([
   { title: 'XII. Datos del médico o profesional de la salud tratante', show: true, errorsValidations: false },
   { title: 'XIII. Amparos que reclama', show: true, errorsValidations: false },
   { title: 'XIV. Confirmación servicios habilitados', show: true, errorsValidations: false },
+  { title: 'XI. Certificación de la atención medica de la víctima como prueba del accidente o evento.', show: true, errorsValidations: false },
+  { title: 'XV. Datos adicionales para completotud de PDF.', show: true, errorsValidations: false },
 ]);
 
 const formRefs = ref<(VForm | null)[]>(new Array(sections.value.length).fill(null));
@@ -291,6 +324,8 @@ const zoneEnum_arrayInfo = ref<ISelect[]>([])
 const municipios_arrayInfo = ref<ISelect[]>([])
 const paises_arrayInfo = ref<ISelect[]>([])
 const departamentos_arrayInfo = ref<ISelect[]>([])
+const doctorIdType_arrayInfo = ref<ISelect[]>([])
+const cie10_arrayInfo = ref<ISelect[]>([])
 
 const invoice = ref<IInvoiceData>({
   id: null,
@@ -327,6 +362,8 @@ const fetchDataForm = async () => {
     municipios_arrayInfo.value = data.municipios_arrayInfo
     paises_arrayInfo.value = data.paises_arrayInfo
     departamentos_arrayInfo.value = data.departamentos_arrayInfo
+    doctorIdType_arrayInfo.value = data.doctorIdType_arrayInfo
+    cie10_arrayInfo.value = data.cie10_arrayInfo
 
     invoice.value = data.invoice
 
@@ -576,6 +613,29 @@ const validationDependInfoPreviousFilingNumberRgoResponse = computed(() => {
   }
 })
 
+
+
+const doctorIdNumberRuleMaxCharacters = computed(() => (value: string) => {
+  const tipoId = form.value.doctorIdType_id?.codigo;
+
+  if (!tipoId || !value) return true;
+  const maxLength = documentLengthByType[tipoId] || 20;
+  return (
+    value.length <= maxLength ||
+    `El documento ${tipoId} debe tener máximo ${maxLength} caracteres`
+  );
+});
+
+const doctorIdType_validation = computed(() => {
+  const rules = [
+    value => requiredValidator(value),
+    doctorIdNumberRuleMaxCharacters.value,
+  ]
+  return {
+    rules: rules,
+    requiredField: false
+  }
+})
 
 const downloadPDF = async () => {
 
@@ -1094,6 +1154,24 @@ const loadEdit = () => {
           <VForm :ref="el => formRefs[9] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView"
+                  label="Tipo de documento de identidad del médico o profesional de la salud"
+                  v-model="form.doctorIdType_id" url="/selectInfiniteTipoIdPisis" arrayInfo="tipoIdPisis"
+                  :requiredField="true" :errorMessages="errorsBack.doctorIdType_id"
+                  @input="errorsBack.doctorIdType_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="doctorIdType_arrayInfo" :firstFetch="false" :params="{
+                    codigo_in: CODS_SELECT_FORM_FURIPS1_DOCTORIDTYPE,
+                  }">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField :requiredField="doctorIdType_validation.requiredField"
+                  label="Número de documento de identidad del médico o profesional de la salud"
+                  v-model="form.doctorIdNumber" clearable :maxlength="16" counter
+                  :errorMessages="errorsBack.doctorIdNumber" @input="errorsBack.doctorIdNumber = ''"
+                  :rules="doctorIdType_validation.rules" />
+              </VCol>
+              <VCol cols="12" sm="4">
                 <AppTextField :requiredField="true" label="Primer apellido del médico o profesional de la salud"
                   v-model="form.doctorFirstLastName" clearable :maxlength="20" counter
                   :errorMessages="errorsBack.doctorFirstLastName" @input="errorsBack.doctorFirstLastName = ''"
@@ -1174,7 +1252,123 @@ const loadEdit = () => {
               </VCol>
             </VRow>
           </VForm>
+
         </div>
+
+        <!-- Tab 3: Datos adicionales -->
+        <div v-show="currentTab == 3">
+          <!-- Certificación de la atención medica de la víctima como prueba del accidente o evento. -->
+          <VCardTitle class="mt-4">XI.. Certificación de la atención medica de la víctima como prueba del accidente o
+            evento.</VCardTitle>
+          <VForm :ref="el => formRefs[12] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
+            <VRow>
+              <VCol cols="12" sm="4">
+                <AppTextField type="date" :requiredField="true" label="Fecha de ingreso"
+                  v-model="form.medicalAdmissionDate" clearable :errorMessages="errorsBack.medicalAdmissionDate"
+                  @input="errorsBack.medicalAdmissionDate = ''" :rules="[requiredValidator]" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppDateTimePicker :requiredField="true" label="Hora de ingreso" v-model="form.medicalAdmissionTime"
+                  clearable :errorMessages="errorsBack.medicalAdmissionTime"
+                  @input="errorsBack.medicalAdmissionTime = ''" :rules="[requiredValidator]" :config="{
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true
+                  }" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField type="date" :requiredField="true" label="Fecha de egreso"
+                  v-model="form.medicalDischargeDate" clearable :errorMessages="errorsBack.medicalDischargeDate"
+                  @input="errorsBack.medicalDischargeDate = ''" :rules="[requiredValidator]" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppDateTimePicker :requiredField="true" label="Hora de egreso" v-model="form.medicalDischargeTime"
+                  clearable :errorMessages="errorsBack.medicalDischargeTime"
+                  @input="errorsBack.medicalDischargeTime = ''" :rules="[requiredValidator]" :config="{
+                    enableTime: true,
+                    noCalendar: true,
+                    dateFormat: 'H:i',
+                    time_24hr: true
+                  }" />
+              </VCol>
+
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico principal de ingreso"
+                  v-model="form.primaryAdmissionDiagnosisCode_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.primaryAdmissionDiagnosisCode_id"
+                  @input="errorsBack.primaryAdmissionDiagnosisCode_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de ingreso asociado 1"
+                  v-model="form.associatedAdmissionDiagnosisCode1_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.associatedAdmissionDiagnosisCode1_id"
+                  @input="errorsBack.associatedAdmissionDiagnosisCode1_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de ingreso asociado 2"
+                  v-model="form.associatedAdmissionDiagnosisCode2_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.associatedAdmissionDiagnosisCode2_id"
+                  @input="errorsBack.associatedAdmissionDiagnosisCode2_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código diagnóstico principal de egreso"
+                  v-model="form.primaryDischargeDiagnosisCode_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.primaryDischargeDiagnosisCode_id"
+                  @input="errorsBack.primaryDischargeDiagnosisCode_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de egreso asociado 1"
+                  v-model="form.associatedDischargeDiagnosisCode1_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.associatedDischargeDiagnosisCode1_id"
+                  @input="errorsBack.associatedDischargeDiagnosisCode1_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de egreso asociado 2"
+                  v-model="form.associatedDischargeDiagnosisCode2_id" url="/selectInfiniteCie10" arrayInfo="cie10"
+                  :requiredField="true" :errorMessages="errorsBack.associatedDischargeDiagnosisCode2_id"
+                  @input="errorsBack.associatedDischargeDiagnosisCode2_id = ''" :rules="[requiredValidator]" clearable
+                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                </AppSelectRemote>
+              </VCol>
+
+            </VRow>
+          </VForm>
+          <!-- Datos adicionales para completotud de PDF. -->
+          <VCardTitle class="mt-4">XV. Datos adicionales para completotud de PDF.</VCardTitle>
+          <VForm :ref="el => formRefs[13] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
+            <VRow>
+              <VCol cols="12" sm="4">
+                <AppSelect :requiredField="true" label="Intervención de autoridad" v-model="form.authorityIntervention"
+                  clearable :items="yesNoEnum_arrayInfo" :errorMessages="errorsBack.authorityIntervention"
+                  @input="errorsBack.authorityIntervention = ''" :rules="[requiredValidator]" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelect :requiredField="true" label="Cobro Excedente Póliza" v-model="form.policyExcessCharge"
+                  clearable :items="yesNoEnum_arrayInfo" :errorMessages="errorsBack.policyExcessCharge"
+                  @input="errorsBack.policyExcessCharge = ''" :rules="[requiredValidator]" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField :requiredField="true" label="Cargo del que recibe en remisión"
+                  v-model="form.referralRecipientCharge" clearable :errorMessages="errorsBack.referralRecipientCharge"
+                  @input="errorsBack.referralRecipientCharge = ''" :rules="[requiredValidator]" />
+              </VCol>
+
+
+            </VRow>
+          </VForm>
+        </div>
+
       </VCardText>
 
       <VCardText class="d-flex justify-end gap-3 flex-wrap mt-5">
