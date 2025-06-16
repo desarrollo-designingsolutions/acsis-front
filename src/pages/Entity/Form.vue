@@ -34,6 +34,7 @@ const form = ref({
   phone: null as string | null,
   email: null as string | null,
   type_entity_id: null as string | null,
+  insuranceCode: null as string | null,
 })
 
 const typeEntities = ref<Array<object>>([])
@@ -187,6 +188,10 @@ const phoneRules = [
               <VCol cols="12" sm="4">
                 <AppTextField :requiredField="true" clearable :rules="[emailValidator]" v-model="form.email"
                   label="Correo de contacto" :error-messages="errorsBack.email" @input="errorsBack.email = ''" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField clearable v-model="form.insuranceCode" label="Código de la aseguradora"
+                  :error-messages="errorsBack.insuranceCode" @input="errorsBack.insuranceCode = ''" />
               </VCol>
 
             </VRow>

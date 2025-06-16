@@ -272,8 +272,10 @@ export const CODS_SELECT_FORM_FURIPS1_DRIVERDOCUMENTTYPE = [
 
 export const CODS_SELECT_FORM_FURIPS1_DOCTORIDTYPE = [
   'CC',
-  'CF',
+  'CE',
   'PA',
+  'PE',
+  'PT',
 ];
 
 export const CODS_SELECT_FORM_FULTRAN_CLAIMANIDTYPE = [

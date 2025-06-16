@@ -237,7 +237,7 @@ const sections = ref([
   { title: 'XIII. Amparos que reclama', show: true, errorsValidations: false },
   { title: 'XIV. Confirmación servicios habilitados', show: true, errorsValidations: false },
   { title: 'XI. Certificación de la atención medica de la víctima como prueba del accidente o evento.', show: true, errorsValidations: false },
-  { title: 'XV. Datos adicionales para completotud de PDF.', show: true, errorsValidations: false },
+  { title: 'XV. Datos adicionales para PDF.', show: true, errorsValidations: false },
 ]);
 
 const formRefs = ref<(VForm | null)[]>(new Array(sections.value.length).fill(null));
@@ -1344,8 +1344,8 @@ const loadEdit = () => {
 
             </VRow>
           </VForm>
-          <!-- Datos adicionales para completotud de PDF. -->
-          <VCardTitle class="mt-4">XV. Datos adicionales para completotud de PDF.</VCardTitle>
+          <!-- Datos adicionales para PDF. -->
+          <VCardTitle class="mt-4">XV. Datos adicionales para PDF.</VCardTitle>
           <VForm :ref="el => formRefs[13] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
