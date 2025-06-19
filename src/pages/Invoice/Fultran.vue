@@ -62,6 +62,11 @@ interface IForm {
   billedValue: string | null;
   claimedValue: string | null;
   serviceEnabledIndication: string | null;
+  ipsName: string | null;
+  ipsNit: string | null;
+  ipsAddress: string | null;
+  ipsPhone: string | null;
+  ipsReceptionHabilitationCode_id: string | null;
 }
 
 const form = ref<IForm>({
@@ -99,6 +104,11 @@ const form = ref<IForm>({
   billedValue: null,
   claimedValue: null,
   serviceEnabledIndication: null,
+  ipsName: null,
+  ipsNit: null,
+  ipsAddress: null,
+  ipsPhone: null,
+  ipsReceptionHabilitationCode_id: null,
 });
 
 const clearForm = () => {
@@ -158,6 +168,7 @@ const zoneEnum_arrayInfo = ref<ISelect[]>([])
 const victimConditionEnum_arrayInfo = ref<ISelect[]>([])
 const vehicleTypeEnum_arrayInfo = ref<ISelect[]>([])
 const yesNoEnum_arrayInfo = ref<ISelect[]>([])
+const ipsCodHabilitacion_arrayInfo = ref<ISelect[]>([])
 
 const fetchDataForm = async () => {
   form.value.invoice_id = route.params.invoice_id || null
@@ -182,6 +193,7 @@ const fetchDataForm = async () => {
     victimConditionEnum_arrayInfo.value = data.victimConditionEnum_arrayInfo
     vehicleTypeEnum_arrayInfo.value = data.vehicleTypeEnum_arrayInfo
     yesNoEnum_arrayInfo.value = data.yesNoEnum_arrayInfo
+    ipsCodHabilitacion_arrayInfo.value = data.ipsCodHabilitacion_arrayInfo
 
     if (data.form) {
       form.value = cloneObject(data.form)
@@ -301,14 +313,14 @@ const insurerCode_validation = computed(() => {
           <VCardTitle>I. Datos del transportador reclamante</VCardTitle>
           <VRow>
             <VCol cols="12" sm="4">
-              <AppTextField :requiredField="true" :rules="[requiredValidator]" label="Número del radicado anterior"
-                v-model="form.previousRecordNumber" clearable :maxlength="10" counter
-                :errorMessages="errorsBack.previousRecordNumber" @input="errorsBack.previousRecordNumber = ''" />
+              <AppTextField label="Número del radicado anterior" v-model="form.previousRecordNumber" clearable
+                :maxlength="10" counter :errorMessages="errorsBack.previousRecordNumber"
+                @input="errorsBack.previousRecordNumber = ''" />
             </VCol>
             <VCol cols="12" sm="4">
-              <AppSelect :requiredField="true" :rules="[requiredValidator]" label="RG Respuesta a Glosa u objeción"
-                v-model="form.rgResponse" clearable :errorMessages="errorsBack.rgResponse"
-                @input="errorsBack.rgResponse = ''" :items="rgResponseEnum_arrayInfo" />
+              <AppSelect label="RG Respuesta a Glosa u objeción" v-model="form.rgResponse" clearable
+                :errorMessages="errorsBack.rgResponse" @input="errorsBack.rgResponse = ''"
+                :items="rgResponseEnum_arrayInfo" />
             </VCol>
             <VCol cols="12" sm="4">
               <AppTextField :requiredField="true" :rules="[requiredValidator]"
@@ -481,6 +493,44 @@ const insurerCode_validation = computed(() => {
                 :rules="[requiredValidator]">
               </AppSelectRemote>
             </VCol>
+
+
+
+
+
+
+
+            <VCol cols="12" sm="4">
+              <AppTextField :requiredField="true" :rules="[requiredValidator]"
+                label="Nombre IPS que atendió a la víctima" v-model="form.ipsName" counter
+                :errorMessages="errorsBack.ipsName" @input="errorsBack.ipsName = ''" />
+            </VCol>
+            <VCol cols="12" sm="4">
+              <AppTextField :requiredField="true" :rules="[requiredValidator]"
+                label="NIT de IPS que atendió a la víctima" v-model="form.ipsNit" counter
+                :errorMessages="errorsBack.ipsNit" @input="errorsBack.ipsNit = ''" />
+            </VCol>
+            <VCol cols="12" sm="4">
+              <AppTextField :requiredField="true" :rules="[requiredValidator]"
+                label="Dirección de IPS que atendió a la víctima" v-model="form.ipsAddress" counter
+                :errorMessages="errorsBack.ipsAddress" @input="errorsBack.ipsAddress = ''" />
+            </VCol>
+            <VCol cols="12" sm="4">
+              <AppTextField :requiredField="true" :rules="[requiredValidator]"
+                label="Teléfono de IPS que atendió a la víctima" v-model="form.ipsPhone" counter
+                :errorMessages="errorsBack.ipsPhone" @input="errorsBack.ipsPhone = ''" />
+            </VCol>
+            <VCol cols="12" sm="4">
+              <AppSelectRemote :disabled="disabledFiledsView" :requiredField="true"
+                label="Código de habilitación de la IPS que recibió a la víctima"
+                v-model="form.ipsReceptionHabilitationCode_id"
+                :errorMessages="errorsBack.ipsReceptionHabilitationCode_id"
+                @input="errorsBack.ipsReceptionHabilitationCode_id = ''" url="/selectInfiniteIpsCodHabilitacion"
+                arrayInfo="ipsCodHabilitacion" clearable :itemsData="ipsCodHabilitacion_arrayInfo" :firstFetch="false"
+                :rules="[requiredValidator]" />
+            </VCol>
+
+
           </VRow>
 
           <!-- VI. Datos obligatorios si el evento es un accidente de tránsito -->

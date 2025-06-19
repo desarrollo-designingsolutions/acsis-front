@@ -637,6 +637,34 @@ const doctorIdType_validation = computed(() => {
   }
 })
 
+const consecutiveClaimNumber_validation = computed(() => {
+  const rules = [];
+
+  // Solo agregar la validación si el campo tiene un valor
+  if (form.value.consecutiveClaimNumber) {
+    rules.push(value => greaterThanZeroValidator(value));
+  }
+
+  return {
+    rules: rules,
+    requiredField: false
+  };
+});
+
+const otherEventDescription_validation = computed(() => {
+  const rules = [];
+
+  // Agregar la validación requerida si form.value.eventNature es 'EVENT_NATURE_017'
+  if (form.value.eventNature === 'EVENT_NATURE_017') {
+    rules.push(value => requiredValidator(value));
+  }
+
+  return {
+    rules: rules,
+    requiredField: form.value.eventNature === 'EVENT_NATURE_017'
+  };
+});
+
 const downloadPDF = async () => {
 
   loading.form = true;
@@ -718,7 +746,7 @@ const loadEdit = () => {
                 <AppTextField type="number" label="Número consecutivo de la reclamación"
                   v-model="form.consecutiveClaimNumber" clearable :maxlength="12" counter
                   :errorMessages="errorsBack.consecutiveClaimNumber" @input="limitNumberLength"
-                  :rules="[greaterThanZeroValidator]" />
+                  :rules="consecutiveClaimNumber_validation.rules" />
               </VCol>
             </VRow>
           </VForm>
@@ -760,11 +788,10 @@ const loadEdit = () => {
                   :items="eventNatureEnum_arrayInfo" :rules="[requiredValidator]" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField :requiredField="form.eventNature == '17' ? true : false"
+                <AppTextField :requiredField="otherEventDescription_validation.requiredField"
                   label="Descripción del otro evento" v-model="form.otherEventDescription" clearable :maxlength="25"
                   counter :errorMessages="errorsBack.otherEventDescription"
-                  @input="errorsBack.otherEventDescription = ''"
-                  :rules="[form.eventNature == '17' ? requiredValidator : []]" />
+                  @input="errorsBack.otherEventDescription = ''" :rules="otherEventDescription_validation.rules" />
               </VCol>
               <VCol cols="12" sm="4">
                 <AppTextField :requiredField="true" label="Dirección de ocurrencia del evento"
@@ -1304,17 +1331,17 @@ const loadEdit = () => {
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de ingreso asociado 1"
                   v-model="form.associatedAdmissionDiagnosisCode1_id" url="/selectInfiniteCie10" arrayInfo="cie10"
-                  :requiredField="true" :errorMessages="errorsBack.associatedAdmissionDiagnosisCode1_id"
-                  @input="errorsBack.associatedAdmissionDiagnosisCode1_id = ''" :rules="[requiredValidator]" clearable
-                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                  :errorMessages="errorsBack.associatedAdmissionDiagnosisCode1_id"
+                  @input="errorsBack.associatedAdmissionDiagnosisCode1_id = ''" clearable :itemsData="cie10_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de ingreso asociado 2"
                   v-model="form.associatedAdmissionDiagnosisCode2_id" url="/selectInfiniteCie10" arrayInfo="cie10"
-                  :requiredField="true" :errorMessages="errorsBack.associatedAdmissionDiagnosisCode2_id"
-                  @input="errorsBack.associatedAdmissionDiagnosisCode2_id = ''" :rules="[requiredValidator]" clearable
-                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                  :errorMessages="errorsBack.associatedAdmissionDiagnosisCode2_id"
+                  @input="errorsBack.associatedAdmissionDiagnosisCode2_id = ''" clearable :itemsData="cie10_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
@@ -1328,17 +1355,17 @@ const loadEdit = () => {
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de egreso asociado 1"
                   v-model="form.associatedDischargeDiagnosisCode1_id" url="/selectInfiniteCie10" arrayInfo="cie10"
-                  :requiredField="true" :errorMessages="errorsBack.associatedDischargeDiagnosisCode1_id"
-                  @input="errorsBack.associatedDischargeDiagnosisCode1_id = ''" :rules="[requiredValidator]" clearable
-                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                  :errorMessages="errorsBack.associatedDischargeDiagnosisCode1_id"
+                  @input="errorsBack.associatedDischargeDiagnosisCode1_id = ''" clearable :itemsData="cie10_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
               <VCol cols="12" sm="4">
                 <AppSelectRemote :disabled="disabledFiledsView" label="Código de diagnóstico de egreso asociado 2"
                   v-model="form.associatedDischargeDiagnosisCode2_id" url="/selectInfiniteCie10" arrayInfo="cie10"
-                  :requiredField="true" :errorMessages="errorsBack.associatedDischargeDiagnosisCode2_id"
-                  @input="errorsBack.associatedDischargeDiagnosisCode2_id = ''" :rules="[requiredValidator]" clearable
-                  :itemsData="cie10_arrayInfo" :firstFetch="false">
+                  :errorMessages="errorsBack.associatedDischargeDiagnosisCode2_id"
+                  @input="errorsBack.associatedDischargeDiagnosisCode2_id = ''" clearable :itemsData="cie10_arrayInfo"
+                  :firstFetch="false">
                 </AppSelectRemote>
               </VCol>
 

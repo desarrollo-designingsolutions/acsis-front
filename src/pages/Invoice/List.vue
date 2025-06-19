@@ -226,24 +226,12 @@ const goViewFurips1 = (data: any) => {
   router.push({ name: "Invoice-Furips1", params: { action: data.furips1_id ? 'view' : 'create', invoice_id: data.id, id: data.furips1_id } })
 }
 const goViewFurips2 = (data: any) => {
-  if (!data.furips1_id) {
-    openModalQuestionFurips2(data)
-    return false
-  }
   router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
 }
 const goViewFultran = (data: any) => {
   router.push({ name: "Invoice-Fultran", params: { invoice_id: data.id, id: data.fultran_id } })
 }
 
-//ModalQuestionFurips2
-const refModalQuestionFurips2 = ref()
-
-const openModalQuestionFurips2 = (data: any) => {
-  refModalQuestionFurips2.value.openModal(data)
-  refModalQuestionFurips2.value.componentData.title = "Se requiere primero crear el FURIPS 1 para avanzar"
-  refModalQuestionFurips2.value.componentData.btnSuccessText = "Crear FURIPS 1"
-}
 </script>
 
 <template>
@@ -391,7 +379,6 @@ const openModalQuestionFurips2 = (data: any) => {
           </template>
         </TableFull>
 
-
       </VCardText>
     </VCard>
     <VDivider />
@@ -399,7 +386,6 @@ const openModalQuestionFurips2 = (data: any) => {
     <ModalUploadFileXml ref="refModalUploadFileXml" />
     <ModalUploadFileJson ref="refModalUploadFileJson" />
 
-    <ModalQuestion ref="refModalQuestionFurips2" @success="goViewFurips1" />
 
 
   </div>

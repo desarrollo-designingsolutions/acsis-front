@@ -134,8 +134,6 @@ const fetchDataForm = async () => {
 
     invoice.value = data.invoice
 
-    form.value.consecutiveNumberClaim = invoice.value.furips1_consecutiveClaimNumber
-
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
@@ -281,7 +279,7 @@ const totalFactoryValue = computed(() => {
               <AppTextField :requiredField="true" :rules="[requiredValidator]"
                 label="Número consecutivo de la reclamación" v-model="form.consecutiveNumberClaim" clearable
                 :maxlength="20" counter :errorMessages="errorsBack.consecutiveNumberClaim"
-                @input="errorsBack.consecutiveNumberClaim = ''" disabled />
+                @input="errorsBack.consecutiveNumberClaim = ''" />
             </VCol>
             <VCol cols="12" sm="4">
               <AppSelect :requiredField="true" :rules="[requiredValidator]" label="Tipo de servicio"
