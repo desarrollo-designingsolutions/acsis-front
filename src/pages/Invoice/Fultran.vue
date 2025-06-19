@@ -321,6 +321,24 @@ const goView = (data: { action: string, invoice_id: string | null, id: string | 
 const loadEdit = () => {
   goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
 }
+
+const downloadTXT = async () => {
+  try {
+    loading.form = true;
+
+    const api = `/fultran/downloadTxt/${form.value.id}`
+    const nameFile = `${form.value.id + '_FULTRAN'}`
+    const ext = "txt"
+
+    await downloadBlob(api, nameFile, ext)
+
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  } finally {
+    loading.form = false;
+
+  }
+};
 </script>
 
 <template>
@@ -330,6 +348,10 @@ const loadEdit = () => {
         <span>Información del Fultran</span>
         <div>
           <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadTXT">TXT
+              </VBtn>
+            </VCol>
             <VCol>
               <VBtn :loading="loading.form" @click="downloadPDF">PDF
               </VBtn>
