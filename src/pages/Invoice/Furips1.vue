@@ -686,6 +686,23 @@ const loadEdit = () => {
   goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
 }
 
+const downloadTXT = async () => {
+  try {
+    loading.form = true;
+
+    const api = `/furips1/downloadTxt/${form.value.id}`
+    const nameFile = `${form.value.id + '_FURIPS1'}`
+    const ext = "txt"
+
+    await downloadBlob(api, nameFile, ext)
+
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  } finally {
+    loading.form = false;
+
+  }
+};
 </script>
 
 
@@ -698,6 +715,10 @@ const loadEdit = () => {
         <span>Información del furips1</span>
         <div>
           <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadTXT">TXT
+              </VBtn>
+            </VCol>
             <VCol>
               <VBtn :loading="loading.form" @click="downloadPDF">PDF
               </VBtn>
