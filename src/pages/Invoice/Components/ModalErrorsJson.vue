@@ -49,6 +49,7 @@ defineExpose({ openModal });
 
 // Headers para la tabla
 const inputsTableFilter = [
+  { title: "Tipo de validación", key: "type" },
   { title: "Nivel", key: "level" },
   { title: "Elemento", key: "key" },
   { title: "Dato", key: "data" },
