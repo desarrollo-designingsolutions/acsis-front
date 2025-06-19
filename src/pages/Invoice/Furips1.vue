@@ -286,7 +286,7 @@ const submitForm = async () => {
 
       form.value.id = data.furips1.id
 
-      router.replace({ name: "Invoice-Furips1", params: { invoice_id: form.value.invoice_id, id: form.value.id } });
+      router.replace({ name: "Invoice-Furips1", params: { action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id } });
 
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};

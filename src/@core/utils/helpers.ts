@@ -196,3 +196,32 @@ export const parseCurrencyToFloat = (value: string) => {
     value.replace(/\s|\$/g, '').replace(',', '.')
   );
 }
+
+export const downloadBlob = async (api: string, nameFile: string, format_ext: string) => {
+  try {
+
+    // Hacer la solicitud GET al endpoint
+    const response = await useAxios(api).get({
+      responseType: 'blob', // Indicar que esperamos un archivo binario
+    });
+
+    // Crear un Blob a partir de la respuesta
+    const blob = new Blob([response.data], { type: `application/${format_ext}` });
+
+    // Crear un enlace temporal para la descarga
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `${nameFile}.${format_ext}`); // Nombre del archivo
+    document.body.appendChild(link);
+    link.click();
+
+    // Limpiar
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  } finally {
+  }
+};

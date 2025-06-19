@@ -142,7 +142,7 @@ const submitForm = async () => {
     if (response.status == 200 && data) {
       if (data.code == 200) {
         form.value.id = data.fultran.id
-        router.replace({ name: "Invoice-Fultran", params: { invoice_id: form.value.invoice_id, id: form.value.id } });
+        router.replace({ name: "Invoice-Fultran", params: { action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id } });
       }
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};

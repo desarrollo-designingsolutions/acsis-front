@@ -68,6 +68,7 @@ declare global {
   const defineStore: typeof import('pinia')['defineStore']
   const descargarArchivo: typeof import('./src/@core/utils/helpers')['descargarArchivo']
   const documentLengthByType: typeof import('./src/utils/constants')['documentLengthByType']
+  const downloadBlob: typeof import('./src/@core/utils/helpers')['downloadBlob']
   const downloadExcelBase64: typeof import('./src/@core/utils/helpers')['downloadExcelBase64']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
@@ -473,6 +474,7 @@ declare module 'vue' {
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
     readonly descargarArchivo: UnwrapRef<typeof import('./src/@core/utils/helpers')['descargarArchivo']>
     readonly documentLengthByType: UnwrapRef<typeof import('./src/utils/constants')['documentLengthByType']>
+    readonly downloadBlob: UnwrapRef<typeof import('./src/@core/utils/helpers')['downloadBlob']>
     readonly downloadExcelBase64: UnwrapRef<typeof import('./src/@core/utils/helpers')['downloadExcelBase64']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>

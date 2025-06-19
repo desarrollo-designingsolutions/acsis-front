@@ -95,7 +95,7 @@ const submitForm = async () => {
     if (response.status == 200 && data) {
       if (data.code == 200) {
         form.value.id = data.furips2.id
-        router.replace({ name: "Invoice-Furips2", params: { invoice_id: form.value.invoice_id, id: form.value.id } });
+        router.replace({ name: "Invoice-Furips2", params: { action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id } });
       }
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};
@@ -274,6 +274,27 @@ const goView = (data: { action: string, invoice_id: string | null, id: string | 
 const loadEdit = () => {
   goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
 }
+
+
+const downloadTXT = async () => {
+  try {
+    loading.form = true;
+
+    const api = `/furips2/downloadTxt/${form.value.id}`
+    const nameFile = `${form.value.id + '_FURIPS2'}`
+    const ext = "txt"
+
+    await downloadBlob(api, nameFile, ext)
+
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  } finally {
+    loading.form = false;
+
+  }
+};
+
+
 </script>
 
 <template>
@@ -283,6 +304,10 @@ const loadEdit = () => {
         <span>Información del Furips2</span>
         <div>
           <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadTXT">TXT
+              </VBtn>
+            </VCol>
             <VCol>
               <VBtn @click="loadEdit">Editar
               </VBtn>

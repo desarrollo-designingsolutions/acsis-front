@@ -119,37 +119,26 @@ const downloadExcel = async () => {
 onMounted(() => {
 })
 
+
+//descarga de JSON
 const downloadJson = async (id: string, item: string) => {
   try {
     loadingItems[id] = true;
-    // Hacer la solicitud GET al endpoint
-    const response = await useAxios(`/invoice/downloadJson/${id}`).get({
-      responseType: 'blob', // Indicar que esperamos un archivo binario
-    });
 
-    // Crear un Blob a partir de la respuesta
-    const blob = new Blob([response.data], { type: 'application/json' });
+    const api = `/invoice/downloadJson/${id}`
+    const nameFile = `${item.serviceVendor_nit + '-' + id}`
+    const ext = "json"
 
-    // Crear un enlace temporal para la descarga
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `${item.serviceVendor_nit + '-' + id}.json`); // Nombre del archivo
-    document.body.appendChild(link);
-    link.click();
+    await downloadBlob(api, nameFile, ext)
 
-    // Limpiar
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
 
   } catch (error) {
     console.error('Error al descargar el archivo:', error);
   } finally {
     loadingItems[id] = false;
+
   }
 };
-
-
 
 const echoChannel = () => {
 
@@ -182,32 +171,25 @@ const downloadFileData = async (file: any) => {
 
 
 //descarga de ZIP
-const downloadZip = async (id: string, invoice_number: string) => {
+const downloadZip = async (id: string) => {
   try {
-
     loadingItems[id] = true;
-    const response = await useAxios(`/invoice/downloadZip/${id}`).get({
-      responseType: 'blob' // Importante para manejar archivos binarios
-    });
 
-    // Crear URL temporal para el blob
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `factura_${id}.zip`);
-    document.body.appendChild(link);
-    link.click();
+    const api = `/invoice/downloadZip/${id}`
+    const nameFile = `factura_${id}`
+    const ext = "zip"
 
-    // Limpiar recursos
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    await downloadBlob(api, nameFile, ext)
+
 
   } catch (error) {
-    console.error('Error al descargar ZIP:', error);
+    console.error('Error al descargar el archivo:', error);
   } finally {
     loadingItems[id] = false;
+
   }
 };
+
 
 // Computed que verifica si al menos uno de los valores es true
 const isLoading = computed(() => {
@@ -226,7 +208,7 @@ const goViewFurips1 = (data: any) => {
   router.push({ name: "Invoice-Furips1", params: { action: data.furips1_id ? 'view' : 'create', invoice_id: data.id, id: data.furips1_id } })
 }
 const goViewFurips2 = (data: any) => {
-  router.push({ name: "Invoice-Furips2", params: { invoice_id: data.id, id: data.furips2_id } })
+  router.push({ name: "Invoice-Furips2", params: { action: data.furips2_id ? 'view' : 'create', invoice_id: data.id, id: data.furips2_id } })
 }
 const goViewFultran = (data: any) => {
   router.push({ name: "Invoice-Fultran", params: { action: data.fultran_id ? 'view' : 'create', invoice_id: data.id, id: data.fultran_id } })
@@ -328,8 +310,7 @@ const goViewFultran = (data: any) => {
                   </template>
                   Descargar XML
                 </VListItem>
-                <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'"
-                  @click="downloadZip(item.id, item.invoice_number)">
+                <VListItem v-if="item.status_xml == 'INVOICE_STATUS_XML_003'" @click="downloadZip(item.id)">
                   <template #prepend>
                     <VIcon icon="tabler-zip"></VIcon>
                   </template>
