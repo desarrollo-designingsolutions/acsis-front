@@ -110,6 +110,12 @@ interface IForm {
   authorityIntervention: null | string;
   policyExcessCharge: null | string;
   referralRecipientCharge: null | string;
+
+  mainHospitalizationCupsCode_id: null | string;
+  mainSurgicalProcedureCupsCode_id: null | string;
+  secondarySurgicalProcedureCupsCode_id: null | string;
+  uciServiceProvided: null | string;
+  claimedUciDays: null | string;
 }
 
 const form = ref<IForm>({
@@ -196,6 +202,12 @@ const form = ref<IForm>({
   authorityIntervention: null,
   policyExcessCharge: null,
   referralRecipientCharge: null,
+
+  mainHospitalizationCupsCode_id: null,
+  mainSurgicalProcedureCupsCode_id: null,
+  secondarySurgicalProcedureCupsCode_id: null,
+  uciServiceProvided: null,
+  claimedUciDays: null,
 });
 
 const clearForm = () => {
@@ -326,6 +338,7 @@ const paises_arrayInfo = ref<ISelect[]>([])
 const departamentos_arrayInfo = ref<ISelect[]>([])
 const doctorIdType_arrayInfo = ref<ISelect[]>([])
 const cie10_arrayInfo = ref<ISelect[]>([])
+const cupsRips_arrayInfo = ref([])
 
 const invoice = ref<IInvoiceData>({
   id: null,
@@ -364,6 +377,7 @@ const fetchDataForm = async () => {
     departamentos_arrayInfo.value = data.departamentos_arrayInfo
     doctorIdType_arrayInfo.value = data.doctorIdType_arrayInfo
     cie10_arrayInfo.value = data.cie10_arrayInfo
+    cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
 
     invoice.value = data.invoice
 
@@ -983,12 +997,45 @@ const downloadTXT = async () => {
           <VCardTitle class="mt-4">VI. Datos Relacionados con la Atención de la Víctima</VCardTitle>
           <VForm :ref="el => formRefs[5] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS de servicio principal de hospitalización"
+                  v-model="form.mainHospitalizationCupsCode_id"
+                  :error-messages="errorsBack.mainHospitalizationCupsCode_id"
+                  @input="errorsBack.mainHospitalizationCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
               <VCol cols="12" sm="4">
                 <AppSelect :requiredField="true" label="Complejidad del procedimiento quirúrgico"
                   v-model="form.surgicalProcedureComplexity" clearable
                   :errorMessages="errorsBack.surgicalProcedureComplexity"
                   @input="errorsBack.surgicalProcedureComplexity = ''" :items="surgicalComplexityEnum_arrayInfo"
                   :rules="[requiredValidator]" />
+              </VCol>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS del procedimiento quirúrgico principal"
+                  v-model="form.mainSurgicalProcedureCupsCode_id"
+                  :error-messages="errorsBack.mainSurgicalProcedureCupsCode_id"
+                  @input="errorsBack.mainSurgicalProcedureCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS del procedimiento quirúrgico secundario"
+                  v-model="form.secondarySurgicalProcedureCupsCode_id"
+                  :error-messages="errorsBack.secondarySurgicalProcedureCupsCode_id"
+                  @input="errorsBack.secondarySurgicalProcedureCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelect label="Se presto servicio UCI" v-model="form.uciServiceProvided" clearable
+                  :errorMessages="errorsBack.uciServiceProvided" @input="errorsBack.uciServiceProvided = ''"
+                  :items="yesNoEnum_arrayInfo" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField label="Días de UCI reclamados" v-model="form.claimedUciDays" clearable counter
+                  :errorMessages="errorsBack.claimedUciDays" @input="errorsBack.claimedUciDays = ''" />
               </VCol>
             </VRow>
           </VForm>
