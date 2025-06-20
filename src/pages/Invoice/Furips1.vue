@@ -1006,11 +1006,9 @@ const downloadTXT = async () => {
                   :firstFetch="false" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppSelect :requiredField="true" label="Complejidad del procedimiento quirúrgico"
-                  v-model="form.surgicalProcedureComplexity" clearable
-                  :errorMessages="errorsBack.surgicalProcedureComplexity"
-                  @input="errorsBack.surgicalProcedureComplexity = ''" :items="surgicalComplexityEnum_arrayInfo"
-                  :rules="[requiredValidator]" />
+                <AppSelect label="Complejidad del procedimiento quirúrgico" v-model="form.surgicalProcedureComplexity"
+                  clearable :errorMessages="errorsBack.surgicalProcedureComplexity"
+                  @input="errorsBack.surgicalProcedureComplexity = ''" :items="surgicalComplexityEnum_arrayInfo" />
               </VCol>
               <VCol cols="12" md="4">
                 <AppSelectRemote clearable label="Código CUPS del procedimiento quirúrgico principal"

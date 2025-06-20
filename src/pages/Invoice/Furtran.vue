@@ -9,12 +9,12 @@ import type { VForm } from 'vuetify/components/VForm';
 const { toast } = useToast()
 
 definePage({
-  path: 'invoice-Fultran/:action/:invoice_id/:id?',
-  name: 'Invoice-Fultran',
+  path: 'invoice-Furtran/:action/:invoice_id/:id?',
+  name: 'Invoice-Furtran',
   meta: {
     redirectIfLoggedIn: true,
     requiresAuth: true,
-    requiredPermission: 'invoice.fultran',
+    requiredPermission: 'invoice.furtran',
   },
 });
 
@@ -133,7 +133,7 @@ const submitForm = async () => {
   const validation = await formValidation.value?.validate()
 
   if (validation?.valid) {
-    const url = form.value.id ? `/fultran/update/${form.value.id}` : `/fultran/store`
+    const url = form.value.id ? `/furtran/update/${form.value.id}` : `/furtran/store`
 
     loading.form = true;
     const { data, response } = await useAxios(url).post(form.value);
@@ -141,8 +141,8 @@ const submitForm = async () => {
 
     if (response.status == 200 && data) {
       if (data.code == 200) {
-        form.value.id = data.fultran.id
-        router.replace({ name: "Invoice-Fultran", params: { action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id } });
+        form.value.id = data.furtran.id
+        router.replace({ name: "Invoice-Furtran", params: { action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id } });
       }
     }
     if (data.code === 422) errorsBack.value = data.errors ?? {};
@@ -174,7 +174,7 @@ const fetchDataForm = async () => {
   form.value.invoice_id = route.params.invoice_id || null
   form.value.id = route.params.id || null
 
-  const url = form.value.id ? `/fultran/${form.value.id}/edit` : `/fultran/create/${form.value.invoice_id}`
+  const url = form.value.id ? `/furtran/${form.value.id}/edit` : `/furtran/create/${form.value.invoice_id}`
 
   loading.form = true
   const { response, data } = await useAxios(url).get();
@@ -304,7 +304,7 @@ const insurerCode_validation = computed(() => {
 const downloadPDF = async () => {
 
   loading.form = true;
-  const { response, data } = await useAxios(`/fultran/${form.value.invoice_id}/pdf`).get();
+  const { response, data } = await useAxios(`/furtran/${form.value.invoice_id}/pdf`).get();
 
   if (response.status == 200 && data) {
     openPdfBase64(data.path);
@@ -315,7 +315,7 @@ const downloadPDF = async () => {
 
 const goView = (data: { action: string, invoice_id: string | null, id: string | null } = { action: "create", invoice_id: null, id: null }) => {
   disabledFiledsView.value = false;
-  router.push({ name: "Invoice-Fultran", params: { action: data.action, invoice_id: data.invoice_id, id: data.id } })
+  router.push({ name: "Invoice-Furtran", params: { action: data.action, invoice_id: data.invoice_id, id: data.id } })
 }
 
 const loadEdit = () => {
@@ -326,8 +326,8 @@ const downloadTXT = async () => {
   try {
     loading.form = true;
 
-    const api = `/fultran/downloadTxt/${form.value.id}`
-    const nameFile = `${form.value.id + '_FULTRAN'}`
+    const api = `/furtran/downloadTxt/${form.value.id}`
+    const nameFile = `${form.value.id + '_FURTRAN'}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)
@@ -345,7 +345,7 @@ const downloadTXT = async () => {
   <div>
     <VCard :disabled="loading.form" :loading="loading.form">
       <VCardTitle class="d-flex justify-space-between">
-        <span>Información del Fultran</span>
+        <span>Información del Furtran</span>
         <div>
           <VRow v-if="disabledFiledsView">
             <VCol>
@@ -408,7 +408,7 @@ const downloadTXT = async () => {
                 :requiredField="true" :errorMessages="errorsBack.claimantIdType_id"
                 @input="errorsBack.claimantIdType_id = ''" :rules="[requiredValidator]" clearable
                 :itemsData="tipoIdPisis_arrayInfo" :firstFetch="false" :params="{
-                  codigo_in: CODS_SELECT_FORM_FULTRAN_CLAIMANIDTYPE,
+                  codigo_in: CODS_SELECT_FORM_FURTRAN_CLAIMANIDTYPE,
                 }">
               </AppSelectRemote>
             </VCol>

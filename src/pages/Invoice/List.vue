@@ -210,8 +210,8 @@ const goViewFurips1 = (data: any) => {
 const goViewFurips2 = (data: any) => {
   router.push({ name: "Invoice-Furips2", params: { action: data.furips2_id ? 'view' : 'create', invoice_id: data.id, id: data.furips2_id } })
 }
-const goViewFultran = (data: any) => {
-  router.push({ name: "Invoice-Fultran", params: { action: data.fultran_id ? 'view' : 'create', invoice_id: data.id, id: data.fultran_id } })
+const goViewFurtran = (data: any) => {
+  router.push({ name: "Invoice-Furtran", params: { action: data.furtran_id ? 'view' : 'create', invoice_id: data.id, id: data.furtran_id } })
 }
 
 </script>
@@ -345,11 +345,11 @@ const goViewFultran = (data: any) => {
                         </template>
                         <span>FURIPS-2</span>
                       </VListItem>
-                      <VListItem @click="goViewFultran(item)">
+                      <VListItem @click="goViewFurtran(item)">
                         <template #prepend>
                           <VIcon icon="tabler-file" />
                         </template>
-                        <span>FULTRAN</span>
+                        <span>FURTRAN</span>
                       </VListItem>
                     </VList>
                   </VMenu>
