@@ -40,6 +40,7 @@ const optionsFilter = ref({
       },
     ],
   },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 const loadingItems = reactive({});

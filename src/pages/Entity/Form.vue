@@ -122,7 +122,7 @@ const isLoading = computed(() => {
 });
 
 const nitRules = [
-  value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
+  // value => (!value || /^[0-9]{9}-[0-9]{1}$/.test(value)) || 'El NIT debe tener el formato 000000000-0',
   value => requiredValidator(value),
 ];
 const phoneRules = [

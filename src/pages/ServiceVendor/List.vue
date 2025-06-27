@@ -30,6 +30,7 @@ const optionsFilter = ref({
       },
     ],
   },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 //TABLE

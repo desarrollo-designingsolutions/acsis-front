@@ -61,7 +61,8 @@ const optionsFilter = ref({
         placeholder: "Ingrese valor"
       },
     ],
-  }
+  },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 
@@ -96,7 +97,7 @@ const downloadExcel = async () => {
     }
   })
 
-  
+
   loading.excel = false;
 
   if (response.status == 200 && data) {
