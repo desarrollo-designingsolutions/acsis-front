@@ -21,6 +21,7 @@ definePage({
 interface IInvoiceData {
   id: string | null;
   furips1_consecutiveClaimNumber: string | null;
+  cod_habilitacion: string | null;
 }
 interface ISelect {
   title: string;
@@ -108,6 +109,7 @@ const submitForm = async () => {
 const invoice = ref<IInvoiceData>({
   id: null,
   furips1_consecutiveClaimNumber: null,
+  cod_habilitacion: null,
 });
 
 const serviceTypeEnum_arrayInfo = ref<ISelect[]>([])
@@ -280,8 +282,16 @@ const downloadTXT = async () => {
   try {
     loading.form = true;
 
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses van de 0 a 11
+    const year = today.getFullYear();
+    const formattedDate = `${day}${month}${year}`; // ddmmyyyy
+
+    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+
     const api = `/furips2/downloadTxt/${form.value.id}`
-    const nameFile = `${form.value.id + '_FURIPS2'}`
+    const nameFile = `${'FURIPS2' + cod_habilitacion + formattedDate}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)
@@ -320,8 +330,7 @@ const downloadTXT = async () => {
         <VForm ref="formValidation" @submit.prevent="() => { }" :disabled="disabledFiledsView">
           <VRow>
             <VCol cols="12" sm="4">
-              <AppTextField :requiredField="true" :rules="[requiredValidator]"
-                label="Número consecutivo de la reclamación" v-model="form.consecutiveNumberClaim" clearable
+              <AppTextField label="Número consecutivo de la reclamación" v-model="form.consecutiveNumberClaim" clearable
                 :maxlength="20" counter :errorMessages="errorsBack.consecutiveNumberClaim"
                 @input="errorsBack.consecutiveNumberClaim = ''" />
             </VCol>

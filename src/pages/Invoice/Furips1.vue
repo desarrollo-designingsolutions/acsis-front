@@ -21,6 +21,7 @@ interface IInvoiceData {
   id: string | null;
   invoice_date: string | null;
   insurance_statuse_code: string | null;
+  cod_habilitacion: string | null;
 }
 interface ISelect {
   title: string;
@@ -344,6 +345,7 @@ const invoice = ref<IInvoiceData>({
   id: null,
   invoice_date: null,
   insurance_statuse_code: null,
+  cod_habilitacion: null,
 })
 
 const fetchDataForm = async () => {
@@ -704,8 +706,16 @@ const downloadTXT = async () => {
   try {
     loading.form = true;
 
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses van de 0 a 11
+    const year = today.getFullYear();
+    const formattedDate = `${day}${month}${year}`; // ddmmyyyy
+
+    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+
     const api = `/furips1/downloadTxt/${form.value.id}`
-    const nameFile = `${form.value.id + '_FURIPS1'}`
+    const nameFile = `${'FURIPS1' + cod_habilitacion + formattedDate}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)
@@ -1298,34 +1308,28 @@ const downloadTXT = async () => {
           <VForm :ref="el => formRefs[10] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
-                  label="Total facturado por amparo de gastos médicos quirúrgicos"
+                <AppTextField type="number" label="Total facturado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalBilledMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalBilledMedicalSurgical"
-                  @input="errorsBack.totalBilledMedicalSurgical = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  @input="errorsBack.totalBilledMedicalSurgical = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
-                  label="Total reclamado por amparo de gastos médicos quirúrgicos"
+                <AppTextField type="number" label="Total reclamado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalClaimedMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalClaimedMedicalSurgical"
-                  @input="errorsBack.totalClaimedMedicalSurgical = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  @input="errorsBack.totalClaimedMedicalSurgical = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
+                <AppTextField type="number"
                   label="Total facturado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalBilledTransport" clearable :maxlength="15" counter
-                  :errorMessages="errorsBack.totalBilledTransport" @input="errorsBack.totalBilledTransport = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  :errorMessages="errorsBack.totalBilledTransport" @input="errorsBack.totalBilledTransport = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
+                <AppTextField type="number"
                   label="Total reclamado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalClaimedTransport" clearable :maxlength="15" counter
-                  :errorMessages="errorsBack.totalClaimedTransport" @input="errorsBack.totalClaimedTransport = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  :errorMessages="errorsBack.totalClaimedTransport" @input="errorsBack.totalClaimedTransport = ''" />
               </VCol>
             </VRow>
           </VForm>
