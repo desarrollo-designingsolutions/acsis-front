@@ -80,7 +80,7 @@ const tableLoading = ref(false); // Estado de carga de la tabla
 // Método para refrescar los datos
 const refreshTable = () => {
   if (refTableFull.value) {
-    refTableFull.value.fetchTableData(null, false, true); // Forzamos la búsqueda
+    refTableFull.value.fetchTableData(1, false, true); // Forzamos la búsqueda
   }
 };
 

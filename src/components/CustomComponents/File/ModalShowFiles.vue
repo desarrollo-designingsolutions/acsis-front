@@ -50,7 +50,7 @@ const optionsTable = ref({
   headers: [
     { key: 'filename', title: 'Nombre' },
     { key: "created_at", title: 'Fecha' },
-    { key: 'actions', title: 'Acciones', width: 50  },
+    { key: 'actions', title: 'Acciones', width: 50 },
   ],
   actions: {
     view: {
@@ -100,7 +100,7 @@ const handleForceSearch = (params) => {
     if (disableUrlUpdate.value && params) {
       refTableFull.value.fetchTableData(null, false, true, params);
     } else {
-      refTableFull.value.fetchTableData(null, false, true);
+      refTableFull.value.fetchTableData(1, false, true);
     }
   }
 };

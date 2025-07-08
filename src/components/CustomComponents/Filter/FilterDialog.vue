@@ -57,8 +57,10 @@ const updateQueries = async () => {
     sort: route.query.sort ? route.query.sort as string : '', // Preservamos el sort existente
     'filter[inputGeneral]': '',
     page: 1,
-    perPage: 15
+    perPage: 10
   };
+
+  console.log('Updating queries with:', queries.value);
 
   queries.value['filter[inputGeneral]'] = generalSearch.value;
 
@@ -92,6 +94,7 @@ const updateQueries = async () => {
 
   // Solo actualizamos la URL si no está deshabilitado
   if (!props.disableUrlUpdate) {
+    console.log('entrando a actualizar la URL con:', queries.value);
     await router.push({ query: { ...queries.value } });
   }
 };
