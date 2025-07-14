@@ -21,7 +21,7 @@ definePage({
 interface IInvoiceData {
   id: string | null;
   furips1_consecutiveClaimNumber: string | null;
-  cod_habilitacion: string | null;
+  serviceVendor_ipsable_codigo: string | null;
 }
 interface ISelect {
   title: string;
@@ -109,7 +109,7 @@ const submitForm = async () => {
 const invoice = ref<IInvoiceData>({
   id: null,
   furips1_consecutiveClaimNumber: null,
-  cod_habilitacion: null,
+  serviceVendor_ipsable_codigo: null,
 });
 
 const serviceTypeEnum_arrayInfo = ref<ISelect[]>([])
@@ -288,10 +288,10 @@ const downloadTXT = async () => {
     const year = today.getFullYear();
     const formattedDate = `${day}${month}${year}`; // ddmmyyyy
 
-    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+    const serviceVendor_ipsable_codigo = invoice.value.serviceVendor_ipsable_codigo ? invoice.value.serviceVendor_ipsable_codigo : ''
 
     const api = `/furips2/downloadTxt/${form.value.id}`
-    const nameFile = `${'FURIPS2' + cod_habilitacion + formattedDate}`
+    const nameFile = `${'FURIPS2' + serviceVendor_ipsable_codigo + formattedDate}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)

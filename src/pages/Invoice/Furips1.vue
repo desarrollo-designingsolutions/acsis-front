@@ -21,7 +21,7 @@ interface IInvoiceData {
   id: string | null;
   invoice_date: string | null;
   insurance_statuse_code: string | null;
-  cod_habilitacion: string | null;
+  serviceVendor_ipsable_codigo: string | null;
 }
 interface ISelect {
   title: string;
@@ -345,7 +345,7 @@ const invoice = ref<IInvoiceData>({
   id: null,
   invoice_date: null,
   insurance_statuse_code: null,
-  cod_habilitacion: null,
+  serviceVendor_ipsable_codigo: null,
 })
 
 const fetchDataForm = async () => {
@@ -712,10 +712,10 @@ const downloadTXT = async () => {
     const year = today.getFullYear();
     const formattedDate = `${day}${month}${year}`; // ddmmyyyy
 
-    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+    const serviceVendor_ipsable_codigo = invoice.value.serviceVendor_ipsable_codigo ? invoice.value.serviceVendor_ipsable_codigo : ''
 
     const api = `/furips1/downloadTxt/${form.value.id}`
-    const nameFile = `${'FURIPS1' + cod_habilitacion + formattedDate}`
+    const nameFile = `${'FURIPS1' + serviceVendor_ipsable_codigo + formattedDate}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)

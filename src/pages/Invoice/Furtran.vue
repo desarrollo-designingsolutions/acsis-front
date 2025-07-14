@@ -21,7 +21,7 @@ definePage({
 interface IInvoiceData {
   id: string | null;
   insurance_statuse_code: string | null;
-  cod_habilitacion: string | null;
+  serviceVendor_ipsable_codigo: string | null;
 }
 interface ISelect {
   title: string;
@@ -156,7 +156,7 @@ const submitForm = async () => {
 const invoice = ref<IInvoiceData>({
   id: null,
   insurance_statuse_code: null,
-  cod_habilitacion: null,
+  serviceVendor_ipsable_codigo: null,
 })
 
 const rgResponseEnum_arrayInfo = ref<ISelect[]>([])
@@ -231,7 +231,7 @@ const claimantIdNumber_validation = computed(() => {
   ]
   return {
     rules: rules,
-    requiredField: false
+    requiredField: true
   }
 })
 
@@ -334,10 +334,10 @@ const downloadTXT = async () => {
     const year = today.getFullYear();
     const formattedDate = `${day}${month}${year}`; // ddmmyyyy
 
-    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+    const serviceVendor_ipsable_codigo = invoice.value.serviceVendor_ipsable_codigo ? invoice.value.serviceVendor_ipsable_codigo : ''
 
     const api = `/furtran/downloadTxt/${form.value.id}`
-    const nameFile = `${'FURTRAN' + cod_habilitacion + formattedDate}`
+    const nameFile = `${'FURTRAN' + serviceVendor_ipsable_codigo + formattedDate}`
     const ext = "txt"
 
     await downloadBlob(api, nameFile, ext)
