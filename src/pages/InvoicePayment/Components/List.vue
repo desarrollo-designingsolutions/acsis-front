@@ -30,7 +30,7 @@ const optionsTable = ref({
   },
   actions: {
     delete: {
-      url: '/glosa/delete',
+      url: '/invoicePayment/delete',
       show: props.showBtnsView // Asignar el valor de props.showBtnsView
     },
     edit: {
