@@ -223,11 +223,11 @@ const dataReal = (data: any, field: string) => {
   dataCalculate[field] = data
 }
 
-//ModalMassUpload
-const refModalMassUpload = ref()
 
-const openModalMassUpload = () => {
-  refModalMassUpload.value.openModal(form.value.id, 'Invoice');
+const showUploadModal = ref(false)
+
+const openUploadModal = () => {
+  showUploadModal.value = true
 }
 
 //ModalShowFiles
@@ -546,7 +546,7 @@ const titleTypeInvoice = computed(() => {
               <VListItem @click="openModalListInvoicePayment()">
                 Pagos
               </VListItem>
-              <VListItem @click="openModalMassUpload()">
+              <VListItem @click="openUploadModal">
                 Añadir Soportes
               </VListItem>
               <VListItem @click="openModalShowFiles">
@@ -569,7 +569,10 @@ const titleTypeInvoice = computed(() => {
 
     <ModalQuestion ref="refModalQuestion" />
 
-    <ModalMassUpload ref="refModalMassUpload" />
+    <template v-if="form.id">
+      <FileUploadModal ref="refFileUploadModal" v-model="showUploadModal" :maxFileSizeMB="30" :fileable_id="form.id"
+        fileable_type="Invoice" />
+    </template>
 
     <ModalShowFiles ref="refModalShowFiles"></ModalShowFiles>
 
