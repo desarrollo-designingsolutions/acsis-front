@@ -2,6 +2,8 @@
 import FileUploadModal from './FileUploadModal.vue'
 
 const showUploadModal = ref(false)
+const fileable_id = "01970ce2-c881-724e-b0cb-b5660696d787"
+const fileable_type = "User"
 
 const openUploadModal = () => {
   showUploadModal.value = true
@@ -15,6 +17,6 @@ const openUploadModal = () => {
     </VBtn>
 
     <FileUploadModal v-model="showUploadModal" :maxFileSizeMB="30" :allowed-extensions="['.jpg', '.png', '.pdf']"
-      :max-files="5" />
+      :max-files="5" :fileable_id="fileable_id" :fileable_type="fileable_type" />
   </div>
 </template>

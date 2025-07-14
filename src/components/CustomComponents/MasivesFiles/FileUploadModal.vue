@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import axios from 'axios'
-import { computed, ref } from 'vue'
+import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
+import axios from 'axios';
+import { computed, ref } from 'vue';
+const authenticationStore = useAuthenticationStore();
+
 
 interface FileUpload {
   id: string
@@ -17,13 +20,15 @@ interface FileUploadProps {
   modelValue: boolean
   maxFileSizeMB?: number // Ahora en MB
   allowedExtensions?: string[]
-  maxFiles?: number
+  fileable_id: string
+  fileable_type: string
+  maxFiles: number
 }
 
 const props = withDefaults(defineProps<FileUploadProps>(), {
   maxFileSizeMB: 0, // Cambiado de Infinity a 0 para mejor manejo
   allowedExtensions: () => [],
-  maxFiles: Infinity
+  maxFiles: 100
 })
 
 const emit = defineEmits<{
@@ -195,90 +200,65 @@ const startUpload = async () => {
   const filesToUpload = files.value.filter(f => f.status === 'pending')
 
   // Crear una función para subir un solo archivo
-  // const uploadSingleFile = async (file: FileUpload) => {
-  //   const formData = new FormData()
-  //   formData.append('files[]', file.file)
-
-  //   try {
-  //     file.status = 'uploading'
-  //     file.progress = 0
-  //     file.errorMessage = undefined
-
-  //     // Crear una nueva instancia XMLHttpRequest para control individual
-  //     const xhr = new XMLHttpRequest()
-  //     file.xhr = xhr // Guardamos la referencia para poder cancelar si es necesario
-
-  //     await new Promise((resolve, reject) => {
-  //       xhr.upload.addEventListener('progress', (event) => {
-  //         if (event.lengthComputable) {
-  //           file.progress = Math.round((event.loaded * 100) / event.total)
-  //         }
-  //       })
-
-  //       xhr.addEventListener('load', () => {
-  //         if (xhr.status >= 200 && xhr.status < 300) {
-  //           file.status = 'completed'
-  //           file.progress = 100
-  //           resolve(xhr.response)
-  //         } else {
-  //           reject(new Error(xhr.statusText))
-  //         }
-  //       })
-
-  //       xhr.addEventListener('error', () => {
-  //         reject(new Error('Upload failed'))
-  //       })
-
-  //       xhr.addEventListener('abort', () => {
-  //         reject(new Error('Upload cancelled'))
-  //       })
-
-  //       xhr.open('POST', `${api.defaults.baseURL}/file/uploadMasive`, true)
-
-  //       // Configurar headers (incluyendo autenticación si es necesaria)
-  //       const headers = {
-  //         'Accept': 'application/json',
-  //         ...api.defaults.headers.common
-  //       }
-
-  //       for (const [key, value] of Object.entries(headers)) {
-  //         if (value) xhr.setRequestHeader(key, value.toString())
-  //       }
-
-  //       xhr.send(formData)
-  //     })
-
-  //   } catch (error: any) {
-  //     file.status = 'error'
-  //     file.errorMessage = error.message || 'Upload failed'
-  //     console.error(`Error uploading file ${file.name}:`, error)
-  //   } finally {
-  //     file.xhr = undefined // Limpiar la referencia
-  //   }
-  // }
   const uploadSingleFile = async (file: FileUpload) => {
     const formData = new FormData();
     formData.append('files[]', file.file);
+    formData.append('company_id', String(authenticationStore.company.id));
+    formData.append('user_id', String(authenticationStore.user.id));
+    formData.append('fileable_id', props.fileable_id);
+    formData.append('fileable_type', props.fileable_type);
 
     try {
       file.status = 'uploading';
       file.progress = 0;
       file.errorMessage = undefined;
 
-      await api.post('/file/uploadMasive', formData, {
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
+      // Crear una nueva instancia XMLHttpRequest
+      const xhr = new XMLHttpRequest();
+      file.xhr = xhr; // Guardar referencia para posible cancelación
+
+      await new Promise((resolve, reject) => {
+        xhr.upload.addEventListener('progress', (progressEvent) => {
+          if (progressEvent.lengthComputable) {
             file.progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           }
-        },
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve(xhr.response);
+          } else {
+            reject(new Error(xhr.statusText));
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          reject(new Error('Error en la conexión'));
+        });
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Subida cancelada'));
+        });
+
+        xhr.open('POST', `${api.defaults.baseURL}/file/massUpload`);
+
+        // Configurar headers
+        xhr.setRequestHeader('Authorization', `Bearer ${accessToken}`);
+        xhr.setRequestHeader('Accept', 'application/json');
+
+        xhr.send(formData);
       });
 
       file.status = 'completed';
       file.progress = 100;
     } catch (error: any) {
-      file.status = 'error';
-      file.errorMessage = error.response?.data?.message || 'Error al subir el archivo';
-      console.error(`Error uploading file ${file.name}:`, error);
+      // No marcar como error si fue cancelación intencional
+      if (error.message !== 'Subida cancelada') {
+        file.status = 'error';
+        file.errorMessage = error.response?.data?.message || 'Error al subir el archivo';
+      }
+    } finally {
+      file.xhr = undefined; // Limpiar referencia
     }
   };
 
@@ -303,17 +283,53 @@ const hasUploadsInProgress = computed(() => {
   return files.value.some(file => file.status === 'uploading')
 })
 
-const cancelUploads = () => {
-  files.value.forEach(file => {
-    if (file.xhr) {
-      file.xhr.abort()
-      file.status = 'error'
-      file.errorMessage = 'Subida cancelada'
-      file.xhr = undefined
-    }
-  })
+const isCancelling = ref(false)
 
-  closeDialog()
+const cancelUploads = async () => {
+  isCancelling.value = true
+  try {
+    // 1. Cancelar archivos en progreso (uploading)
+    const uploadsToCancel = files.value.filter(f => f.status === 'uploading')
+    await Promise.all(uploadsToCancel.map(file => {
+      if (file.xhr) {
+        file.xhr.abort()
+      }
+    }))
+
+    // 2. Marcar TODOS los archivos no completados como cancelados
+    files.value.forEach(file => {
+      if (file.status !== 'completed') {
+        file.status = 'error'
+        file.errorMessage = 'Subida cancelada por el usuario'
+        file.xhr = undefined
+      }
+    })
+
+    // 3. Opcional: Eliminar archivos ya subidos del servidor
+    // await deleteUploadedFiles()
+
+    // 4. Cerrar el diálogo
+    closeDialog()
+  } finally {
+    isCancelling.value = false
+  }
+}
+
+// Opcional: Función para limpiar archivos subidos
+const deleteUploadedFiles = async () => {
+  const completedFiles = files.value.filter(f => f.status === 'completed')
+  if (completedFiles.length === 0) return
+
+  try {
+    await api.delete('/file/batchDelete', {
+      data: {
+        file_ids: completedFiles.map(f => f.id),
+        company_id: authenticationStore.company.id
+      }
+    })
+  } catch (error) {
+    console.error('Error al eliminar archivos:', error)
+  }
 }
 
 const finishUpload = () => {
@@ -350,6 +366,38 @@ const acceptString = computed(() => {
 onMounted(() => {
 
 })
+
+//ModalQuestion
+const refModalQuestionCancelUpload = ref()
+
+const openModalQuestionCancelUpload = () => {
+  const completedCount = files.value.filter(f => f.status === 'completed').length
+
+  refModalQuestionCancelUpload.value.openModal()
+  refModalQuestionCancelUpload.value.componentData.title =
+    completedCount > 0
+      ? `¿Cancelar subidas? ${completedCount} archivos ya fueron guardados`
+      : "¿Está seguro que desea cancelar todas las subidas?"
+
+  refModalQuestionCancelUpload.value.componentData.actions = [
+    {
+      text: 'Cancelar solo pendientes',
+      color: 'primary',
+      action: () => cancelUploads(false)
+    },
+    completedCount > 0 && {
+      text: 'Cancelar y eliminar todo',
+      color: 'error',
+      action: () => cancelUploads(true)
+    },
+    {
+      text: 'Continuar subiendo',
+      color: 'secondary',
+      action: () => { }
+    }
+  ].filter(Boolean)
+}
+
 </script>
 
 <template>
@@ -386,7 +434,7 @@ onMounted(() => {
                 ? `Extensiones permitidas: ${props.allowedExtensions.join(', ')}`
                 : 'Se permiten archivos de cualquier tipo' }}
             </p>
-            <p class="text-body-2 text-grey-darken-1" v-if="props.maxFiles < Infinity">
+            <p class="text-body-2 text-grey-darken-1">
               Máximo {{ props.maxFiles }} archivo{{ props.maxFiles > 1 ? 's' : '' }} permitido{{ props.maxFiles > 1 ?
                 's' : '' }}
             </p>
@@ -435,9 +483,10 @@ onMounted(() => {
 
       <VDivider />
       <VCardText class="d-flex justify-end gap-3 flex-wrap">
-        <v-btn @click="cancelUploads">
-          Cancelar
+        <v-btn @click="openModalQuestionCancelUpload" :disabled="!hasUploadsInProgress" :loading="isCancelling">
+          {{ hasUploadsInProgress ? 'Cancelar Subidas' : 'Cancelar' }}
         </v-btn>
+
         <v-btn v-if="currentStep === 'upload'" color="primary" :disabled="files.length === 0" @click="startUpload">
           Guardar
         </v-btn>
@@ -468,6 +517,9 @@ onMounted(() => {
       </VCardText>
     </VCard>
   </VDialog>
+
+  <ModalQuestion ref="refModalQuestionCancelUpload" @success="cancelUploads" />
+
 
 </template>
 
