@@ -6,7 +6,7 @@ export function useFileUpload() {
   const key = ref<number>(1);
   const name = ref<string | null>(null);
   const allowedExtensions = ref<Array<string>>([]);
-  const allowedSizeFile = ref<number>(10240);
+  const allowedSizeFile = ref<number>(30720); // 30 MB in KB
   const loading = ref<boolean>(false);
 
   function handleImageSelected(event: Event, swal = false) {
@@ -20,7 +20,7 @@ export function useFileUpload() {
       return {
         icon: 'error',
         title: 'Oops...',
-        text: 'Debe registrar máximo 10MB',
+        text: 'Debe registrar máximo 30MB',
         success: false
       };
     }

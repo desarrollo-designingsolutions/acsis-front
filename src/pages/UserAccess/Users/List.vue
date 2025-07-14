@@ -61,7 +61,8 @@ const optionsFilter = ref({
         placeholder: "Ingrese valor"
       },
     ],
-  }
+  },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 
@@ -82,7 +83,7 @@ const tableLoading = ref(false); // Estado de carga de la tabla
 // Método para refrescar los datos
 const refreshTable = () => {
   if (refTableFull.value) {
-    refTableFull.value.fetchTableData(null, false, true); // Forzamos la búsqueda
+    refTableFull.value.fetchTableData(1, false, true); // Forzamos la búsqueda
   }
 };
 
@@ -96,7 +97,7 @@ const downloadExcel = async () => {
     }
   })
 
-  
+
   loading.excel = false;
 
   if (response.status == 200 && data) {

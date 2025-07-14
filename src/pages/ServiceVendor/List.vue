@@ -30,6 +30,7 @@ const optionsFilter = ref({
       },
     ],
   },
+  filterLabels: { inputGeneral: 'Buscar en todo' }
 })
 
 //TABLE
@@ -72,7 +73,7 @@ const tableLoading = ref(false); // Estado de carga de la tabla
 // Método para refrescar los datos
 const refreshTable = () => {
   if (refTableFull.value) {
-    refTableFull.value.fetchTableData(null, false, true); // Forzamos la búsqueda
+    refTableFull.value.fetchTableData(1, false, true); // Forzamos la búsqueda
   }
 };
 
@@ -131,7 +132,7 @@ const downloadExcel = async () => {
 
           <template #item.logo="{ item }">
             <div class="my-2">
-              <VImg style="width: 80px;" :src="storageBack(item.logo)"></VImg>
+              <VImg style="inline-size: 80px;" :src="storageBack(item.logo)"></VImg>
             </div>
           </template>
 

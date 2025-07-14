@@ -21,6 +21,7 @@ interface IInvoiceData {
   id: string | null;
   invoice_date: string | null;
   insurance_statuse_code: string | null;
+  cod_habilitacion: string | null;
 }
 interface ISelect {
   title: string;
@@ -110,6 +111,12 @@ interface IForm {
   authorityIntervention: null | string;
   policyExcessCharge: null | string;
   referralRecipientCharge: null | string;
+
+  mainHospitalizationCupsCode_id: null | string;
+  mainSurgicalProcedureCupsCode_id: null | string;
+  secondarySurgicalProcedureCupsCode_id: null | string;
+  uciServiceProvided: null | string;
+  claimedUciDays: null | string;
 }
 
 const form = ref<IForm>({
@@ -196,6 +203,12 @@ const form = ref<IForm>({
   authorityIntervention: null,
   policyExcessCharge: null,
   referralRecipientCharge: null,
+
+  mainHospitalizationCupsCode_id: null,
+  mainSurgicalProcedureCupsCode_id: null,
+  secondarySurgicalProcedureCupsCode_id: null,
+  uciServiceProvided: null,
+  claimedUciDays: null,
 });
 
 const clearForm = () => {
@@ -326,11 +339,13 @@ const paises_arrayInfo = ref<ISelect[]>([])
 const departamentos_arrayInfo = ref<ISelect[]>([])
 const doctorIdType_arrayInfo = ref<ISelect[]>([])
 const cie10_arrayInfo = ref<ISelect[]>([])
+const cupsRips_arrayInfo = ref([])
 
 const invoice = ref<IInvoiceData>({
   id: null,
   invoice_date: null,
   insurance_statuse_code: null,
+  cod_habilitacion: null,
 })
 
 const fetchDataForm = async () => {
@@ -364,6 +379,7 @@ const fetchDataForm = async () => {
     departamentos_arrayInfo.value = data.departamentos_arrayInfo
     doctorIdType_arrayInfo.value = data.doctorIdType_arrayInfo
     cie10_arrayInfo.value = data.cie10_arrayInfo
+    cupsRips_arrayInfo.value = data.cupsRips_arrayInfo
 
     invoice.value = data.invoice
 
@@ -686,6 +702,31 @@ const loadEdit = () => {
   goView({ action: 'edit', invoice_id: form.value.invoice_id, id: form.value.id })
 }
 
+const downloadTXT = async () => {
+  try {
+    loading.form = true;
+
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Meses van de 0 a 11
+    const year = today.getFullYear();
+    const formattedDate = `${day}${month}${year}`; // ddmmyyyy
+
+    const cod_habilitacion = invoice.value.cod_habilitacion ? invoice.value.cod_habilitacion : ''
+
+    const api = `/furips1/downloadTxt/${form.value.id}`
+    const nameFile = `${'FURIPS1' + cod_habilitacion + formattedDate}`
+    const ext = "txt"
+
+    await downloadBlob(api, nameFile, ext)
+
+  } catch (error) {
+    console.error('Error al descargar el archivo:', error);
+  } finally {
+    loading.form = false;
+
+  }
+};
 </script>
 
 
@@ -698,6 +739,10 @@ const loadEdit = () => {
         <span>Información del furips1</span>
         <div>
           <VRow v-if="disabledFiledsView">
+            <VCol>
+              <VBtn :loading="loading.form" @click="downloadTXT">TXT
+              </VBtn>
+            </VCol>
             <VCol>
               <VBtn :loading="loading.form" @click="downloadPDF">PDF
               </VBtn>
@@ -962,12 +1007,43 @@ const loadEdit = () => {
           <VCardTitle class="mt-4">VI. Datos Relacionados con la Atención de la Víctima</VCardTitle>
           <VForm :ref="el => formRefs[5] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS de servicio principal de hospitalización"
+                  v-model="form.mainHospitalizationCupsCode_id"
+                  :error-messages="errorsBack.mainHospitalizationCupsCode_id"
+                  @input="errorsBack.mainHospitalizationCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
               <VCol cols="12" sm="4">
-                <AppSelect :requiredField="true" label="Complejidad del procedimiento quirúrgico"
-                  v-model="form.surgicalProcedureComplexity" clearable
-                  :errorMessages="errorsBack.surgicalProcedureComplexity"
-                  @input="errorsBack.surgicalProcedureComplexity = ''" :items="surgicalComplexityEnum_arrayInfo"
-                  :rules="[requiredValidator]" />
+                <AppSelect label="Complejidad del procedimiento quirúrgico" v-model="form.surgicalProcedureComplexity"
+                  clearable :errorMessages="errorsBack.surgicalProcedureComplexity"
+                  @input="errorsBack.surgicalProcedureComplexity = ''" :items="surgicalComplexityEnum_arrayInfo" />
+              </VCol>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS del procedimiento quirúrgico principal"
+                  v-model="form.mainSurgicalProcedureCupsCode_id"
+                  :error-messages="errorsBack.mainSurgicalProcedureCupsCode_id"
+                  @input="errorsBack.mainSurgicalProcedureCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+              <VCol cols="12" md="4">
+                <AppSelectRemote clearable label="Código CUPS del procedimiento quirúrgico secundario"
+                  v-model="form.secondarySurgicalProcedureCupsCode_id"
+                  :error-messages="errorsBack.secondarySurgicalProcedureCupsCode_id"
+                  @input="errorsBack.secondarySurgicalProcedureCupsCode_id = ''" :disabled="disabledFiledsView"
+                  url="/selectInfiniteCupsRips" array-info="cupsRips" :itemsData="cupsRips_arrayInfo"
+                  :firstFetch="false" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppSelect label="Se presto servicio UCI" v-model="form.uciServiceProvided" clearable
+                  :errorMessages="errorsBack.uciServiceProvided" @input="errorsBack.uciServiceProvided = ''"
+                  :items="yesNoEnum_arrayInfo" />
+              </VCol>
+              <VCol cols="12" sm="4">
+                <AppTextField label="Días de UCI reclamados" v-model="form.claimedUciDays" clearable counter
+                  :errorMessages="errorsBack.claimedUciDays" @input="errorsBack.claimedUciDays = ''" />
               </VCol>
             </VRow>
           </VForm>
@@ -1232,34 +1308,28 @@ const loadEdit = () => {
           <VForm :ref="el => formRefs[10] = el" @submit.prevent="() => { }" :disabled="disabledFiledsView">
             <VRow>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
-                  label="Total facturado por amparo de gastos médicos quirúrgicos"
+                <AppTextField type="number" label="Total facturado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalBilledMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalBilledMedicalSurgical"
-                  @input="errorsBack.totalBilledMedicalSurgical = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  @input="errorsBack.totalBilledMedicalSurgical = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
-                  label="Total reclamado por amparo de gastos médicos quirúrgicos"
+                <AppTextField type="number" label="Total reclamado por amparo de gastos médicos quirúrgicos"
                   v-model="form.totalClaimedMedicalSurgical" clearable :maxlength="15" counter
                   :errorMessages="errorsBack.totalClaimedMedicalSurgical"
-                  @input="errorsBack.totalClaimedMedicalSurgical = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  @input="errorsBack.totalClaimedMedicalSurgical = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
+                <AppTextField type="number"
                   label="Total facturado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalBilledTransport" clearable :maxlength="15" counter
-                  :errorMessages="errorsBack.totalBilledTransport" @input="errorsBack.totalBilledTransport = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  :errorMessages="errorsBack.totalBilledTransport" @input="errorsBack.totalBilledTransport = ''" />
               </VCol>
               <VCol cols="12" sm="4">
-                <AppTextField type="number" :requiredField="true"
+                <AppTextField type="number"
                   label="Total reclamado por amparo de gastos de transporte y movilización de la víctima"
                   v-model="form.totalClaimedTransport" clearable :maxlength="15" counter
-                  :errorMessages="errorsBack.totalClaimedTransport" @input="errorsBack.totalClaimedTransport = ''"
-                  :rules="[requiredValidator, greaterThanZeroValidator]" />
+                  :errorMessages="errorsBack.totalClaimedTransport" @input="errorsBack.totalClaimedTransport = ''" />
               </VCol>
             </VRow>
           </VForm>

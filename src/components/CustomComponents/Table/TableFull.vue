@@ -264,7 +264,7 @@ watch(() => route.query, (newQuery, oldQuery) => {
     delete options.params.page;
     delete options.params.perPage;
     delete options.params.sort;
-    fetchTableData(null, true);
+    fetchTableData(1, true);
   }
 }, { deep: true });
 
