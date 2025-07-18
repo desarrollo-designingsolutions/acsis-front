@@ -197,6 +197,8 @@ const fetchDataForm = async () => {
     yesNoEnum_arrayInfo.value = data.yesNoEnum_arrayInfo
     ipsCodHabilitacion_arrayInfo.value = data.ipsCodHabilitacion_arrayInfo
 
+    invoice.value = data.invoice
+
     if (data.form) {
       form.value = cloneObject(data.form)
     }
