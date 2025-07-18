@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ModalUploadPatientFileExcel from '@/pages/Patient/components/ModalUploadPatientFileExcel.vue';
 import { router } from '@/plugins/1.router';
 import { useAuthenticationStore } from "@/stores/useAuthenticationStore";
 
@@ -11,7 +12,7 @@ definePage({
   },
 });
 
-const loading = reactive({ excel: false })
+const loading = reactive({ excel: false, masive_excel: false })
 const route = useRoute()
 
 const authenticationStore = useAuthenticationStore();
@@ -98,6 +99,37 @@ const downloadExcel = async () => {
   }
 }
 
+const downloadExportValues = async () => {
+  loading.masive_excel = true;
+  const { data, response } = await useAxios("/patient/exportDataToPatientImportExcel").post({
+    company_id: authenticationStore.company.id,
+  })
+
+  if (response?.status == 200 && data && data.code == 200) {
+    downloadExcelBase64(data.excel, "Informacion_Pacientes")
+  }
+  loading.masive_excel = false;
+}
+
+const downloadExportFormat = async () => {
+  loading.masive_excel = true;
+  const { data, response } = await useAxios("/patient/exportFormatPatientImportExcel").post({
+    company_id: authenticationStore.company.id,
+  })
+
+  if (response?.status == 200 && data && data.code == 200) {
+    downloadExcelBase64(data.excel, "Formato_Pacientes")
+  }
+  loading.masive_excel = false;
+}
+
+//ModalUploadPatientFileExcel
+const refModalUploadPatientFileExcel = ref()
+const openModalUploadPatientFileExcel = () => {
+  refModalUploadPatientFileExcel.value.openModal({
+    user_id: authenticationStore.user.id,
+  })
+}
 </script>
 
 <template>
@@ -110,11 +142,40 @@ const downloadExcel = async () => {
         </span>
 
         <div class="d-flex justify-end gap-3 flex-wrap ">
+          <ProgressCircularChannel :channel="'patient.' + authenticationStore.user.id"
+            tooltipText="Cargando Pacientes" />
+
           <VBtn :loading="loading.excel" :disabled="loading.excel" size="38" color="primary" icon
             @click="downloadExcel()">
             <VIcon icon="tabler-file-spreadsheet"></VIcon>
             <VTooltip location="top" transition="scale-transition" activator="parent" text="Descargar Excel">
             </VTooltip>
+          </VBtn>
+
+          <VBtn color="primary" append-icon="tabler-chevron-down" :loading="loading.masive_excel">
+            Más Acciones
+            <VMenu activator="parent" :loading="loading.masive_excel">
+              <VList>
+                <VListItem @click="openModalUploadPatientFileExcel()">
+                  <template #prepend>
+                    <VIcon start icon="tabler-file-upload" />
+                  </template>
+                  <span>Importar</span>
+                </VListItem>
+                <VListItem @click="downloadExportValues()">
+                  <template #prepend>
+                    <VIcon start icon="tabler-file-download" />
+                  </template>
+                  <span>Exportar Valores</span>
+                </VListItem>
+                <VListItem @click="downloadExportFormat()">
+                  <template #prepend>
+                    <VIcon start icon="tabler-file-download" />
+                  </template>
+                  <span>Exportar Formato</span>
+                </VListItem>
+              </VList>
+            </VMenu>
           </VBtn>
 
           <VBtn @click="goViewCreate()">
@@ -141,5 +202,8 @@ const downloadExcel = async () => {
 
       </VCardText>
     </VCard>
+
+    <ModalUploadPatientFileExcel ref="refModalUploadPatientFileExcel" />
+
   </div>
 </template>

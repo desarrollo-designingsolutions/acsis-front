@@ -84,8 +84,6 @@ const isLoading = computed(() => {
 const submitForm = async () => {
   const validation = await formValidation.value?.validate()
 
-  console.log("validation", validation);
-
   if (validation?.valid) {
     const url = form.value.id ? `/furips2/update/${form.value.id}` : `/furips2/store`
 

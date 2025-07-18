@@ -1,8 +1,7 @@
 <template>
-  <div v-if="isLoading" class="loading-overlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">Cargando...</div>
-    <ProgressBar :progress="progress" />
+  <div>
+    <LoadingV2 v-model:isLoading="isLoading" :progress="progress" :show-actions="true" @minimized="minimized = true"
+      @restored="minimized = false" />
   </div>
 </template>
 
@@ -22,6 +21,7 @@ const props = defineProps({
 
 // Estado de carga
 const isLoading = ref(false);
+const minimized = ref(false)
 
 // Función para activar el estado de carga
 const startLoading = () => {
@@ -44,31 +44,31 @@ defineExpose({
 <style scoped>
 .loading-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.7);
+  z-index: 99999;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  z-index: 99999;
+  justify-content: center;
+  background: rgba(255, 255, 255, 70%);
+  block-size: 100%;
+  inline-size: 100%;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .loading-text {
-  font-size: 24px;
-  margin-bottom: 20px;
   color: #3498db;
+  font-size: 24px;
+  margin-block-end: 20px;
 }
 
 .loading-spinner {
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #3498db;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
   animation: spin 1s linear infinite;
+  block-size: 50px;
+  border-block-start: 4px solid #3498db;
+  inline-size: 50px;
 }
 
 @keyframes spin {
