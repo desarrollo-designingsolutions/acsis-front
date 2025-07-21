@@ -51,7 +51,7 @@ defineExpose({ openModal });
 const inputsTableFilter = [
   { title: "Tipo de validación", key: "type" },
   { title: "Nivel", key: "level" },
-  { title: "Elemento", key: "key" },
+  { title: "Elemento/Campo", key: "key" },
   { title: "Dato", key: "data" },
   { title: "Descripción error", key: "message" },
 ];
