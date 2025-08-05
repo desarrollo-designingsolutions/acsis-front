@@ -268,7 +268,7 @@ watch(
                 <AppTextField clearable label="fechaInicioAtencion" v-model="form.fechaInicioAtencion"
                   :requiredField="true" :rules="[requiredValidator]" :error-messages="errorsBack.fechaInicioAtencion"
                   @input="errorsBack.fechaInicioAtencion = ''" :disabled="disabledFiledsView" type="datetime-local"
-                  :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  :max="formatToDateTimeLocal(new Date(new Date(invoice?.invoice_date).getTime() + 24 * 60 * 60 * 1000))" />
               </VCol>
 
               <VCol cols="12" md="6">

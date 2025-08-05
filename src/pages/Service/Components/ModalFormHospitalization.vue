@@ -151,9 +151,9 @@ const numAutorizacionRules = [
 
 const fechaInicioAtencionMaxDate = computed(() => {
   if (form.value.fechaEgreso) {
-    return formatToDateTimeLocal(form.value.fechaEgreso);
+    return formatToDateTimeLocal(new Date(new Date(form.value.fechaEgreso).getTime() + 24 * 60 * 60 * 1000));
   } else {
-    return formatToDateTimeLocal(invoice.value?.invoice_date);
+    return formatToDateTimeLocal(new Date(new Date(invoice?.value.invoice_date).getTime() + 24 * 60 * 60 * 1000));
   }
 });
 
@@ -296,7 +296,8 @@ const fechaEgresoRules = [
                 <AppTextField clearable label="fechaEgreso" v-model="form.fechaEgreso" :requiredField="true"
                   :rules="fechaEgresoRules" :error-messages="errorsBack.fechaEgreso"
                   @input="errorsBack.fechaEgreso = ''" :disabled="disabledFiledsView" type="datetime-local"
-                  :min="form.fechaInicioAtencion" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  :min="form.fechaInicioAtencion"
+                  :max="formatToDateTimeLocal(new Date(new Date(invoice?.invoice_date).getTime() + 24 * 60 * 60 * 1000))" />
               </VCol>
 
             </VRow>

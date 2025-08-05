@@ -367,7 +367,7 @@ watch(
                 <AppTextField clearable label="fechaDispensAdmon" v-model="form.fechaDispensAdmon" :requiredField="true"
                   :rules="[requiredValidator]" :error-messages="errorsBack.fechaDispensAdmon"
                   @input="errorsBack.fechaDispensAdmon = ''" :disabled="disabledFiledsView" type="datetime-local"
-                  :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  :max="formatToDateTimeLocal(new Date(new Date(invoice?.invoice_date).getTime() + 24 * 60 * 60 * 1000))" />
               </VCol>
 
               <VCol cols="12" md="6">

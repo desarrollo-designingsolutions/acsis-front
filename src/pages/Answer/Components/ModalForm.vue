@@ -254,7 +254,6 @@ const rulesValueApprovedAccepted = [
                     :error-messages="errorsBack.date_answer" :rules="[requiredValidator]" v-model="form.date_answer"
                     label="Fecha De Respuesta" @input="errorsBack.date_answer = ''"
                     :min="formatToDateTimeLocal(glosa_date)" />
-                  {{ formatToDateTimeLocal(glosa_date) }}
                 </VCol>
 
                 <VCol cols="12" md="6">

@@ -115,6 +115,10 @@ const submitForm = async () => {
       toast('Faltan campos por diligenciar', '', 'warning');
       return;
     }
+    if (!radication_date.value) {
+      toast('Debe existir una fecha de radicacion para crear la glosa', '', 'warning');
+      return;
+    }
 
     isLoading.value = true;
     const url = form.value.id ? `/glosa/update/${form.value.id}` : `/glosa/store`;

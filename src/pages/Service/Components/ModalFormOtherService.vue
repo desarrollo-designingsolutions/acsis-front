@@ -285,7 +285,8 @@ watch(
                   :requiredField="true" :rules="[requiredValidator]"
                   :error-messages="errorsBack.fechaSuministroTecnologia"
                   @input="errorsBack.fechaSuministroTecnologia = ''" :disabled="disabledFiledsView"
-                  type="datetime-local" :max="formatToDateTimeLocal(invoice?.invoice_date)" />
+                  type="datetime-local"
+                  :max="formatToDateTimeLocal(new Date(new Date(invoice?.invoice_date).getTime() + 24 * 60 * 60 * 1000))" />
               </VCol>
               <VCol cols="12" md="6">
                 <AppSelectRemote clearable label="tipoOS" v-model="form.tipoOS_id"
