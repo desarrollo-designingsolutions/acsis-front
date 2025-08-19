@@ -30,10 +30,12 @@ const form = ref({
   value_approved: null as string | null,
   value_accepted: null as string | null,
   status_id: null as string | null,
+  code_glosa_answer_id: null as string | null,
 })
 
 const totalValueApproved = ref<number | string | null>(0)
 const totalValueAccepted = ref<number | string | null>(0)
+const codeGlosaAnswer_arrayInfo = ref([])
 
 const dataCalculate = reactive({
   real_value_approved: 0 as number,
@@ -83,6 +85,7 @@ const fetchDataForm = async () => {
 
       form.value.value_approved = '0,00';
       form.value.value_accepted = '0,00';
+      codeGlosaAnswer_arrayInfo.value = data.codeGlosaAnswer_arrayInfo
 
       glosa_date.value = data.glosa_date;
 
@@ -125,6 +128,7 @@ const submitForm = async () => {
     formData.append("value_approved", String(dataCalculate.real_value_approved));
     formData.append("value_accepted", String(dataCalculate.real_value_accepted));
     formData.append("status", String(form.value.status_id));
+    formData.append("code_glosa_answer_id", String(form.value.code_glosa_answer_id.value));
 
     const { data, response } = await useAxios(url).post(formData);
 
@@ -218,6 +222,16 @@ const rulesValueApprovedAccepted = [
           <VForm ref="refForm" @submit.prevent>
             <div class="answer-form pa-4">
               <VRow>
+
+                <VCol cols="12">
+                  <AppSelectRemote :disabled="disabledFiledsView" label="Código respuesta glosa"
+                    v-model="form.code_glosa_answer_id" url="/selectCodeGlosaAnswer" arrayInfo="codeGlosaAnswer"
+                    clearable :itemsData="codeGlosaAnswer_arrayInfo" :firstFetch="false"
+                    :error-messages="errorsBack.code_glosa_answer_id" @input="errorsBack.code_glosa_answer_id = ''"
+                    :rules="[requiredValidator]" :requiredField="true">
+                  </AppSelectRemote>
+                </VCol>
+
                 <VCol cols="12">
                   <AppTextarea label="Observación" :requiredField="true" :rules="[requiredValidator]"
                     :disabled="disabledFiledsView" v-model="form.observation" :error-messages="errorsBack.observation"
