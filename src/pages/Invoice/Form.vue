@@ -78,6 +78,8 @@ const clearForm = () => {
 
 const selectPatientKey = ref(0);
 
+const service_date = ref();
+
 const fetchDataForm = async () => {
 
   form.value.id = route.params.id || null
@@ -107,6 +109,8 @@ const fetchDataForm = async () => {
     //formulario 
     if (data.form) {
       form.value = cloneObject(data.form)
+
+      service_date.value = data.service_date;
 
       if (form.value.patient_id) {
         // Forzar la recarga del componente del paciente
@@ -473,7 +477,7 @@ const titleTypeInvoice = computed(() => {
                     <VCol cols="12" sm="3">
                       <AppTextField clearable :requiredField="true" type="date" label="Fecha de transacción"
                         v-model="form.invoice_date" :error-messages="errorsBack.invoice_date"
-                        :max="form.radication_date" :rules="[requiredValidator]" />
+                        :max="form.radication_date" :min="service_date" :rules="[requiredValidator]" />
                     </VCol>
 
                     <VCol cols="12" sm="3">
