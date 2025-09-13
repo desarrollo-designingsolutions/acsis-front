@@ -83,6 +83,24 @@ const handleForceSearch = (params) => {
   }
 };
 
+const loading = reactive({ pdf: false });
+
+const isLoading = computed(() => {
+  return Object.values(loading).some(value => value);
+});
+
+const downloadPDF = async (id: any) => {
+
+  loading.pdf = true;
+  const { response, data } = await useAxios(`/glosaAnswer/${id}/downloadPDF`).get();
+
+  if (response.status == 200 && data) {
+    openPdfBase64(data.path);
+  }
+
+  loading.pdf = false;
+}
+
 </script>
 
 <template>
@@ -115,6 +133,43 @@ const handleForceSearch = (params) => {
             <div>
               <VChip>{{ item.status_description }}</VChip>
             </div>
+          </template>
+
+          <template #item.actions="{ item }">
+            <VMenu>
+              <template #activator="{ props }">
+                <VBtn color="primary" v-bind="props" :loading="isLoading" :disabled="isLoading"
+                  append-icon="tabler-chevron-down">
+                  Acciones
+                </VBtn>
+              </template>
+              <VList>
+                <VListItem @click="openModalFormView(item)">
+                  <template #prepend>
+                    <VIcon icon="tabler-eye" />
+                  </template>
+                  <span>Ver</span>
+                </VListItem>
+                <VListItem @click="openModalFormEdit(item)">
+                  <template #prepend>
+                    <VIcon icon="tabler-pencil" />
+                  </template>
+                  <span>Editar</span>
+                </VListItem>
+                <VListItem @click="refTableFull.openDeleteModal(item.id)">
+                  <template #prepend>
+                    <VIcon icon="tabler-trash" />
+                  </template>
+                  <span>Eliminar</span>
+                </VListItem>
+                <VListItem @click="downloadPDF(item.id)">
+                  <template #prepend>
+                    <VIcon size="22" icon="tabler-file-type-pdf" />
+                  </template>
+                  <span>Exportar PDF</span>
+                </VListItem>
+              </VList>
+            </VMenu>
           </template>
 
         </TableFull>
