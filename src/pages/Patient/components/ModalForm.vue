@@ -140,6 +140,10 @@ const nacionalities = {
   },
 };
 
+const companywithoutvalidationrules = [
+  '0196f477-e248-7001-b805-5799f312ee23'
+];
+
 // Validar edad mínima según el tipo de documento
 const birthDateRule = [
   (value: string) => requiredValidator(value) || 'La fecha de nacimiento es requerida',
@@ -206,29 +210,31 @@ const paisOrigenRule = [
       }
       const tipoId = form.value.tipo_id_pisi_id?.codigo;
 
+      if (!companywithoutvalidationrules.includes(authenticationStore.company.id)) {
+        // Caso 1: Personas con edad >= 18 años y nacionalidad colombiana deben usar CC
+        if (age >= 18 && value.extra_II === 'CO' && tipoId !== 'CC') {
+          return 'Las personas mayores de 18 años con nacionalidad colombiana deben usar la Cédula de Ciudadanía (CC)';
+        }
 
-      // Caso 1: Personas con edad >= 18 años y nacionalidad colombiana deben usar CC
-      if (age >= 18 && value.extra_II === 'CO' && tipoId !== 'CC') {
-        return 'Las personas mayores de 18 años con nacionalidad colombiana deben usar la Cédula de Ciudadanía (CC)';
+        // Determinar si es extranjero (país de origen no es Colombia)
+        const isForeigner = nacionalities[value.codigo]?.code !== 'CO';
+
+        // Determinar si está de paso (reside en Colombia, pero no es colombiano)
+        const isTransient = nacionalities[form.value.pais_residency_id.codigo]?.code === 'CO';
+
+        // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
+        if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
+          return 'Los extranjeros de paso deben identificarse con Cédula de Extranjería (CE), Carnet Diplomático (CD), Pasaporte (PA) o Salvoconducto (SC)';
+        }
+
+        // Caso 3: Migrantes venezolanos deben usar PE
+        const isVenezuelan = nacionalities[value.codigo]?.code === 'VE';
+
+        if (isVenezuelan && tipoId !== 'PE') {
+          return 'Los migrantes venezolanos deben identificarse con el Permiso Especial de Permanencia (PE)';
+        }
       }
 
-      // Determinar si es extranjero (país de origen no es Colombia)
-      const isForeigner = nacionalities[value.codigo]?.code !== 'CO';
-
-      // Determinar si está de paso (reside en Colombia, pero no es colombiano)
-      const isTransient = nacionalities[form.value.pais_residency_id.codigo]?.code === 'CO';
-
-      // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
-      if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
-        return 'Los extranjeros de paso deben identificarse con Cédula de Extranjería (CE), Carnet Diplomático (CD), Pasaporte (PA) o Salvoconducto (SC)';
-      }
-
-      // Caso 3: Migrantes venezolanos deben usar PE
-      const isVenezuelan = nacionalities[value.codigo]?.code === 'VE';
-
-      if (isVenezuelan && tipoId !== 'PE') {
-        return 'Los migrantes venezolanos deben identificarse con el Permiso Especial de Permanencia (PE)';
-      }
     }
     return true;
   },
@@ -250,9 +256,13 @@ const paisResidenciaRule = [
     // Determinar si está de paso (reside en Colombia, pero no es colombiano)
     const isTransient = nacionalities[value.codigo]?.code === 'CO';
 
-    // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
-    if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
-      return 'Los extranjeros de paso deben identificarse con Cédula de Extranjería (CE), Carnet Diplomático (CD), Pasaporte (PA) o Salvoconducto (SC)';
+    if (!companywithoutvalidationrules.includes(authenticationStore.company.id)) {
+      if (!companywithoutvalidationrules.includes(authenticationStore.company.id)) {
+        // Caso 2: Extranjeros de paso deben usar CE, CD, PA o SC
+        if (isForeigner && isTransient && !allowedForeignTransientDocs.includes(tipoId)) {
+          return 'Los extranjeros de paso deben identificarse con Cédula de Extranjería (CE), Carnet Diplomático (CD), Pasaporte (PA) o Salvoconducto (SC)';
+        }
+      }
     }
 
     return true;
